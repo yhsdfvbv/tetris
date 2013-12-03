@@ -263,6 +263,71 @@ var setting = {
   Outline: ['Off', 'On']
 };
 
+var arrStages=[
+      {begin:   0, delay: 60*2, gen:function(arr){arrRowGen.simple(arr,3,1,4)}},
+      {begin:  10, delay: 60*5, gen:function(arr){arrRowGen.simple(arr,2,3,4)}},
+      {begin:  20, delay: 60*7, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
+      {begin:  40, delay: 60*5, gen:function(arr){arrRowGen.simple(arr,2,3,4)}},
+      {begin:  50, delay: 60*2, gen:function(arr){arrRowGen.simple(arr,4,1,2)}},
+      {begin:  70, delay: 60*5, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
+      {begin:  80, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
+      {begin:  90, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
+      
+      {begin: 100, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin: 110, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      
+      {begin: 150, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
+      {begin: 170, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
+      
+      {begin: 200, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin: 220, delay: 60*2.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin: 250, delay: 60*2, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
+      
+      {begin: 300, delay: 60*3.5, gen:function(arr){arrRowGen.simplemessy(arr,0.9)}},
+      {begin: 320, delay: 60*2.5, gen:function(arr){arrRowGen.simplemessy(arr,0.9)}},
+      {begin: 350, delay: 60*3.5, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
+      {begin: 390, delay: 60*2.5, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
+      {begin: 400, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.6)}},
+      {begin: 430, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
+      {begin: 450, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.1)}},
+      
+      {begin: 470, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
+      {begin: 500, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
+      {begin: 550, delay: 60*2.5, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
+      {begin: 600, delay: 60*3.5, gen:function(arr){arrRowGen.simplemessy(arr,0.6)}},
+      {begin: 650, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.6)}},
+      {begin: 700, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
+      {begin: 750, delay: 60*3.5, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
+      {begin: 780, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
+      {begin: 800, delay: 60*2, gen:function(arr){arrRowGen.simplemessy(arr,0.9)}},
+      {begin: 900, delay: 60*1.7, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      
+      {begin: 950, delay: 60*1.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin:1000, delay: 60*5, gen:function(arr){arrRowGen.simplemessy(arr,0.0)}},
+      
+];
+var arrRowGen = {
+      'simple':
+      function(arr,offset,range,width) {
+        var holex = ~~(rng.next()*range)+offset;
+        for(var x = 0; x < width; x++){
+          arr[holex + x] = 0;
+        }
+      },
+      'simplemessy':
+      function(arr,ratio) {
+        var hashole = false;
+        for(var x = 0; x < 10; x++){
+          if(rng.next()>=ratio) {
+            hashole=true;
+            arr[x] = 0;
+          }
+        }
+        if(hashole===false){
+          arr[~~(rng.next()*10)] = 0;
+        }
+      },
+};
 var frame;
 var frameLastRise;
 
@@ -289,6 +354,7 @@ var replayKeys;
 var watchingReplay = false;
 var toGreyRow;
 var gametype;
+var gameparams;
 //TODO Make dirty flags for each canvas, draw them all at once during frame call.
 // var dirtyHold, dirtyActive, dirtyStack, dirtyPreview;
 var lastX, lastY, lastPos, landed;
@@ -406,7 +472,7 @@ addEventListener('resize', resize, false);
 /**
  * Resets all the settings and starts the game.
  */
-function init(gt) {
+function init(gt, params) {
   if (gt === 'replay') {
     watchingReplay = true;
   } else {
@@ -415,6 +481,7 @@ function init(gt) {
     // TODO Make new seed and rng method.
     replayKeys.seed = ~~(Math.random() * 2147483645) + 1;
     gametype = gt;
+    gameparams = params || {};
   }
 
   lineLimit = 40;
@@ -836,81 +903,16 @@ function update() {
   if(gametype === 3) {
     var fromLastRise = frame-frameLastRise;
     var arrRow = [8,8,8,8,8,8,8,8,8,8];
-    var arrRowGen = {
-      'simple':
-      function(arr,offset,range,width) {
-        var holex = ~~(rng.next()*range)+offset;
-        for(var x = 0; x < width; x++){
-          arr[holex + x] = 0;
-        }
-      },
-      'simplemessy':
-      function(arr,ratio) {
-        var hashole = false;
-        for(var x = 0; x < 10; x++){
-          if(rng.next()>=ratio) {
-            hashole=true;
-            arr[x] = 0;
-          }
-        }
-        if(hashole===false){
-          arr[~~(rng.next()*10)] = 0;
-        }
-      },
-    };
-    var arrStages=[
-      {begin:   0, delay: 60*2, gen:function(arr){arrRowGen.simple(arr,3,1,4)}},
-      {begin:  10, delay: 60*5, gen:function(arr){arrRowGen.simple(arr,2,3,4)}},
-      {begin:  20, delay: 60*7, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
-      {begin:  40, delay: 60*5, gen:function(arr){arrRowGen.simple(arr,2,3,4)}},
-      {begin:  50, delay: 60*2, gen:function(arr){arrRowGen.simple(arr,4,1,2)}},
-      {begin:  70, delay: 60*5, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
-      {begin:  80, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
-      {begin:  90, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
-      
-      {begin: 100, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin: 110, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      
-      {begin: 150, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
-      {begin: 170, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
-      
-      {begin: 200, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin: 220, delay: 60*2.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin: 250, delay: 60*2, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
-      
-      {begin: 300, delay: 60*3.5, gen:function(arr){arrRowGen.simplemessy(arr,0.9)}},
-      {begin: 320, delay: 60*2.5, gen:function(arr){arrRowGen.simplemessy(arr,0.9)}},
-      {begin: 350, delay: 60*3.5, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
-      {begin: 390, delay: 60*2.5, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
-      {begin: 400, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.6)}},
-      {begin: 430, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
-      {begin: 450, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.1)}},
-      
-      {begin: 470, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
-      {begin: 500, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
-      {begin: 550, delay: 60*2.5, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
-      {begin: 600, delay: 60*3.5, gen:function(arr){arrRowGen.simplemessy(arr,0.6)}},
-      {begin: 650, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.6)}},
-      {begin: 700, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
-      {begin: 750, delay: 60*3.5, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
-      {begin: 780, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
-      {begin: 800, delay: 60*2, gen:function(arr){arrRowGen.simplemessy(arr,0.9)}},
-      {begin: 900, delay: 60*1.7, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      
-      {begin: 950, delay: 60*1.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin:1000, delay: 60*5, gen:function(arr){arrRowGen.simplemessy(arr,0.0)}},
-      
-    ];
     {
       var curStage = 0, objCurStage;
-      while(curStage<arrStages.length && arrStages[curStage].begin <= lines) {
+      while(curStage<arrStages.length && arrStages[curStage].begin <= lines + (gameparams["digOffset"] || 0)) {
         curStage++;
       }
       curStage--;
       objCurStage = arrStages[curStage];
       if(fromLastRise >= objCurStage.delay) {
         //IJLOSTZ
-        var arrRainbow=[2,-1,1,5,4,3,7,6,-1,-1,8],idxRainbow,flagAll,colorUsed;
+        var arrRainbow=[2,-1,1,5,4,3,7,6,-1,8,8],idxRainbow,flagAll,colorUsed;
         idxRainbow = ~~(objCurStage.begin/100);
         flagAll = (~~(objCurStage.begin/50))%2;
         if(idxRainbow >= arrRainbow.length) {
