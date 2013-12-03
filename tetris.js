@@ -812,7 +812,7 @@ addEventListener('keydown', function(e) {
     }
   }
   if (e.keyCode === binds.retry) {
-    init(gametype);
+    init(gametype,gameparams);
   }
   if (!watchingReplay) {
     if (e.keyCode === binds.moveLeft) {
