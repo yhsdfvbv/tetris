@@ -1,0 +1,23 @@
+<!doctype html>
+<head>
+  <meta charset=utf-8>
+  <meta name="viewport" content="initial-scale = 1.0,minimum-scale = 1.0,maximum-scale = 1.0 ,user-scalable = no ,width = device-width" />
+  <title>Tetr.js</title>
+</head>
+<html>
+<p>测试文字</p>
+<div style="width:1in;height:1in;background:black;color:white">所谓的<br />1英寸</div><br />
+<div style="width:1in;height:1cm;background:black;color:white">所谓的<br />1厘米</div><br />
+<div style="width:1in;height:96px;background:black;color:white">所谓的<br />96像素</div><br />
+
+<div id="divDisplay"></div>
+<script lang="text/javascript">
+var endl="<br />";
+setInterval(function(){
+divDisplay.innerHTML=
+  "设备像素比例(device pixel ratio)："+window.devicePixelRatio+endl+
+  "所谓的宽度、高度（像素）："+window.innerWidth+"×"+window.innerHeight+endl
+;
+},100);
+</script>
+</html>

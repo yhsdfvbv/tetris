@@ -1,9 +1,23 @@
 <!doctype html>
+<head>
   <meta charset=utf-8>
+  <meta name="viewport" content="initial-scale = 1.0 ,minimum-scale = 1.0 ,maximum-scale = 1.0 ,user-scalable = no ,width = device-width" />
   <title>Tetr.js</title>
   <link rel=stylesheet href=style.css>
-<!--<canvas id=bg></canvas>-->
+</head>
+<html>
+
+<canvas id=bg></canvas>
 <!--<video id=bg src=bg.webm loop autoplay></video>-->
+<div class=touchbutton id=touchLeft style=display:none>←</div>
+<div class=touchbutton id=touchRight style=display:none>→</div>
+<div class=touchbutton id=touchDown style=display:none>↓</div>
+<div class=touchbutton id=touchDrop style=display:none>⇊</div>
+<div class=touchbutton id=touchHold style=display:none>⇄</div>
+<div class=touchbutton id=touchRotRight style=display:none>↷</div>
+<div class=touchbutton id=touchRotLeft style=display:none>↶</div>
+<div class=touchbutton id=touchRot180 style=display:none>↻</div>
+
 <div id=content>
 
   <!-- Canvases -->
@@ -11,18 +25,19 @@
     <h3>Hold</h3>
 
     <div id=a>
-      <canvas id=hold></canvas>
+      <canvas id=hold></canvas> <br />
+      <div id=divInp></div>
     </div>
     <ul id=replay style=display:none>
-      <li><a onclick=replay(-1)>prev 前</a>
-      <li><a onclick=replay()>Play/Pause 暂停</a>
-      <li><a onclick=replay(1)>next 后</a>
+      <li><a onclick=replay(-1)>prev 前</a></li>
+      <li><a onclick=replay()>Play/Pause 暂停</a></li>
+      <li><a onclick=replay(1)>next 后</a></li>
     </ul>
 
     <table id=stats>
-      <tr><td id=line>0<th>Line 行
-      <tr><td id=piece>0<th>Piece 块
-      <tr><th id=time>00:00.00
+      <tr><td id=line>0</td><th>Line 行</th></tr>
+      <tr><td id=piece>0</td><th>Piece 块</th></tr>
+      <tr><th id=time>00:00.00</th></tr>
     </table>
   </div>
 
@@ -38,14 +53,14 @@
       <p>Original: <span onclick="window.location='http://simon.lc/tetr.js/'">&gt;&gt;simonlc</a></p>
       <p>farter's DIG mod</p>
       <ul>
-        <li><a onclick=init(0)>Sprint! 40行</a>
-        <!--<li><a onclick=init(1)>Play Marathon</a>
-        <li><a onclick=init(2)>Play Ultra</a>-->
-        <li><a onclick="init(3,{digOffset:0})">Dig! 挖掘挑战</a>
-        <li><a onclick=menu(2)><i class=></i>Controls<br>调整键位</a>
-        <li><a onclick=menu(1)><i class=icon-cog></i>Settings<br>调整设定</a>
-        <li><a onclick="init(3,{digOffset:500})">Dig - 500+</a>
-        <li><a onclick="init(3,{digOffset:1000})">Dig - 1000+</a>
+        <li><a onclick=init(0)>Sprint! 40行</a></li>
+        <!--<li><a onclick=init(1)>Play Marathon</a></li>
+        <li><a onclick=init(2)>Play Ultra</a>--></li>
+        <li><a onclick="init(3,{digOffset:0})">Dig! 挖掘挑战</a></li>
+        <li><a onclick=menu(2)><i class=></i>Controls<br>调整按键</a></li>
+        <li><a onclick=menu(1)><i class=icon-cog></i>Settings<br>调整设定</a></li>
+        <li><a onclick="init(3,{digOffset:500})">Dig - 500+</a></li>
+        <li><a onclick="init(3,{digOffset:1000})">Dig - 1000+</a></li>
       </ul>
     </nav>
 
@@ -57,37 +72,37 @@
     </div>
 
     <div class=menu>
-      <h2>Controls 调整键位</h2>
+      <h2>Controls 调整按键</h2>
       <p>Click on the control you want to change, then press any key.</p>
       <p>点击要设置的键位，然后按键。</p>
       <table id=controls>
-        <tr> <th>Move ← 左移<td id=moveLeft>←
-        <tr> <th>Move → 右移<td id=moveRight>→
-        <tr> <th>Move ↓ 软降<td id=moveDown>↓
-        <tr> <th>Drop ⇊ 硬降<td id=hardDrop>Space
-        <tr> <th>Hold ⇄ 暂存<td id=holdPiece>C
-        <tr> <th>Spin ↷ 右转<td id=rotRight>X
-        <tr> <th>Spin ↶ 左转<td id=rotLeft>Z
-        <tr> <th>Spin ↻ 半周转<td id=rot180>Shift
-        <tr> <th>Retry 重来<td id=retry>R
-        <tr> <th>Pause 暂停<td id=pause>Esc
+        <tr> <th>Move ← 左移</th><td id=moveLeft>←</td> </tr>
+        <tr> <th>Move → 右移</th><td id=moveRight>→</td> </tr>
+        <tr> <th>Move ↓ 软降</th><td id=moveDown>↓</td> </tr>
+        <tr> <th>Drop ⇊ 硬降</th><td id=hardDrop>Space</td> </tr>
+        <tr> <th>Hold ⇄ 暂存</th><td id=holdPiece>C</td> </tr>
+        <tr> <th>Spin ↷ 右转</th><td id=rotRight>X</td> </tr>
+        <tr> <th>Spin ↶ 左转</th><td id=rotLeft>Z</td> </tr>
+        <tr> <th>Spin ↻ 半周转</th><td id=rot180>Shift</td> </tr>
+        <tr> <th>Retry 重来</th><td id=retry>R</td> </tr>
+        <tr> <th>Pause 暂停</th><td id=pause>Esc</td> </tr>
       </table>
       <div style=clear:both><a class=button onclick=menu(0)>Done 完成</a></div>
     </div>
 
     <nav id=go class=menu>
       <ul>
-        <li><a onclick=init(gametype,gameparams)>Retry 再来</a>
-        <li><a onclick=init('replay')>Replay 回放</a>
-        <li><a onclick=menu(0)>Back 回菜单</a>
+        <li><a onclick=init(gametype,gameparams)>Retry 再来</a></li>
+        <li><a onclick=init('replay')>Replay 回放</a></li>
+        <li><a onclick=menu(0)>Back 回菜单</a></li>
       </ul>
     </nav>
 
     <nav id=pause class=menu>
       <ul>
-        <li><a onclick=unpause()>Return 继续</a>
-        <li><a onclick=init(gametype,gameparams)>Retry 重来</a>
-        <li><a onclick=menu(0)>Back 回菜单</a>
+        <li><a onclick=unpause()>Return 继续</a></li>
+        <li><a onclick=init(gametype,gameparams)>Retry 重来</a></li>
+        <li><a onclick=menu(0)>Back 回菜单</a></li>
       </ul>
     </nav>
   </div>
@@ -108,3 +123,5 @@
 <script src=menu.js></script>
 <script src=bg.js></script>
 <script>_gaq=[['_setAccount','UA-30472693-1'],['_trackPageview']];(function(d){var g=d.createElement('script'),s=d.scripts[0];g.src='//www.google-analytics.com/ga.js';s.parentNode.insertBefore(g,s)})(document)</script>
+
+</html>

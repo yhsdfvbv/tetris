@@ -133,6 +133,8 @@ Piece.prototype.checkShift = function() {
     this.shiftDir = 0;
   }
   // Handle events
+  /* farter */
+  // here problem causes it taking 2 frames to move 1 grid even ARR=1
   if (this.shiftDir) {
     // 1. When key pressed instantly move over once.
     if (this.shiftReleased) {
@@ -151,8 +153,12 @@ Piece.prototype.checkShift = function() {
     } else if (this.arrDelay < settings.ARR) {
       this.arrDelay++;
     // 5. If ARR Delay is full, move piece, and reset delay and repeat.
+    /*
     } else if (this.arrDelay === settings.ARR && settings.ARR !== 0) {
-      this.shift(this.shiftDir);
+    */
+      if (this.arrDelay === settings.ARR && settings.ARR !== 0) {
+        this.shift(this.shiftDir);
+      }
     }
   }
 }
@@ -179,7 +185,7 @@ Piece.prototype.shiftDown = function() {
   }
 }
 Piece.prototype.hardDrop = function() {
-  this.y += this.getDrop(20);
+  this.y += this.getDrop(2147483647); /* farter */
   this.lockDelay = settings['Lock Delay'];
 }
 Piece.prototype.getDrop = function(distance) {
@@ -243,17 +249,20 @@ Piece.prototype.update = function() {
       stack.addPiece(this.tetro);
       this.new(preview.next());
     } else {
-      var a = 1 / setting['Lock Delay'][settings['Lock Delay']];
-      activeCtx.globalCompositeOperation = 'source-atop';
-      activeCtx.fillStyle = 'rgba(0,0,0,' + a + ')';
-      activeCtx.fillRect(0, 0, activeCanvas.width, activeCanvas.height);
-      activeCtx.globalCompositeOperation = 'source-over';
       this.lockDelay++;
     }
   }
 }
 Piece.prototype.draw = function() {
   draw(this.tetro, this.x, this.y, activeCtx);
+  if (landed) {
+    var a = this.lockDelay / setting['Lock Delay'][settings['Lock Delay']];
+    a = Math.pow(a,2)*0.5;
+    activeCtx.globalCompositeOperation = 'source-atop';
+    activeCtx.fillStyle = 'rgba(0,0,0,' + a + ')';
+    activeCtx.fillRect(0, 0, activeCanvas.width, activeCanvas.height);
+    activeCtx.globalCompositeOperation = 'source-over';
+  }
 }
 Piece.prototype.drawGhost = function() {
   if (!settings.Ghost && !landed) {

@@ -104,24 +104,34 @@ function settingsLoop() {
 var s;
 var settingsArrow;
 // TODO DRY this.
-function arrowRelease() {
-    resize();
-    arrowReleased = true;
-    arrowDelay = 0;
-    clearTimeout(setLoop)
+function arrowRelease(e) {
+  resize();
+  arrowReleased = true;
+  arrowDelay = 0;
+  clearTimeout(setLoop);
+  if(e && e.preventDefault)
+    e.preventDefault(); //avoid selection by touch
 }
-function left() {
+function left(e) {
   settingsArrow = 1;
   s = this.parentNode.id;
   this.onmouseup = arrowRelease;
   this.onmouseout = arrowRelease;
+  this.ontouchend = arrowRelease;
+  this.ontouchcancel = arrowRelease;
+  if(e && e.preventDefault)
+    e.preventDefault(); //avoid selection by touch
   settingsLoop();
 }
-function right() {
+function right(e) {
   settingsArrow = 0;
   s = this.parentNode.id;
   this.onmouseup = arrowRelease;
   this.onmouseout = arrowRelease;
+  this.ontouchend = arrowRelease;
+  this.ontouchcancel = arrowRelease;
+  if(e && e.preventDefault)
+    e.preventDefault(); //avoid selection by touch
   settingsLoop();
 }
 
@@ -168,7 +178,9 @@ for (var s in settings) {
   iLeft.className = 'left';
   iRight.className = 'right';
   iLeft.onmousedown = left;
+  iLeft.ontouchstart = left;
   iRight.onmousedown = right;
+  iRight.ontouchstart = right;
 
   set.appendChild(div);
   div.appendChild(b);

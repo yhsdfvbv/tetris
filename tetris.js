@@ -40,6 +40,27 @@ var activeCtx = activeCanvas.getContext('2d');
 var previewCtx = previewCanvas.getContext('2d');
 var spriteCtx = spriteCanvas.getContext('2d');
 
+var touchLeft = document.getElementById('touchLeft');
+var touchRight = document.getElementById('touchRight');
+var touchDown = document.getElementById('touchDown');
+var touchDrop = document.getElementById('touchDrop');
+var touchHold = document.getElementById('touchHold');
+var touchRotLeft = document.getElementById('touchRotLeft');
+var touchRotRight = document.getElementById('touchRotRight');
+var touchRot180 = document.getElementById('touchRot180');
+var touchButtons = [
+  touchLeft, touchRight, touchDown, touchDrop,
+  touchHold, touchRotRight, touchRotLeft, touchRot180
+];
+touchLeft.bindsMemberName = "moveLeft";
+touchRight.bindsMemberName = "moveRight";
+touchDown.bindsMemberName = "moveDown";
+touchDrop.bindsMemberName = "hardDrop";
+touchHold.bindsMemberName = "holdPiece";
+touchRotRight.bindsMemberName = "rotRight";
+touchRotLeft.bindsMemberName = "rotLeft";
+touchRot180.bindsMemberName = "rot180";
+
 /**
  * Piece data
  */
@@ -224,9 +245,9 @@ var settingName = {
   Gravity: "Gravity<br>下落速度",
   'Soft Drop': "Soft Drop<br>软降速度",
   'Lock Delay': "Lock Delay<br>锁定延迟",
-  Size: "Size<br>画面大小",
+  Size: "Size 大小",
   Sound: "Sound 声音",
-  Volume: "音量",
+  Volume: "Volume 音量",
   Block: "Block 样式",
   Ghost: "Ghost 影子",
   Grid: "Grid 网格",
@@ -406,6 +427,8 @@ function resize() {
   var screenWidth = ~~(screenHeight * 1.024);
   if (screenWidth > window.innerWidth)
     screenHeight = ~~(window.innerWidth / 1.024);
+  
+  //console.log("w"+screenWidth+"h"+screenHeight);
 
   if (settings.Size === 1 && screenHeight > 602) cellSize = 15;
   else if (settings.Size === 2 && screenHeight > 602) cellSize = 30;
@@ -433,7 +456,7 @@ function resize() {
   previewCanvas.height = stackCanvas.height;
   c.style.width = previewCanvas.width + 'px';
   c.style.height = b.style.height;
-
+  
   // Scale the text so it fits in the thing.
   // TODO get rid of extra font sizes here.
   msg.style.lineHeight = b.style.height;
@@ -445,6 +468,83 @@ function resize() {
   for (var i = 0, len = h3.length; i < len; i++) {
     h3[i].style.lineHeight = a.style.height;
     h3[i].style.fontSize = stats.style.fontSize;
+  }
+  
+  // position of touch buttons
+  {
+    var tmpNode = document.createElement("div");
+    tmpNode.style.cssText = 
+      "width:1in;height:1in;position:absolute;left:0px;top:0px;z-index:-100;visibility:hidden";
+    document.body.appendChild(tmpNode);
+    var dpiX = parseInt(tmpNode.clientWidth);
+    var dpiY = parseInt(tmpNode.clientHeight);
+    tmpNode.parentNode.removeChild(tmpNode);
+    var winW = window.innerWidth / dpiX;
+    var winH = window.innerHeight / dpiY;
+    var buttonH = 0.7, buttonW = 1, fontSize=0.55, unit="in";
+    
+    var setPos = function(elem, posX, posY, sizeW, sizeH,
+      alignX, alignY, offsetX, offsetY, clientW, clientH)
+    {
+      elem.style.width = "" + sizeW + unit;
+      elem.style.height = "" + sizeH + unit;
+      // border ignored, for now
+      elem.style.left = "" + (offsetX + alignX * 0.5 * (clientW - sizeW) + posX) + unit;
+      elem.style.top = "" + (offsetY + alignY * 0.5 * (clientH - sizeH) + posY) + unit;
+      elem.style.display = "block";
+      elem.style["font-size"] = "" + fontSize + unit;
+    }
+    if(winW<buttonW*3)
+    {
+      for (var i = 0, len = touchButtons.length; i < len; i++)
+        touchButtons[i].style.display = "none";
+    }
+    else if((winW-(winH*0.5)>buttonW*4.5) || (winH-winW>4*buttonH && winW>buttonW*5.5))
+    {
+      setPos(touchRotLeft,  0, -buttonH, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+      setPos(touchRot180,   buttonW*0.5, -buttonH*2, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+      setPos(touchRotRight, buttonW, -buttonH, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+      setPos(touchHold,     1.5*buttonW, 0, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+      setPos(touchRight,    0, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+      setPos(touchLeft,     -buttonW*2, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+      setPos(touchDown,     -buttonW, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+      setPos(touchDrop,     -buttonW, -buttonH, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+      
+    }
+    else if(winW-(winH*0.5)>buttonW*3)
+    {
+      setPos(touchRotLeft,  -buttonW*0.5, buttonH, buttonW, buttonH, 2, 1, 0, 0, winW, winH);
+      setPos(touchRot180,   -buttonW*0.5, -buttonH, buttonW, buttonH, 2, 1, 0, 0, winW, winH);
+      setPos(touchRotRight, 0, 0, buttonW, buttonH, 2, 1, 0, 0, winW, winH);
+      setPos(touchHold,     -buttonW, 0, buttonW, buttonH, 2, 1, 0, 0, winW, winH);
+      setPos(touchRight,    buttonW, 0, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+      setPos(touchLeft,     0, 0, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+      setPos(touchDown,     buttonW*0.5, buttonH, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+      setPos(touchDrop,     buttonW*0.5, -buttonH, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+    }
+    else if(winH-winW>0)
+    {
+      setPos(touchLeft,     -buttonW*2, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+      setPos(touchRight,    0, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+      if (winH-winW>buttonH*3) {
+        setPos(touchDown,     -buttonW, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        setPos(touchDrop,     -buttonW, -buttonH, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+      }
+      else {
+        setPos(touchDown,     0, -buttonH, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        setPos(touchDrop,     -buttonW, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+      }
+      setPos(touchRotLeft,  0, -buttonH*1.2, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+      setPos(touchRotRight, 0, 0, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+      setPos(touchHold,     0, buttonH*1.2, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+      setPos(touchRot180,   0, 0, buttonW, buttonH, 0, 0, 0, 0, winW, winH);
+      
+    }
+    else
+    {
+      for (var i = 0, len = touchButtons.length; i < len; i++)
+        touchButtons[i].style.display = "none";
+    }
   }
 
   // Redraw graphics
@@ -797,67 +897,120 @@ function draw(tetro, cx, cy, ctx, color) {
 
 // ========================== Controller ======================================
 
-addEventListener('keydown', function(e) {
+function keyUpDown(e) {
   // TODO send to menu or game depending on context.
   if ([32,37,38,39,40].indexOf(e.keyCode) !== -1)
     e.preventDefault();
   //TODO if active, prevent default for binded keys
   //if (bindsArr.indexOf(e.keyCode) !== -1)
   //  e.preventDefault();
-  if (e.keyCode === binds.pause) {
+  if (e.type === "keydown" && e.keyCode === binds.pause) {
     if (paused) {
       unpause();
     } else {
       pause();
     }
   }
-  if (e.keyCode === binds.retry) {
+  if (e.type === "keydown" && e.keyCode === binds.retry) {
     init(gametype,gameparams);
   }
   if (!watchingReplay) {
-    if (e.keyCode === binds.moveLeft) {
-      keysDown |= flags.moveLeft;
-      //piece.finesse++
-    } else if (e.keyCode === binds.moveRight) {
-      keysDown |= flags.moveRight;
-    } else if (e.keyCode === binds.moveDown) {
-      keysDown |= flags.moveDown;
-    } else if (e.keyCode === binds.hardDrop) {
-      keysDown |= flags.hardDrop;
-    } else if (e.keyCode === binds.rotRight) {
-      keysDown |= flags.rotRight;
-    } else if (e.keyCode === binds.rotLeft) {
-      keysDown |= flags.rotLeft;
-    } else if (e.keyCode === binds.rot180) {
-      keysDown |= flags.rot180;
-    } else if (e.keyCode === binds.holdPiece) {
-      keysDown |= flags.holdPiece;
+    if (e.type === "keydown") {
+      if (e.keyCode === binds.moveLeft) {
+        keysDown |= flags.moveLeft;
+        //piece.finesse++
+      } else if (e.keyCode === binds.moveRight) {
+        keysDown |= flags.moveRight;
+      } else if (e.keyCode === binds.moveDown) {
+        keysDown |= flags.moveDown;
+      } else if (e.keyCode === binds.hardDrop) {
+        keysDown |= flags.hardDrop;
+      } else if (e.keyCode === binds.rotRight) {
+        keysDown |= flags.rotRight;
+      } else if (e.keyCode === binds.rotLeft) {
+        keysDown |= flags.rotLeft;
+      } else if (e.keyCode === binds.rot180) {
+        keysDown |= flags.rot180;
+      } else if (e.keyCode === binds.holdPiece) {
+        keysDown |= flags.holdPiece;
+      }
+    }
+    else if (e.type === "keyup")
+    {
+      if (e.keyCode === binds.moveLeft && keysDown & flags.moveLeft) {
+        keysDown ^= flags.moveLeft;
+      } else if (e.keyCode === binds.moveRight && keysDown & flags.moveRight) {
+        keysDown ^= flags.moveRight;
+      } else if (e.keyCode === binds.moveDown && keysDown & flags.moveDown) {
+        keysDown ^= flags.moveDown;
+      } else if (e.keyCode === binds.hardDrop && keysDown & flags.hardDrop) {
+        keysDown ^= flags.hardDrop;
+      } else if (e.keyCode === binds.rotRight && keysDown & flags.rotRight) {
+        keysDown ^= flags.rotRight;
+      } else if (e.keyCode === binds.rotLeft && keysDown & flags.rotLeft) {
+        keysDown ^= flags.rotLeft;
+      } else if (e.keyCode === binds.rot180 && keysDown & flags.rot180) {
+        keysDown ^= flags.rot180;
+      } else if (e.keyCode === binds.holdPiece && keysDown & flags.holdPiece) {
+        keysDown ^= flags.holdPiece;
+      }
     }
   }
-}, false);
-addEventListener('keyup', function(e) {
-  if (!watchingReplay) {
-    if (e.keyCode === binds.moveLeft && keysDown & flags.moveLeft) {
-      keysDown ^= flags.moveLeft;
-    } else if (e.keyCode === binds.moveRight && keysDown & flags.moveRight) {
-      keysDown ^= flags.moveRight;
-    } else if (e.keyCode === binds.moveDown && keysDown & flags.moveDown) {
-      keysDown ^= flags.moveDown;
-    } else if (e.keyCode === binds.hardDrop && keysDown & flags.hardDrop) {
-      keysDown ^= flags.hardDrop;
-    } else if (e.keyCode === binds.rotRight && keysDown & flags.rotRight) {
-      keysDown ^= flags.rotRight;
-    } else if (e.keyCode === binds.rotLeft && keysDown & flags.rotLeft) {
-      keysDown ^= flags.rotLeft;
-    } else if (e.keyCode === binds.rot180 && keysDown & flags.rot180) {
-      keysDown ^= flags.rot180;
-    } else if (e.keyCode === binds.holdPiece && keysDown & flags.holdPiece) {
-      keysDown ^= flags.holdPiece;
+}
+addEventListener('keydown', keyUpDown, false);
+addEventListener('keyup', keyUpDown, false);
+
+function touch(e)
+{
+  var winH = window.innerHeight, winW = window.innerWidth;
+  //if (e.type==="touchmove")
+    //e.preventDefault();
+  for (var i in binds)
+    keyUpDown({
+      type: "keyup",
+      keyCode: binds[i],
+      preventDefault: function(){}
+    });
+  for (var i = 0, l = e.touches.length; i < l; i++) {
+/*
+  //fails when dragged
+    if (e.touches[i].target) {
+      if (e.touches[i].target.hasOwnProperty("bindsMemberName")) {
+        keyUpDown({
+          type: "keydown",
+          keyCode: binds[e.touches[i].target.bindsMemberName],
+          preventDefault: function(){}
+        });
+        e.preventDefault();
+      }
+    }
+*/
+    var tX = e.touches[i].pageX, tY = e.touches[i].pageY;
+    for(var j in touchButtons) {
+      var oRef = touchButtons[j];
+      if (tX>=oRef.offsetLeft && tX<oRef.offsetLeft+oRef.offsetWidth &&
+        tY>=oRef.offsetTop && tY<oRef.offsetTop+oRef.offsetHeight) {
+        keyUpDown({
+          type: "keydown",
+          keyCode: binds[oRef.bindsMemberName],
+          preventDefault: function(){}
+        });
+        e.preventDefault();
+      }
     }
   }
-}, false);
+}
 
-
+function preventDefault(e) {
+  e.preventDefault();
+}
+document.addEventListener('touchstart',touch, false);
+document.addEventListener('touchmove',touch, false);
+document.addEventListener('touchend',touch, false);
+document.addEventListener('gesturestart',preventDefault,false);
+document.addEventListener('gestureend',preventDefault,false);
+document.addEventListener('gesturechange',preventDefault,false);
+    
 // ========================== Loop ============================================
 
 //TODO Cleanup gameloop and update.
@@ -972,18 +1125,23 @@ function gameLoop() {
     }
 
     // TODO improve this with 'dirty' flags.
+    /* farter */ // as you draw for lock delay brightness gradient... give this up..
+/*
     if (piece.x !== lastX ||
     Math.floor(piece.y) !== lastY ||
     piece.pos !== lastPos ||
     piece.dirty) {
+*/
       clear(activeCtx);
       piece.drawGhost();
       piece.draw();
+/*
     }
     lastX = piece.x;
     lastY = Math.floor(piece.y);
     lastPos = piece.pos;
     piece.dirty = false;
+*/
   } else if (gameState === 2) {
     // Count Down
     if (frame < 50) {

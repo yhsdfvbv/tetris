@@ -26,8 +26,15 @@
   font-style: normal;
 }
 /* General */
+@-ms-viewport {
+  user-zoom: fixed;
+}
 html {
   font-size: 1em;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 body {
   font: 1em 'Source Sans Pro';
@@ -310,7 +317,7 @@ nav a {
   font-weight: bold;
   display: inline-block;
   width: 5em;
-  margin: 0.3em 0;
+  margin: 0.2em 0;
 }
 
 /* Special Menus */
@@ -332,4 +339,18 @@ nav a {
   width: 100%;
   position: absolute;
   bottom: 2em;
+}
+
+/* Touch Buttons */
+.touchbutton {
+  position: absolute;
+  font-family: Arial;
+  text-align: center;
+  color: #fff;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  opacity: 0.3;
+  /* padding: 0.3rem 0.6rem 0.4rem; */
+  background: #444;
+  z-index: 100;
 }
