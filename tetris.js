@@ -40,6 +40,7 @@ var activeCtx = activeCanvas.getContext('2d');
 var previewCtx = previewCanvas.getContext('2d');
 var spriteCtx = spriteCanvas.getContext('2d');
 
+
 var touchLeft = document.getElementById('touchLeft');
 var touchRight = document.getElementById('touchRight');
 var touchDown = document.getElementById('touchDown');
@@ -48,6 +49,9 @@ var touchHold = document.getElementById('touchHold');
 var touchRotLeft = document.getElementById('touchRotLeft');
 var touchRotRight = document.getElementById('touchRotRight');
 var touchRot180 = document.getElementById('touchRot180');
+
+var touchLayout = document.getElementById('touchLayout');
+
 var touchButtons = [
   touchLeft, touchRight, touchDown, touchDrop,
   touchHold, touchRotRight, touchRotLeft, touchRot180
@@ -60,6 +64,8 @@ touchHold.bindsMemberName = "holdPiece";
 touchRotRight.bindsMemberName = "rotRight";
 touchRotLeft.bindsMemberName = "rotLeft";
 touchRot180.bindsMemberName = "rot180";
+
+var nLayouts = 4, currLayout = -1 /* auto */;
 
 /**
  * Piece data
@@ -283,50 +289,6 @@ var setting = {
   Grid: ['Off', 'On'],
   Outline: ['Off', 'On']
 };
-
-var arrStages=[
-      {begin:   0, delay: 60*2, gen:function(arr){arrRowGen.simple(arr,3,1,4)}},
-      {begin:  10, delay: 60*5, gen:function(arr){arrRowGen.simple(arr,2,3,4)}},
-      {begin:  20, delay: 60*7, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
-      {begin:  40, delay: 60*5, gen:function(arr){arrRowGen.simple(arr,2,3,4)}},
-      {begin:  50, delay: 60*2, gen:function(arr){arrRowGen.simple(arr,4,1,2)}},
-      {begin:  70, delay: 60*5, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
-      {begin:  80, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
-      {begin:  90, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
-      
-      {begin: 100, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin: 110, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      
-      {begin: 150, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
-      {begin: 170, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
-      
-      {begin: 200, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin: 220, delay: 60*2.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin: 250, delay: 60*2, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
-      
-      {begin: 300, delay: 60*3.5, gen:function(arr){arrRowGen.simplemessy(arr,0.9)}},
-      {begin: 320, delay: 60*2.5, gen:function(arr){arrRowGen.simplemessy(arr,0.9)}},
-      {begin: 350, delay: 60*3.5, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
-      {begin: 390, delay: 60*2.5, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
-      {begin: 400, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.6)}},
-      {begin: 430, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
-      {begin: 450, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.1)}},
-      
-      {begin: 470, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
-      {begin: 500, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
-      {begin: 550, delay: 60*2.5, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
-      {begin: 600, delay: 60*3.5, gen:function(arr){arrRowGen.simplemessy(arr,0.6)}},
-      {begin: 650, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.6)}},
-      {begin: 700, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
-      {begin: 750, delay: 60*3.5, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
-      {begin: 780, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
-      {begin: 800, delay: 60*2, gen:function(arr){arrRowGen.simplemessy(arr,0.9)}},
-      {begin: 900, delay: 60*1.7, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      
-      {begin: 950, delay: 60*1.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin:1000, delay: 60*5, gen:function(arr){arrRowGen.simplemessy(arr,0.0)}},
-      
-];
 var arrRowGen = {
       'simple':
       function(arr,offset,range,width) {
@@ -349,6 +311,85 @@ var arrRowGen = {
         }
       },
 };
+
+var arrStages = [
+      {begin:   0, delay: 60*1, gen:function(arr){arrRowGen.simple(arr,3,1,4)}},
+      {begin:  10, delay: 60*5, gen:function(arr){arrRowGen.simple(arr,2,3,4)}},
+      {begin:  20, delay: 60*7, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
+      {begin:  40, delay: 60*5, gen:function(arr){arrRowGen.simple(arr,2,3,4)}},
+      {begin:  50, delay: 60*2, gen:function(arr){arrRowGen.simple(arr,4,1,2)}},
+      {begin:  70, delay: 60*5, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
+      {begin:  80, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
+      {begin:  90, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
+      
+      {begin: 100, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin: 110, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin: 150, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
+      {begin: 170, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
+      
+      {begin: 200, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin: 220, delay: 60*2.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin: 250, delay: 60*2, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
+      
+      {begin: 300, delay: 60*3.5, gen:function(arr){arrRowGen.simplemessy(arr,0.9)}},
+      {begin: 320, delay: 60*2.5, gen:function(arr){arrRowGen.simplemessy(arr,0.9)}},
+      {begin: 350, delay: 60*3.5, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
+      {begin: 390, delay: 60*2.5, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
+      {begin: 400, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.6)}},
+      {begin: 430, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
+      {begin: 450, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.1)}},
+      
+      {begin: 470, delay: 60*5, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
+      {begin: 500, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
+      {begin: 550, delay: 60*2.5, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
+      {begin: 600, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.6)}},
+      {begin: 650, delay: 60*2.5, gen:function(arr){arrRowGen.simplemessy(arr,0.6)}},
+      {begin: 700, delay: 60*3.5, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
+      {begin: 750, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
+      {begin: 780, delay: 60*2.5, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
+      {begin: 800, delay: 60*2, gen:function(arr){arrRowGen.simplemessy(arr,0.9)}},
+      {begin: 900, delay: 60*1.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin: 950, delay: 60*1.2, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      
+      {begin:1000, delay: 60*5, gen:function(arr){arrRowGen.simplemessy(arr,0.0)}},
+      {begin:1050, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.0)}},
+      {begin:1100, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,1,1,8)}},
+      {begin:1150, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,2,1,6)}},
+      {begin:1180, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,3,1,4)}},
+      {begin:1200, delay: 60*2, gen:function(arr){arrRowGen.simple(arr,4,1,2)}},
+      {begin:1210, delay: 60*1, gen:function(arr){arrRowGen.simple(arr,4,1,2)}},
+      {begin:1250, delay: 60*2, gen:function(arr){arrRowGen.simple(arr,9,1,1)}},
+      {begin:1260, delay: 60*0.5, gen:function(arr){arrRowGen.simple(arr,9,1,1)}},
+      {begin:1300, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.0)}},
+      {begin:1350, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.1)}},
+      {begin:1400, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.15)}},
+      {begin:1450, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.2)}},
+      {begin:1480, delay: 60*5, gen:function(arr){arrRowGen.simplemessy(arr,0.2)}},
+
+      {begin:1500, delay: 60*1.5, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
+      {begin:1550, delay: 60*1.4, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
+      {begin:1600, delay: 60*1.3, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
+      {begin:1650, delay: 60*1.2, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
+      {begin:1700, delay: 60*1.3, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin:1800, delay: 60*1.2, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin:1850, delay: 60*1.15, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin:1900, delay: 60*1.1, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin:1950, delay: 60*1.05, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      
+      {begin:2000, delay: 60*1.0, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin:2050, delay: 60*0.95, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin:2100, delay: 60*0.9, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin:2150, delay: 60*0.85, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin:2180, delay: 60*0.8, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin:2190, delay: 60*1.0, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin:2200, delay: 60*0.8, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin:2300, delay: 60*0.75, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin:2400, delay: 60*0.7, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin:2450, delay: 60*0.6, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin:2500, delay: 60*0.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      
+      
+];
 var frame;
 var frameLastRise;
 
@@ -494,57 +535,86 @@ function resize() {
       elem.style.display = "block";
       elem.style["font-size"] = "" + fontSize + unit;
     }
-    if(winW<buttonW*3)
-    {
-      for (var i = 0, len = touchButtons.length; i < len; i++)
-        touchButtons[i].style.display = "none";
-    }
-    else if((winW-(winH*0.5)>buttonW*4.5) || (winH-winW>4*buttonH && winW>buttonW*5.5))
-    {
-      setPos(touchRotLeft,  0, -buttonH, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
-      setPos(touchRot180,   buttonW*0.5, -buttonH*2, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
-      setPos(touchRotRight, buttonW, -buttonH, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
-      setPos(touchHold,     1.5*buttonW, 0, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
-      setPos(touchRight,    0, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
-      setPos(touchLeft,     -buttonW*2, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
-      setPos(touchDown,     -buttonW, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
-      setPos(touchDrop,     -buttonW, -buttonH, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
-      
-    }
-    else if(winW-(winH*0.5)>buttonW*3)
-    {
-      setPos(touchRotLeft,  -buttonW*0.5, buttonH, buttonW, buttonH, 2, 1, 0, 0, winW, winH);
-      setPos(touchRot180,   -buttonW*0.5, -buttonH, buttonW, buttonH, 2, 1, 0, 0, winW, winH);
-      setPos(touchRotRight, 0, 0, buttonW, buttonH, 2, 1, 0, 0, winW, winH);
-      setPos(touchHold,     -buttonW, 0, buttonW, buttonH, 2, 1, 0, 0, winW, winH);
-      setPos(touchRight,    buttonW, 0, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
-      setPos(touchLeft,     0, 0, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
-      setPos(touchDown,     buttonW*0.5, buttonH, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
-      setPos(touchDrop,     buttonW*0.5, -buttonH, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
-    }
-    else if(winH-winW>0)
-    {
-      setPos(touchLeft,     -buttonW*2, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
-      setPos(touchRight,    0, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
-      if (winH-winW>buttonH*3) {
+    
+    var layouts = { //function array
+      "NONE":
+      function() {
+        for (var i = 0, len = touchButtons.length; i < len; i++)
+          touchButtons[i].style.display = "none";
+      },
+      "KBD_R":
+      function() {
+        setPos(touchRotLeft,  0, -buttonH, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+        setPos(touchRot180,   buttonW*0.5, -buttonH*2, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+        setPos(touchRotRight, buttonW, -buttonH, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+        setPos(touchHold,     1.5*buttonW, 0, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+        setPos(touchRight,    0, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        setPos(touchLeft,     -buttonW*2, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
         setPos(touchDown,     -buttonW, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
         setPos(touchDrop,     -buttonW, -buttonH, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+      },
+      "KBD_L":
+      function() {
+        setPos(touchRotLeft,  -buttonW, -buttonH, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        setPos(touchRot180,   -buttonW*0.4, -buttonH*2, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        setPos(touchRotRight, 0, -buttonH, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        setPos(touchHold,     -buttonW*1.5, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        setPos(touchRight,    buttonW*2, 0, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+        setPos(touchLeft,     0, 0, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+        setPos(touchDown,     buttonW, 0, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+        setPos(touchDrop,     buttonW, -buttonH, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+      },
+      "JOY":
+      function() {
+        setPos(touchRotLeft,  -buttonW*0.5, buttonH, buttonW, buttonH, 2, 1, 0, 0, winW, winH);
+        setPos(touchRot180,   -buttonW*0.5, -buttonH, buttonW, buttonH, 2, 1, 0, 0, winW, winH);
+        setPos(touchRotRight, 0, 0, buttonW, buttonH, 2, 1, 0, 0, winW, winH);
+        setPos(touchHold,     -buttonW, 0, buttonW, buttonH, 2, 1, 0, 0, winW, winH);
+        setPos(touchRight,    buttonW, 0, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+        setPos(touchLeft,     0, 0, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+        setPos(touchDown,     buttonW*0.5, buttonH, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+        setPos(touchDrop,     buttonW*0.5, -buttonH, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+      },
+      "NARROW":
+      function() {
+        setPos(touchLeft,     -buttonW*2, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        setPos(touchRight,    0, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        if (winH-winW>buttonH*3) {
+          setPos(touchDown,     -buttonW, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+          setPos(touchDrop,     -buttonW, -buttonH, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        }
+        else {
+          setPos(touchDown,     0, -buttonH, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+          setPos(touchDrop,     -buttonW, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        }
+        setPos(touchRotLeft,  0, -buttonH*1.2, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+        setPos(touchRotRight, 0, 0, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+        setPos(touchHold,     0, buttonH*1.2, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+        setPos(touchRot180,   0, -buttonH*2.4, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+      },
+    };
+    if(currLayout === -1) { // auto detection
+      if(winW<buttonW*3) {
+        layouts["NONE"]();
+      }
+      else if((winW-(winH*0.5)>buttonW*4.5) ||
+        (winH-winW>4*buttonH && winW>buttonW*5.5)) {
+        layouts["KBD_R"]();
+      }
+      else if(winW-(winH*0.5)>buttonW*3) {
+        layouts["JOY"]();
+      }
+      else if(winH-winW>0) {
+        layouts["NARROW"]();
       }
       else {
-        setPos(touchDown,     0, -buttonH, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
-        setPos(touchDrop,     -buttonW, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        layouts["NONE"]();
       }
-      setPos(touchRotLeft,  0, -buttonH*1.2, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
-      setPos(touchRotRight, 0, 0, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
-      setPos(touchHold,     0, buttonH*1.2, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
-      setPos(touchRot180,   0, 0, buttonW, buttonH, 0, 0, 0, 0, winW, winH);
-      
     }
-    else
-    {
-      for (var i = 0, len = touchButtons.length; i < len; i++)
-        touchButtons[i].style.display = "none";
+    else {
+      layouts[["KBD_R","KBD_L","JOY","NARROW","NONE"][currLayout]]();
     }
+    setPos(touchLayout, 0, 0, buttonW, buttonH, 2, 0, 0, 0, winW, winH);
   }
 
   // Redraw graphics
@@ -615,9 +685,6 @@ function init(gt, params) {
   lines = 0;
   piecesSet = 0;
 
-  statsPiece.innerHTML = piecesSet;
-  statsLines.innerHTML = lineLimit - lines;
-  statistics();
   clear(stackCtx);
   clear(activeCtx);
   clear(holdCtx);
@@ -644,6 +711,9 @@ function init(gt, params) {
   } else {
     gameState = 2;
   }
+  
+  statistics();
+  statisticsStack();
 }
 
 function range(start, end, inc) {
@@ -717,6 +787,23 @@ function statistics() {
                         (seconds < 10 ? ':0' : ':') + seconds;
 }
 
+/**
+ * Draws the stats about the stack next to the tetrion.
+ */
+function statisticsStack() {
+  statsPiece.innerHTML = piecesSet;
+
+  if (gametype !== 3)
+    statsLines.innerHTML = lineLimit - lines;
+  else {
+    if (gameparams["digOffset"] || gameparams["digOffset"] !== 0)
+      statsLines.innerHTML = '<span style="font-size: 0.5em">' + gameparams["digOffset"]
+        + "+</span><br />" + lines;
+        // /* farter */
+    else
+      statsLines.innerHTML = lines;
+  }
+}
 // ========================== View ============================================
 
 /**
@@ -965,39 +1052,53 @@ function touch(e)
   var winH = window.innerHeight, winW = window.innerWidth;
   //if (e.type==="touchmove")
     //e.preventDefault();
-  for (var i in binds)
-    keyUpDown({
-      type: "keyup",
-      keyCode: binds[i],
-      preventDefault: function(){}
-    });
-  for (var i = 0, l = e.touches.length; i < l; i++) {
-/*
-  //fails when dragged
-    if (e.touches[i].target) {
-      if (e.touches[i].target.hasOwnProperty("bindsMemberName")) {
-        keyUpDown({
-          type: "keydown",
-          keyCode: binds[e.touches[i].target.bindsMemberName],
-          preventDefault: function(){}
-        });
-        e.preventDefault();
+  if (e.type === "touchstart" || e.type === "touchmove" || e.type === "touchend") {
+    for (var i in binds)
+      keyUpDown({
+        type: "keyup",
+        keyCode: binds[i],
+        preventDefault: function(){}
+      });
+    for (var i = 0, l = e.touches.length; i < l; i++) {
+  /*
+    //fails when dragged
+      if (e.touches[i].target) {
+        if (e.touches[i].target.hasOwnProperty("bindsMemberName")) {
+          keyUpDown({
+            type: "keydown",
+            keyCode: binds[e.touches[i].target.bindsMemberName],
+            preventDefault: function(){}
+          });
+          e.preventDefault();
+        }
+      }
+  */
+      var tX = e.touches[i].pageX, tY = e.touches[i].pageY;
+      for (var j in touchButtons) {
+        var oRef = touchButtons[j];
+        if (tX>=oRef.offsetLeft && tX<oRef.offsetLeft+oRef.offsetWidth &&
+          tY>=oRef.offsetTop && tY<oRef.offsetTop+oRef.offsetHeight) {
+          keyUpDown({
+            type: "keydown",
+            keyCode: binds[oRef.bindsMemberName],
+            preventDefault: function(){}
+          });
+          e.preventDefault();
+        }
       }
     }
-*/
-    var tX = e.touches[i].pageX, tY = e.touches[i].pageY;
-    for(var j in touchButtons) {
-      var oRef = touchButtons[j];
-      if (tX>=oRef.offsetLeft && tX<oRef.offsetLeft+oRef.offsetWidth &&
-        tY>=oRef.offsetTop && tY<oRef.offsetTop+oRef.offsetHeight) {
-        keyUpDown({
-          type: "keydown",
-          keyCode: binds[oRef.bindsMemberName],
-          preventDefault: function(){}
-        });
-        e.preventDefault();
+  }
+  if ((e.type === "touchstart" || e.type === "click") && e.target === touchLayout) {
+    if (currLayout === -1) {
+      currLayout = 0;
+    }
+    else {
+      currLayout++;
+      if (currLayout === nLayouts) {
+        currLayout = -1;
       }
     }
+    resize();
   }
 }
 
@@ -1007,6 +1108,8 @@ function preventDefault(e) {
 document.addEventListener('touchstart',touch, false);
 document.addEventListener('touchmove',touch, false);
 document.addEventListener('touchend',touch, false);
+document.addEventListener('click',touch, false);
+
 document.addEventListener('gesturestart',preventDefault,false);
 document.addEventListener('gestureend',preventDefault,false);
 document.addEventListener('gesturechange',preventDefault,false);
@@ -1065,7 +1168,11 @@ function update() {
       objCurStage = arrStages[curStage];
       if(fromLastRise >= objCurStage.delay) {
         //IJLOSTZ
-        var arrRainbow=[2,-1,1,5,4,3,7,6,-1,8,8],idxRainbow,flagAll,colorUsed;
+        var arrRainbow=[
+          2,-1,1,5,4,3,7,6,-1,8,
+          8,8,8,6,6,2,1,5,8,-1,
+          7,7,-1,8,8];
+        var idxRainbow,flagAll,colorUsed;
         idxRainbow = ~~(objCurStage.begin/100);
         flagAll = (~~(objCurStage.begin/50))%2;
         if(idxRainbow >= arrRainbow.length) {
@@ -1179,7 +1286,10 @@ function gameLoop() {
       clear(activeCtx);
     if (frame % 2) {
       for (var x = 0; x < 10; x++) {
-        if (stack.grid[x][toGreyRow]) stack.grid[x][toGreyRow] = gameState - 1;
+         /* farter */ //WTF gamestate-1
+        if (stack.grid[x][toGreyRow])
+          stack.grid[x][toGreyRow] =
+            (gameState === 9 ? 8 : 0);
       }
       stack.draw();
       toGreyRow--;

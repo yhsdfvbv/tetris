@@ -77,12 +77,7 @@ Stack.prototype.addPiece = function(tetro) {
   // TODO Might not need this (same for in init)
   column = 0;
 
-  statsPiece.innerHTML = piecesSet;
-
-  if (gametype !== 3)
-    statsLines.innerHTML = lineLimit - lines;
-  else
-    statsLines.innerHTML = lines; // digLines.length; /* farter */
+  statisticsStack();
 
   this.draw();
 }
