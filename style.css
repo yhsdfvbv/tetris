@@ -37,7 +37,9 @@ html {
   user-select: none;
 }
 body {
-  font: 1em 'Source Sans Pro';
+/*  font: 1em 'Source Sans Pro'; */
+  font-family: 'Trebuchet MS', 'Microsoft Yahei';
+  font-size: 1em;
   margin: 0;
   background: #000;
   background-size: cover;
@@ -87,7 +89,10 @@ nav li {
 }
 .button,
 nav a {
-  font: 1rem 'Lato';
+/*  font: 1rem 'Lato'; */
+  font-size: 1rem;
+  font-family: 'Trebuchet MS', 'Microsoft Yahei';
+  font-weight: bold;
   display: inline-block;
   width: 50%;
   color: #fff;
@@ -176,7 +181,9 @@ nav a {
     z-index: 3;
   }
   #msg {
-    font: 900 4rem 'Source Sans Pro', sans-serif;
+/*    font: 900 4rem 'Source Sans Pro', sans-serif; */
+    font-family: 'Trebuchet MS', 'Microsoft Yahei';
+    font-weight: bold;
     font-size: 4rem;
     color: #fff;
     position: absolute;
@@ -311,6 +318,7 @@ nav a {
   text-align: left;
   display: inline-block;
   width: 7em;
+  font-weight: normal;
 }
 #settings span {
   text-align: center;

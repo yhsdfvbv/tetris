@@ -313,10 +313,10 @@ var arrRowGen = {
 };
 
 var arrStages = [
-      {begin:   0, delay: 60*1, gen:function(arr){arrRowGen.simple(arr,3,1,4)}},
-      {begin:  10, delay: 60*5, gen:function(arr){arrRowGen.simple(arr,2,3,4)}},
-      {begin:  20, delay: 60*7, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
-      {begin:  40, delay: 60*5, gen:function(arr){arrRowGen.simple(arr,2,3,4)}},
+      {begin:   0, delay: 60*5, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
+      {begin:   5, delay: 60*7, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
+      {begin:  20, delay: 60*5, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
+      {begin:  40, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,2,3,4)}},
       {begin:  50, delay: 60*2, gen:function(arr){arrRowGen.simple(arr,4,1,2)}},
       {begin:  70, delay: 60*5, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
       {begin:  80, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
@@ -360,8 +360,8 @@ var arrStages = [
       {begin:1210, delay: 60*1, gen:function(arr){arrRowGen.simple(arr,4,1,2)}},
       {begin:1250, delay: 60*2, gen:function(arr){arrRowGen.simple(arr,9,1,1)}},
       {begin:1260, delay: 60*0.5, gen:function(arr){arrRowGen.simple(arr,9,1,1)}},
-      {begin:1300, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.0)}},
-      {begin:1350, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.1)}},
+      {begin:1300, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.0)}},
+      {begin:1350, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.1)}},
       {begin:1400, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.15)}},
       {begin:1450, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.2)}},
       {begin:1480, delay: 60*5, gen:function(arr){arrRowGen.simplemessy(arr,0.2)}},
@@ -513,6 +513,7 @@ function resize() {
   
   // position of touch buttons
   {
+    /*
     var tmpNode = document.createElement("div");
     tmpNode.style.cssText = 
       "width:1in;height:1in;position:absolute;left:0px;top:0px;z-index:-100;visibility:hidden";
@@ -520,6 +521,9 @@ function resize() {
     var dpiX = parseInt(tmpNode.clientWidth);
     var dpiY = parseInt(tmpNode.clientHeight);
     tmpNode.parentNode.removeChild(tmpNode);
+    */
+    var dpiX = 96;
+    var dpiY = 96;
     var winW = window.innerWidth / dpiX;
     var winH = window.innerHeight / dpiY;
     var buttonH = 0.7, buttonW = 1, fontSize=0.55, unit="in";
@@ -533,7 +537,7 @@ function resize() {
       elem.style.left = "" + (offsetX + alignX * 0.5 * (clientW - sizeW) + posX) + unit;
       elem.style.top = "" + (offsetY + alignY * 0.5 * (clientH - sizeH) + posY) + unit;
       elem.style.display = "block";
-      elem.style["font-size"] = "" + fontSize + unit;
+      elem.style.fontSize = "" + fontSize + unit;
     }
     
     var layouts = { //function array

@@ -265,15 +265,15 @@ Piece.prototype.draw = function() {
   }
 }
 Piece.prototype.drawGhost = function() {
-  if (!settings.Ghost && !landed) {
+  activeCtx.globalAlpha = 0.4;
+  if (settings.Ghost === 0 && !landed) {
     draw(this.tetro, this.x,
          this.y + this.getDrop(22), activeCtx, 0);
   } else if (settings.Ghost === 1 && !landed) {
-    activeCtx.globalAlpha = 0.3;
     draw(this.tetro, this.x,
          this.y + this.getDrop(22), activeCtx);
-    activeCtx.globalAlpha = 1;
   }
+  activeCtx.globalAlpha = 1;
 }
 
 var piece = new Piece();

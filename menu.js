@@ -167,13 +167,13 @@ function loadLocalData() {
 loadLocalData();
 for (var s in settings) {
   var div = document.createElement('div');
-  var b = document.createElement('b');
+  var sname = document.createElement('b');
   var iLeft = document.createElement('i');
   var span = document.createElement('span');
   var iRight = document.createElement('i');
 
   div.id = s;
-  b.innerHTML = settingName[s];
+  sname.innerHTML = settingName[s];
   span.innerHTML = setting[s][settings[s]];
   iLeft.className = 'left';
   iRight.className = 'right';
@@ -183,7 +183,7 @@ for (var s in settings) {
   iRight.ontouchstart = right;
 
   set.appendChild(div);
-  div.appendChild(b);
+  div.appendChild(sname);
   div.appendChild(iLeft);
   div.appendChild(span);
   div.appendChild(iRight);
