@@ -13,6 +13,7 @@ function Piece() {
   this.held = false;
   this.finesse = 0;
   this.dirty = false;
+  this.dead = false;
 }
 /**
  * Removes last active piece, and gets the next active piece from the grab bag.
@@ -24,6 +25,7 @@ Piece.prototype.new = function(index) {
   this.held = false;
   this.finesse = 0;
   this.dirty = true;
+  this.dead = false;
   //TODO change this
   landed = false;
 
@@ -48,6 +50,8 @@ Piece.prototype.new = function(index) {
     msg.innerHTML = 'BLOCK OUT!';
     menu(3);
   }
+  
+  piece.checkFall(); //real 20G !
 }
 Piece.prototype.rotate = function(direction) {
 
@@ -165,9 +169,13 @@ Piece.prototype.checkShift = function() {
 Piece.prototype.shift = function(direction) {
   this.arrDelay = 0;
   if (settings.ARR === 0 && this.shiftDelay === settings.DAS) {
-    for (var i = 1; i < 10; i++) {
-      if (!this.moveValid(i * direction, 0, this.tetro)) {
-        this.x += i * direction - direction;
+    while (true) {
+      if (this.moveValid(direction, 0, this.tetro)) {
+        this.x += direction;
+        /* farter */ //instant das under 20G
+        if(gravity >= 20 || gravityArr[settings.Gravity - 1] >= 20)
+          this.checkFall();
+      } else {
         break;
       }
     }
@@ -230,38 +238,52 @@ Piece.prototype.moveValid = function(cx, cy, tetro) {
   this.lockDelay = 0;
   return true;
 }
+
+Piece.prototype.checkFall = function() {
+  var grav;
+  if (settings.Gravity !== 0) {
+    grav = gravityArr[settings.Gravity - 1];
+  } else {
+    grav = gravity;
+  }
+  if (grav > 1)
+    this.y += this.getDrop(grav);
+  else {
+    this.y += grav;
+  }
+  /* farter */ // rounding problem
+  if (Math.abs(this.y - Math.round(this.y))<0.000001)
+    this.y = Math.round(this.y);
+}
 Piece.prototype.update = function() {
   if (this.moveValid(0, 1, this.tetro)) {
     landed = false;
-    if (settings.Gravity) {
-      var grav = gravityArr[settings.Gravity - 1];
-      if (grav > 1)
-        this.y += this.getDrop(grav);
-      else
-        this.y += grav;
-    } else {
-      this.y += gravity;
-    }
+    this.checkFall();
   } else {
     landed = true;
     this.y = Math.floor(this.y);
     if (this.lockDelay >= settings['Lock Delay']) {
       stack.addPiece(this.tetro);
-      this.new(preview.next());
+      this.dead = true;
+      this.new(preview.next()); // consider move to main update
+      /* farter */
+      
     } else {
       this.lockDelay++;
     }
   }
 }
 Piece.prototype.draw = function() {
-  draw(this.tetro, this.x, this.y, activeCtx);
-  if (landed) {
-    var a = this.lockDelay / setting['Lock Delay'][settings['Lock Delay']];
-    a = Math.pow(a,2)*0.5;
-    activeCtx.globalCompositeOperation = 'source-atop';
-    activeCtx.fillStyle = 'rgba(0,0,0,' + a + ')';
-    activeCtx.fillRect(0, 0, activeCanvas.width, activeCanvas.height);
-    activeCtx.globalCompositeOperation = 'source-over';
+  if (!this.dead) {
+    draw(this.tetro, this.x, this.y, activeCtx);
+    if (landed) {
+      var a = this.lockDelay / setting['Lock Delay'][settings['Lock Delay']];
+      a = Math.pow(a,2)*0.5;
+      activeCtx.globalCompositeOperation = 'source-atop';
+      activeCtx.fillStyle = 'rgba(0,0,0,' + a + ')';
+      activeCtx.fillRect(0, 0, activeCanvas.width, activeCanvas.height);
+      activeCtx.globalCompositeOperation = 'source-over';
+    }
   }
 }
 Piece.prototype.drawGhost = function() {

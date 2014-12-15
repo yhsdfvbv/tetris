@@ -231,7 +231,7 @@ var gravityArr = (function() {
 })();
 
 var settings = {
-  DAS: 8,
+  DAS: 9,
   ARR: 1,
   Gravity: 0,
   'Soft Drop': 6,
@@ -534,8 +534,8 @@ function resize() {
       elem.style.width = "" + sizeW + unit;
       elem.style.height = "" + sizeH + unit;
       // border ignored, for now
-      elem.style.left = "" + (offsetX + alignX * 0.5 * (clientW - sizeW) + posX) + unit;
-      elem.style.top = "" + (offsetY + alignY * 0.5 * (clientH - sizeH) + posY) + unit;
+      elem.style.left = "" + (offsetX + alignX * 0.5 * (clientW - sizeW) + posX - ( (alignX-1) * 0.05)) + unit;
+      elem.style.top = "" + (offsetY + alignY * 0.5 * (clientH - sizeH) + posY - ( (alignY-1) * 0.05)) + unit;
       elem.style.display = "block";
       elem.style.fontSize = "" + fontSize + unit;
     }
@@ -658,7 +658,8 @@ function init(gt, params) {
     gameparams = params || {};
   }
 
-  lineLimit = 40;
+  if(gametype === 0)
+    lineLimit = 40;
 
   //Reset
   column = 0;
@@ -797,9 +798,11 @@ function statistics() {
 function statisticsStack() {
   statsPiece.innerHTML = piecesSet;
 
-  if (gametype !== 3)
+  if(gametype === 0)
     statsLines.innerHTML = lineLimit - lines;
-  else {
+  else if(gametype === 1)
+    statsLines.innerHTML = lines;
+  else if (gametype === 3){
     if (gameparams["digOffset"] || gameparams["digOffset"] !== 0)
       statsLines.innerHTML = '<span style="font-size: 0.5em">' + gameparams["digOffset"]
         + "+</span><br />" + lines;
@@ -1131,7 +1134,12 @@ function update() {
   } else if (frame in replayKeys) {
     keysDown = replayKeys[frame];
   }
-
+/*
+  if (piece.dead) {
+    piece.new(preview.next());
+  }
+*/
+    
   if (!(lastKeys & flags.holdPiece) && flags.holdPiece & keysDown) {
     piece.hold();
   }
@@ -1160,7 +1168,19 @@ function update() {
 
   piece.update();
 
-  if(gametype === 3) {
+  if(gametype === 1) { //Marathon
+    var level = ~~(lines/10);
+    if(level > 20)
+      level = 20;
+    gravity = [
+      1/60, 1/30, 1/25, 1/20, 1/15, 1/12, 1/10, 1/8,  1/6,  1/6,
+       1/4,  1/4,  1/3,  1/3,  1/3,  1/2,    1,   1,    2,    3,
+      20
+      ]
+      [level];
+  }
+  
+  if(gametype === 3) { //Dig
     var fromLastRise = frame-frameLastRise;
     var arrRow = [8,8,8,8,8,8,8,8,8,8];
     {
@@ -1200,13 +1220,21 @@ function update() {
 	
   // Win
   // TODO
-  if (gametype !== 3) {
+  if (gametype === 0) { // 40L
     if (lines >= lineLimit) {
       gameState = 1;
       msg.innerHTML = 'GREAT!';
       menu(3);
     }
-  } /* else {
+  } else if (gametype === 1) { // Marathon
+    if (settings.Gravity !== 0 && lines>=200) { // not Auto, limit to 200 Lines
+      gameState = 1;
+      msg.innerHTML = 'GREAT!';
+      menu(3);
+    }
+  }
+  
+  /* else {
     if (digLines.length === 0) {
       gameState = 1;
       msg.innerHTML = 'GREAT!';
@@ -1223,7 +1251,6 @@ function update() {
 }
 
 function gameLoop() {
-  requestAnimFrame(gameLoop);
 
   //TODO check to see how pause works in replays.
   frame++;
@@ -1299,4 +1326,7 @@ function gameLoop() {
       toGreyRow--;
     }
   }
+  
+  //setTimeout(gameLoop, 33);
+  requestAnimFrame(gameLoop);
 }
