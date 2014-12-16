@@ -673,10 +673,6 @@ function init(gt, params) {
   piece.shiftDir = 0;
   piece.shiftReleased = true;
 
-  startPauseTime = 0;
-  pauseTime = 0;
-  paused = false;
-
   rng.seed = replayKeys.seed;
   toGreyRow = 21;
   frame = 0;
@@ -714,12 +710,14 @@ function init(gt, params) {
 
   // Only start a loop if one is not running already.
   // don't keep looping when not played
-  //if (gameState === 3) {
-    gameState = 2;
-    gameLoop();
-  //} else {
-  //  gameState = 2;
-  //}
+  console.log(paused,gameState);
+  if (paused || gameState === 3) {
+    requestAnimFrame(gameLoop);
+  }
+  startPauseTime = 0;
+  pauseTime = 0;
+  paused = false;
+  gameState = 2;
   
   statistics();
   statisticsStack();
@@ -929,7 +927,7 @@ function makeSprite() {
       spriteCtx.fillRect(x, 0, cellSize, cellSize);
     } else if (settings.Block === 2) {
       // Glossy
-      var k = Math.max(~~(cellSize * 0.083), 1);
+      var k = Math.max(~~(cellSize * 0.1), 1);
 
       var grad = spriteCtx.createLinearGradient(x, 0, x + cellSize, cellSize);
       grad.addColorStop(0.5, glossy[i][3]);
@@ -1025,7 +1023,6 @@ function keyUpDown(e) {
     if (e.type === "keydown") {
       if (e.keyCode === binds.moveLeft) {
         keysDown |= flags.moveLeft;
-        //piece.finesse++
       } else if (e.keyCode === binds.moveRight) {
         keysDown |= flags.moveRight;
       } else if (e.keyCode === binds.moveDown) {
