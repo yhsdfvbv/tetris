@@ -13,7 +13,7 @@ function Piece() {
   this.held = false;
   this.finesse = 0;
   this.dirty = false;
-  this.dead = false;
+  this.dead = true;
 }
 /**
  * Removes last active piece, and gets the next active piece from the grab bag.
@@ -275,27 +275,26 @@ Piece.prototype.update = function() {
 }
 Piece.prototype.draw = function() {
   if (!this.dead) {
-    draw(this.tetro, this.x, this.y, activeCtx);
+    var a = void 0;
     if (landed) {
-      var a = this.lockDelay / setting['Lock Delay'][settings['Lock Delay']];
+      a = this.lockDelay / setting['Lock Delay'][settings['Lock Delay']];
       a = Math.pow(a,2)*0.5;
-      activeCtx.globalCompositeOperation = 'source-atop';
-      activeCtx.fillStyle = 'rgba(0,0,0,' + a + ')';
-      activeCtx.fillRect(0, 0, activeCanvas.width, activeCanvas.height);
-      activeCtx.globalCompositeOperation = 'source-over';
     }
+    draw(this.tetro, this.x, this.y, activeCtx, void 0, a);
   }
 }
 Piece.prototype.drawGhost = function() {
-  activeCtx.globalAlpha = 0.4;
-  if (settings.Ghost === 0 && !landed) {
-    draw(this.tetro, this.x,
-         this.y + this.getDrop(22), activeCtx, 0);
-  } else if (settings.Ghost === 1 && !landed) {
-    draw(this.tetro, this.x,
-         this.y + this.getDrop(22), activeCtx);
+  if (!this.dead) {
+    activeCtx.globalAlpha = 0.4;
+    if (settings.Ghost === 0 && !landed) {
+      draw(this.tetro, this.x,
+           this.y + this.getDrop(22), activeCtx, 0);
+    } else if (settings.Ghost === 1 && !landed) {
+      draw(this.tetro, this.x,
+           this.y + this.getDrop(22), activeCtx);
+    }
+    activeCtx.globalAlpha = 1;
   }
-  activeCtx.globalAlpha = 1;
 }
 
 var piece = new Piece();

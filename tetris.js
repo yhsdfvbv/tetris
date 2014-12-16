@@ -419,7 +419,7 @@ var gametype;
 var gameparams;
 //TODO Make dirty flags for each canvas, draw them all at once during frame call.
 // var dirtyHold, dirtyActive, dirtyStack, dirtyPreview;
-var lastX, lastY, lastPos, landed;
+var lastX, lastY, lastPos, lastLockDelay, landed;
 
 // Stats
 var lines;
@@ -627,7 +627,8 @@ function resize() {
   if (settings.Grid === 1)
     bg(bgStackCtx);
 
-  if (gameState === 0) {
+  //if (gameState === 0) {
+  try {
     piece.drawGhost();
     piece.draw();
     stack.draw();
@@ -635,7 +636,9 @@ function resize() {
     if (hold.piece) {
       hold.draw();
     }
+  } catch(e) {
   }
+  //}
 }
 addEventListener('resize', resize, false);
 
@@ -764,6 +767,7 @@ function unpause() {
   pauseTime += (Date.now() - startPauseTime);
   msg.innerHTML = '';
   menu();
+  requestAnimFrame(gameLoop);
 }
 
 /**
@@ -830,11 +834,17 @@ function bg(ctx) {
 /**
  * Draws a pre-rendered mino.
  */
-function drawCell(x, y, color, ctx) {
+function drawCell(x, y, color, ctx, darkness) {
   x = x * cellSize;
   x = ~~x;
   y = ~~y * cellSize - 2 * cellSize;
   ctx.drawImage(spriteCanvas, color * cellSize, 0, cellSize, cellSize, x, y, cellSize, cellSize);
+  if (darkness !== void 0) {
+    //ctx.globalCompositeOperation = 'source-atop';
+    ctx.fillStyle = 'rgba(0,0,0,' + darkness + ')';
+    ctx.fillRect(x, y, cellSize, cellSize);
+    //ctx.globalCompositeOperation = 'source-over';
+  }
 }
 
 /**
@@ -981,10 +991,12 @@ function clear(ctx) {
 /**
  * Draws a 2d array of minos.
  */
-function draw(tetro, cx, cy, ctx, color) {
+function draw(tetro, cx, cy, ctx, color, darkness) {
   for (var x = 0, len = tetro.length; x < len; x++) {
     for (var y = 0, wid = tetro[x].length; y < wid; y++) {
-      if (tetro[x][y]) drawCell(x + cx, y + cy, color !== void 0 ? color : tetro[x][y], ctx);
+      if (tetro[x][y]) {
+        drawCell(x + cx, y + cy, color !== void 0 ? color : tetro[x][y], ctx, darkness);
+      }
     }
   }
 }
@@ -1252,6 +1264,11 @@ function update() {
 
 function gameLoop() {
 
+  if (!paused) {
+    requestAnimFrame(gameLoop);
+  }
+  //setTimeout(gameLoop, 33);
+  
   //TODO check to see how pause works in replays.
   frame++;
 
@@ -1268,6 +1285,7 @@ function gameLoop() {
     if (piece.x !== lastX ||
     Math.floor(piece.y) !== lastY ||
     piece.pos !== lastPos ||
+    piece.lockDelay !== lastLockDelay ||
     piece.dirty) {
 */
       clear(activeCtx);
@@ -1278,6 +1296,7 @@ function gameLoop() {
     lastX = piece.x;
     lastY = Math.floor(piece.y);
     lastPos = piece.pos;
+    lastLockDelay = piece.lockDelay;
     piece.dirty = false;
 */
   } else if (gameState === 2) {
@@ -1326,7 +1345,4 @@ function gameLoop() {
       toGreyRow--;
     }
   }
-  
-  //setTimeout(gameLoop, 33);
-  requestAnimFrame(gameLoop);
 }
