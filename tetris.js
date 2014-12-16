@@ -1267,85 +1267,88 @@ function gameLoop() {
 
   //if (frame % 60 == 0) console.log("running");
   
-  if (!paused && gameState !== 9 && gameState !== 1) {
+  if (!paused && gameState !== 3) {
     requestAnimFrame(gameLoop);
-  }
-  //setTimeout(gameLoop, 33);
-  
-  //TODO check to see how pause works in replays.
-  frame++;
-
-  if (gameState === 0) {
-    // Playing
     
-    if (!paused) {
-      update();
-    }
+    //setTimeout(gameLoop, 33);
+    
+    //TODO check to see how pause works in replays.
+    frame++;
 
-    // TODO improve this with 'dirty' flags.
-    /* farter */ // as you draw for lock delay brightness gradient... give this up..
-/*
-    if (piece.x !== lastX ||
-    Math.floor(piece.y) !== lastY ||
-    piece.pos !== lastPos ||
-    piece.lockDelay !== lastLockDelay ||
-    piece.dirty) {
-*/
-      clear(activeCtx);
-      piece.drawGhost();
-      piece.draw();
-/*
-    }
-    lastX = piece.x;
-    lastY = Math.floor(piece.y);
-    lastPos = piece.pos;
-    lastLockDelay = piece.lockDelay;
-    piece.dirty = false;
-*/
-  } else if (gameState === 2) {
-    // Count Down
-    if (frame < 50) {
-      if (msg.innerHTML !== 'READY') msg.innerHTML = 'READY';
-    } else if (frame < 100) {
-      if (msg.innerHTML !== 'GO!') msg.innerHTML = 'GO!';
-    } else {
-      msg.innerHTML = '';
-      gameState = 0;
-      startTime = Date.now();
-      piece.new(preview.next());
-    }
-    // DAS Preload
-    if (lastKeys !== keysDown && !watchingReplay) {
-      replayKeys[frame] = keysDown;
-    } else if (frame in replayKeys) {
-      keysDown = replayKeys[frame];
-    }
-    if (keysDown & flags.moveLeft) {
-      lastKeys = keysDown;
-      piece.shiftDelay = settings.DAS;
-      piece.shiftReleased = false;
-      piece.shiftDir = -1;
-    } else if (keysDown & flags.moveRight) {
-      lastKeys = keysDown;
-      piece.shiftDelay = settings.DAS;
-      piece.shiftReleased = false;
-      piece.shiftDir = 1;
-    }
-  } else if (toGreyRow >= 2){
-    /**
-     * Fade to grey animation played when player loses.
-     */
-    if (toGreyRow === 21)
-      clear(activeCtx);
-    if (frame % 2) {
-      for (var x = 0; x < 10; x++) {
-         /* farter */ //WTF gamestate-1
-        if (stack.grid[x][toGreyRow])
-          stack.grid[x][toGreyRow] =
-            (gameState === 9 ? 8 : 0);
+    if (gameState === 0) {
+      // Playing
+      
+        update();
+
+      // TODO improve this with 'dirty' flags.
+      /* farter */ // as you draw for lock delay brightness gradient... give this up..
+  /*
+      if (piece.x !== lastX ||
+      Math.floor(piece.y) !== lastY ||
+      piece.pos !== lastPos ||
+      piece.lockDelay !== lastLockDelay ||
+      piece.dirty) {
+  */
+        clear(activeCtx);
+        piece.drawGhost();
+        piece.draw();
+  /*
       }
-      stack.draw();
-      toGreyRow--;
+      lastX = piece.x;
+      lastY = Math.floor(piece.y);
+      lastPos = piece.pos;
+      lastLockDelay = piece.lockDelay;
+      piece.dirty = false;
+  */
+    } else if (gameState === 2) {
+      // Count Down
+      if (frame < 50) {
+        if (msg.innerHTML !== 'READY') msg.innerHTML = 'READY';
+      } else if (frame < 100) {
+        if (msg.innerHTML !== 'GO!') msg.innerHTML = 'GO!';
+      } else {
+        msg.innerHTML = '';
+        gameState = 0;
+        startTime = Date.now();
+        piece.new(preview.next());
+      }
+      // DAS Preload
+      if (lastKeys !== keysDown && !watchingReplay) {
+        replayKeys[frame] = keysDown;
+      } else if (frame in replayKeys) {
+        keysDown = replayKeys[frame];
+      }
+      if (keysDown & flags.moveLeft) {
+        lastKeys = keysDown;
+        piece.shiftDelay = settings.DAS;
+        piece.shiftReleased = false;
+        piece.shiftDir = -1;
+      } else if (keysDown & flags.moveRight) {
+        lastKeys = keysDown;
+        piece.shiftDelay = settings.DAS;
+        piece.shiftReleased = false;
+        piece.shiftDir = 1;
+      }
+    } else if (gameState === 9) {
+      if (toGreyRow >= 2) {
+        /**
+         * Fade to grey animation played when player loses.
+         */
+        if (toGreyRow === 21)
+          clear(activeCtx);
+        if (frame % 2) {
+          for (var x = 0; x < 10; x++) {
+             /* farter */ //WTF gamestate-1
+            if (stack.grid[x][toGreyRow])
+              stack.grid[x][toGreyRow] =
+                (gameState === 9 ? 8 : 0);
+          }
+          stack.draw();
+          toGreyRow--;
+        }
+      } else {
+        gameState = 3;
+      }
     }
   }
 }
