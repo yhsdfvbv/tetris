@@ -713,12 +713,13 @@ function init(gt, params) {
   menu();
 
   // Only start a loop if one is not running already.
-  if (gameState === 3) {
+  // don't keep looping when not played
+  //if (gameState === 3) {
     gameState = 2;
     gameLoop();
-  } else {
-    gameState = 2;
-  }
+  //} else {
+  //  gameState = 2;
+  //}
   
   statistics();
   statisticsStack();
@@ -1264,7 +1265,9 @@ function update() {
 
 function gameLoop() {
 
-  if (!paused) {
+  //if (frame % 60 == 0) console.log("running");
+  
+  if (!paused && gameState !== 9 && gameState !== 1) {
     requestAnimFrame(gameLoop);
   }
   //setTimeout(gameLoop, 33);
