@@ -230,6 +230,8 @@ var gravityArr = (function() {
   return array;
 })();
 
+var lockDelayLimit = void 0;
+
 var settings = {
   DAS: 9,
   ARR: 1,
@@ -239,10 +241,10 @@ var settings = {
   Size: 0,
   Sound: 0,
   Volume: 100,
-  Block: 0,
+  Block: 2,
   Ghost: 1,
-  Grid: 0,
-  Outline: 0
+  Grid: 1,
+  Outline: 1
 };
 
 var settingName = {
@@ -660,6 +662,9 @@ function init(gt, params) {
     gametype = gt;
     gameparams = params || {};
   }
+
+  if(gametype === void 0) //sometimes happens.....
+    gametype = 0;
 
   if(gametype === 0)
     lineLimit = 40;
@@ -1144,11 +1149,11 @@ function update() {
   } else if (frame in replayKeys) {
     keysDown = replayKeys[frame];
   }
-/*
-  if (piece.dead) {
-    piece.new(preview.next());
-  }
-*/
+  
+  //if (piece.dead) {
+  //  piece.new(preview.next());
+  //}
+
     
   if (!(lastKeys & flags.holdPiece) && flags.holdPiece & keysDown) {
     piece.hold();
@@ -1177,18 +1182,6 @@ function update() {
   }
 
   piece.update();
-
-  if(gametype === 1) { //Marathon
-    var level = ~~(lines/10);
-    if(level > 20)
-      level = 20;
-    gravity = [
-      1/60, 1/30, 1/25, 1/20, 1/15, 1/12, 1/10, 1/8,  1/6,  1/6,
-       1/4,  1/4,  1/3,  1/3,  1/3,  1/2,    1,   1,    2,    3,
-      20
-      ]
-      [level];
-  }
   
   if(gametype === 3) { //Dig
     var fromLastRise = frame-frameLastRise;
@@ -1326,7 +1319,7 @@ function gameLoop() {
         piece.shiftReleased = false;
         piece.shiftDir = 1;
       }
-    } else if (gameState === 9) {
+    } else if (gameState === 9 || gameState === 1) {
       if (toGreyRow >= 2) {
         /**
          * Fade to grey animation played when player loses.

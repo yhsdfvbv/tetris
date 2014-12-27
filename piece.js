@@ -5,7 +5,9 @@ function Piece() {
   this.tetro;
   this.index;
   this.kickData;
+  this.gravity = gravityUnit;
   this.lockDelay = 0;
+  this.lockDelayLimit = 30;
   this.shiftDelay = 0;
   this.shiftDir;
   this.shiftReleased;
@@ -44,6 +46,25 @@ Piece.prototype.new = function(index) {
   // Preview.draw();
   //preview.next();
 
+  this.lockDelayLimit = setting['Lock Delay'][settings['Lock Delay']];
+  if (settings.Gravity !== 0) {
+    this.gravity = gravityArr[settings.Gravity - 1];
+  } else if (gametype === 1) { //Marathon
+    var level = ~~((lines)/10);
+    if (level < 20) {
+      this.gravity = [
+        1/60, 1/30, 1/25, 1/20, 1/15, 1/12, 1/10, 1/8,  1/6,  1/6,
+         1/4,  1/4,  1/3,  1/3,  1/3,  1/2,    1,   1,    2,    3
+        ]
+        [level];
+    } else {
+       this.gravity = 20;
+       this.lockDelayLimit = ~~(30 * Math.pow(0.93, (Math.pow(level-20, 0.8)))); // magic!
+    }
+  } else {
+    this.gravity = gravityUnit;
+  }
+  
   // Check for blockout.
   if (!this.moveValid(0, 0, this.tetro)) {
     gameState = 9;
@@ -173,7 +194,7 @@ Piece.prototype.shift = function(direction) {
       if (this.moveValid(direction, 0, this.tetro)) {
         this.x += direction;
         /* farter */ //instant das under 20G
-        if(gravity >= 20 || gravityArr[settings.Gravity - 1] >= 20)
+        if(this.gravity >= 20)
           this.checkFall();
       } else {
         break;
@@ -194,7 +215,7 @@ Piece.prototype.shiftDown = function() {
 }
 Piece.prototype.hardDrop = function() {
   this.y += this.getDrop(2147483647); /* farter */
-  this.lockDelay = settings['Lock Delay'];
+  this.lockDelay = this.lockDelayLimit;
 }
 Piece.prototype.getDrop = function(distance) {
   for (var i = 1; i <= distance; i++) {
@@ -240,12 +261,7 @@ Piece.prototype.moveValid = function(cx, cy, tetro) {
 }
 
 Piece.prototype.checkFall = function() {
-  var grav;
-  if (settings.Gravity !== 0) {
-    grav = gravityArr[settings.Gravity - 1];
-  } else {
-    grav = gravity;
-  }
+  var grav = this.gravity;
   if (grav > 1)
     this.y += this.getDrop(grav);
   else {
@@ -262,7 +278,7 @@ Piece.prototype.update = function() {
   } else {
     landed = true;
     this.y = Math.floor(this.y);
-    if (this.lockDelay >= settings['Lock Delay']) {
+    if (this.lockDelay >= this.lockDelayLimit) {
       stack.addPiece(this.tetro);
       this.dead = true;
       this.new(preview.next()); // consider move to main update
@@ -277,7 +293,7 @@ Piece.prototype.draw = function() {
   if (!this.dead) {
     var a = void 0;
     if (landed) {
-      a = this.lockDelay / setting['Lock Delay'][settings['Lock Delay']];
+      a = this.lockDelay / this.lockDelayLimit;
       a = Math.pow(a,2)*0.5;
     }
     draw(this.tetro, this.x, this.y, activeCtx, void 0, a);
