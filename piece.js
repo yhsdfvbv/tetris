@@ -194,8 +194,16 @@ Piece.prototype.shift = function(direction) {
       if (this.moveValid(direction, 0, this.tetro)) {
         this.x += direction;
         /* farter */ //instant das under 20G
-        if(this.gravity >= 20)
+        if(this.gravity >= 20) {
           this.checkFall();
+        }
+        if (flags.moveDown & keysDown) {
+          var grav = gravityArr[settings['Soft Drop'] + 1];
+          if (grav >= 20) // 20G softdrop vs. 20G das
+            this.y += this.getDrop(grav);
+          piece.shiftDown();
+          //piece.finesse++;
+        }
       } else {
         break;
       }

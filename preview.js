@@ -26,7 +26,15 @@ Preview.prototype.next = function() {
  */
 Preview.prototype.gen = function() {
   var pieceList = [0, 1, 2, 3, 4, 5, 6];
-  return pieceList.sort(function() {return 0.5 - rng.next()});
+  //return pieceList.sort(function() {return 0.5 - rng.next()});
+  /* farter */ // proven random shuffle algorithm
+  for (var i=0;i<7-1;i++)
+  {
+    var temp=pieceList[i], rand=~~((7-i)*rng.next())+i;
+    pieceList[i]=pieceList[rand];
+    pieceList[rand]=temp;
+  }
+  return pieceList;
 }
 /**
  * Draws the piece preview.

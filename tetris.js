@@ -218,7 +218,7 @@ var finesse = [
 /**
  * Gameplay specific vars.
  */
-var gravityUnit = 0.00390625;
+var gravityUnit = 1.0/64;
 var gravity;
 var gravityArr = (function() {
   var array = [];
@@ -325,23 +325,23 @@ var arrStages = [
       {begin:  90, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
       
       {begin: 100, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin: 110, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin: 120, delay: 60*3.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
       {begin: 150, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
-      {begin: 170, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
+      {begin: 170, delay: 60*3.5, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
       
-      {begin: 200, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin: 220, delay: 60*2.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin: 250, delay: 60*2, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
+      {begin: 200, delay: 60*3.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin: 220, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin: 250, delay: 60*2.5, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
       
       {begin: 300, delay: 60*3.5, gen:function(arr){arrRowGen.simplemessy(arr,0.9)}},
-      {begin: 320, delay: 60*2.5, gen:function(arr){arrRowGen.simplemessy(arr,0.9)}},
+      {begin: 320, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.9)}},
       {begin: 350, delay: 60*3.5, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
-      {begin: 390, delay: 60*2.5, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
+      {begin: 390, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
       {begin: 400, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.6)}},
-      {begin: 430, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
-      {begin: 450, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.1)}},
+      {begin: 430, delay: 60*5, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
+      {begin: 450, delay: 60*7, gen:function(arr){arrRowGen.simplemessy(arr,0.1)}},
       
-      {begin: 470, delay: 60*5, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
+      {begin: 470, delay: 60*7, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
       {begin: 500, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
       {begin: 550, delay: 60*2.5, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
       {begin: 600, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.6)}},
@@ -684,7 +684,7 @@ function init(gt, params) {
   lastPos = 'reset';
   stack.new(10, 22);
   hold.piece = void 0;
-  if (settings.Gravity === 0) gravity = gravityUnit * 4;
+  if (settings.Gravity === 0) gravity = gravityUnit;
   startTime = Date.now();
 
   preview.init()
