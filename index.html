@@ -1,15 +1,16 @@
 <!doctype html>
+<html>
 <head>
   <meta charset=utf-8>
   <meta name="viewport" content="initial-scale = 1.0 ,minimum-scale = 1.0 ,maximum-scale = 1.0 ,user-scalable = no ,width = device-width" />
   <title>Tetr.js</title>
   <link rel=stylesheet href=style.css>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-554c83a8661bf358" async="async"></script>
 </head>
-<html>
-
-<canvas id=bg></canvas>
+<body style="background-image: url('bg.jpg'); background-position:center center; background-repeat: no-repeat; background-attachment: fixed">
+<!--<canvas id=bg></canvas>-->
 <!--<video id=bg src=bg.webm loop autoplay></video>-->
-<div class=touchbutton id=touchLayout style=display:none>嵒</div>
+
 <div class=touchbutton id=touchLeft style=display:none>←</div>
 <div class=touchbutton id=touchRight style=display:none>→</div>
 <div class=touchbutton id=touchDown style=display:none>↓</div>
@@ -18,6 +19,7 @@
 <div class=touchbutton id=touchRotRight style=display:none>↷</div>
 <div class=touchbutton id=touchRotLeft style=display:none>↶</div>
 <div class=touchbutton id=touchRot180 style=display:none>↻</div>
+<div class=touchbutton id=touchLayout style=display:none>☝</div>
 
 <div id=content>
 
@@ -47,10 +49,12 @@
     <canvas id=stack></canvas>
     <canvas id=active></canvas>
 
-    <p id=msg>
+    <div id=msgdiv>
+      <span id=msg></span>
+    </div>
 
     <nav class='menu on'>
-      <h1>Tetr.js - Dig v0.2</h1>
+      <h1>Tetr.js - Dig v0.3</h1>
       <p>Original: <span onclick="window.location='http://simon.lc/tetr.js/'"><u>&gt;&gt;simonlc</u></a></p>
       <p>farter's DIG mod</p>
       <ul>
@@ -128,4 +132,5 @@
 <!--
 <script>_gaq=[['_setAccount','UA-30472693-1'],['_trackPageview']];(function(d){var g=d.createElement('script'),s=d.scripts[0];g.src='//www.google-analytics.com/ga.js';s.parentNode.insertBefore(g,s)})(document)</script>
 -->
+</body>
 </html>

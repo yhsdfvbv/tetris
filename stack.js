@@ -110,15 +110,17 @@ Stack.prototype.rowRise = function(arrRow, objPiece) {
  * Draws the stack.
  */
 Stack.prototype.draw = function() {
+  
   clear(stackCtx);
-  draw(this.grid, 0, 0, stackCtx);
+  draw(this.grid, 0, 0, stackCtx, void 0, 0.3);
 
   // Darken Stack
   // TODO wrap this with an option.
-  stackCtx.globalCompositeOperation = 'source-atop';
-  stackCtx.fillStyle = 'rgba(0,0,0,0.3)';
-  stackCtx.fillRect(0, 0, stackCanvas.width, stackCanvas.height);
-  stackCtx.globalCompositeOperation = 'source-over';
+  // no fullscreen flush, see above
+  //stackCtx.globalCompositeOperation = 'source-atop';
+  //stackCtx.fillStyle = 'rgba(0,0,0,0.3)';
+  //stackCtx.fillRect(0, 0, stackCanvas.width, stackCanvas.height);
+  //stackCtx.globalCompositeOperation = 'source-over';
 
   if (settings.Outline) {
     var b = ~~(cellSize / 8);
@@ -126,6 +128,7 @@ Stack.prototype.draw = function() {
     var lineCanvas = document.createElement('canvas');
     lineCanvas.width = stackCanvas.width;
     lineCanvas.height = stackCanvas.height;
+    
     var lineCtx = lineCanvas.getContext('2d');
     lineCtx.fillStyle = 'rgba(255,255,255,0.5)';
     lineCtx.beginPath();
@@ -193,6 +196,7 @@ Stack.prototype.draw = function() {
       }
     }
     lineCtx.fill();
+    stackCtx.globalCompositeOperation = 'source-over';
     stackCtx.drawImage(lineCanvas, 0, 0);
   }
 }

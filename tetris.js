@@ -65,7 +65,7 @@ touchRotRight.bindsMemberName = "rotRight";
 touchRotLeft.bindsMemberName = "rotLeft";
 touchRot180.bindsMemberName = "rot180";
 
-var nLayouts = 4, currLayout = -1 /* auto */;
+var nLayouts = 7, currLayout = -1 /* auto */;
 
 /**
  * Piece data
@@ -466,22 +466,31 @@ function resize() {
 
   // TODO Finalize this.
   // Aspect ratio: 1.024
-  var screenHeight = window.innerHeight - 34;
-  var screenWidth = ~~(screenHeight * 1.024);
+  var padH = 12;
+  var screenHeight = window.innerHeight - padH * 2;
+  var screenWidth = ~~(screenHeight * 1.0);
   if (screenWidth > window.innerWidth)
-    screenHeight = ~~(window.innerWidth / 1.024);
-  
-  //console.log("w"+screenWidth+"h"+screenHeight);
+    screenHeight = ~~(window.innerWidth / 1.0);
 
   if (settings.Size === 1 && screenHeight > 602) cellSize = 15;
   else if (settings.Size === 2 && screenHeight > 602) cellSize = 30;
   else if (settings.Size === 3 && screenHeight > 902) cellSize = 45;
   else cellSize = Math.max(~~(screenHeight / 20), 10);
 
-  var pad = (window.innerHeight - (cellSize * 20 + 2)) / 2 + 'px';
-  content.style.padding = pad + ' 0';
-  stats.style.bottom = pad;
-
+  var pad = (window.innerHeight - (cellSize * 20 + 2));
+  var padFinal = Math.min(pad/2, padH);
+  //console.log(pad);
+  content.style.padding =
+    //"0 0";
+    //(pad / 2) + 'px' + ' 0';
+    (padFinal) + 'px' + ' 0';
+    
+  stats.style.bottom =
+    //(pad) + 'px';
+    //(pad / 2) + 'px';
+    (pad - padFinal) + 'px';
+    //(pad - padH) + 'px';
+  
   // Size elements
   a.style.padding = '0 0.5rem ' + ~~(cellSize / 2) + 'px';
 
@@ -496,14 +505,15 @@ function resize() {
   a.style.height = holdCanvas.height + 'px';
 
   previewCanvas.width = cellSize * 4;
-  previewCanvas.height = stackCanvas.height;
+  previewCanvas.height = stackCanvas.height - cellSize * 2;
   c.style.width = previewCanvas.width + 'px';
   c.style.height = b.style.height;
   
   // Scale the text so it fits in the thing.
   // TODO get rid of extra font sizes here.
-  msg.style.lineHeight = b.style.height;
+  msgdiv.style.lineHeight = b.style.height;
   msg.style.fontSize = ~~(stackCanvas.width / 6) + 'px';
+  msg.style.lineHeight = msg.style.fontSize;
   stats.style.fontSize = ~~(stackCanvas.width / 11) + 'px';
   document.documentElement.style.fontSize = ~~(stackCanvas.width / 16) + 'px';
 
@@ -536,8 +546,8 @@ function resize() {
       elem.style.width = "" + sizeW + unit;
       elem.style.height = "" + sizeH + unit;
       // border ignored, for now
-      elem.style.left = "" + (offsetX + alignX * 0.5 * (clientW - sizeW) + posX - ( (alignX-1) * 0.05)) + unit;
-      elem.style.top = "" + (offsetY + alignY * 0.5 * (clientH - sizeH) + posY - ( (alignY-1) * 0.05)) + unit;
+      elem.style.left = "" + (offsetX + alignX * 0.5 * (clientW - sizeW) + posX * sizeW - ( (alignX-1) * 0.05)) + unit;
+      elem.style.top = "" + (offsetY + alignY * 0.5 * (clientH - sizeH) + posY * sizeH - ( (alignY-1) * 0.05)) + unit;
       elem.style.display = "block";
       elem.style.fontSize = "" + fontSize + unit;
     }
@@ -550,55 +560,90 @@ function resize() {
       },
       "KBD_R":
       function() {
-        setPos(touchRotLeft,  0, -buttonH, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
-        setPos(touchRot180,   buttonW*0.5, -buttonH*2, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
-        setPos(touchRotRight, buttonW, -buttonH, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
-        setPos(touchHold,     1.5*buttonW, 0, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+        setPos(touchRotLeft,  0, -1, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+        setPos(touchRot180,   0.5, -2, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+        setPos(touchRotRight, 1, -1, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+        setPos(touchHold,     1.5, 0, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
         setPos(touchRight,    0, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
-        setPos(touchLeft,     -buttonW*2, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
-        setPos(touchDown,     -buttonW, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
-        setPos(touchDrop,     -buttonW, -buttonH, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        setPos(touchLeft,     -2, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        setPos(touchDown,     -1, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        setPos(touchDrop,     -1, -1, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
       },
       "KBD_L":
       function() {
-        setPos(touchRotLeft,  -buttonW, -buttonH, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
-        setPos(touchRot180,   -buttonW*0.4, -buttonH*2, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
-        setPos(touchRotRight, 0, -buttonH, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
-        setPos(touchHold,     -buttonW*1.5, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
-        setPos(touchRight,    buttonW*2, 0, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+        setPos(touchRotLeft,  -1, -1, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        setPos(touchRot180,   -0.4, -2, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        setPos(touchRotRight, 0, -1, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        setPos(touchHold,     -1.5, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        setPos(touchRight,    2, 0, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
         setPos(touchLeft,     0, 0, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
-        setPos(touchDown,     buttonW, 0, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
-        setPos(touchDrop,     buttonW, -buttonH, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+        setPos(touchDown,     1, 0, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+        setPos(touchDrop,     1, -1, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
       },
       "JOY":
       function() {
-        setPos(touchRotLeft,  -buttonW*0.5, buttonH, buttonW, buttonH, 2, 1, 0, 0, winW, winH);
-        setPos(touchRot180,   -buttonW*0.5, -buttonH, buttonW, buttonH, 2, 1, 0, 0, winW, winH);
+        setPos(touchRotLeft,  -0.5, 1, buttonW, buttonH, 2, 1, 0, 0, winW, winH);
+        setPos(touchRot180,   -0.5, -1, buttonW, buttonH, 2, 1, 0, 0, winW, winH);
         setPos(touchRotRight, 0, 0, buttonW, buttonH, 2, 1, 0, 0, winW, winH);
-        setPos(touchHold,     -buttonW, 0, buttonW, buttonH, 2, 1, 0, 0, winW, winH);
-        setPos(touchRight,    buttonW, 0, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+        setPos(touchHold,     -1, 0, buttonW, buttonH, 2, 1, 0, 0, winW, winH);
+        setPos(touchRight,    1, 0, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
         setPos(touchLeft,     0, 0, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
-        setPos(touchDown,     buttonW*0.5, buttonH, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
-        setPos(touchDrop,     buttonW*0.5, -buttonH, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+        setPos(touchDown,     0.5, 1, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+        setPos(touchDrop,     0.5, -1, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
       },
       "NARROW":
       function() {
-        setPos(touchLeft,     -buttonW*2, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        setPos(touchLeft,     -2, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
         setPos(touchRight,    0, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
-        if (winH-winW>buttonH*3) {
-          setPos(touchDown,     -buttonW, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
-          setPos(touchDrop,     -buttonW, -buttonH, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        if (winH-winW>buttonH*1.5) {
+          setPos(touchDown,     -1, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+          setPos(touchDrop,     -1, -1, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
         }
         else {
-          setPos(touchDown,     0, -buttonH, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
-          setPos(touchDrop,     -buttonW, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+          setPos(touchDown,     0, -1, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+          setPos(touchDrop,     -1, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
         }
-        setPos(touchRotLeft,  0, -buttonH*1.2, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+        setPos(touchRotLeft,  0, -1.2, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
         setPos(touchRotRight, 0, 0, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
-        setPos(touchHold,     0, buttonH*1.2, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
-        setPos(touchRot180,   0, -buttonH*2.4, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+        setPos(touchHold,     0, 1.2, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+        setPos(touchRot180,   0, -2.4, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
       },
+      "NARROW_L":
+      function() {
+        setPos(touchLeft,     0, 0, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+        setPos(touchRight,    2, 0, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+        if (winH-winW>buttonH*1.5) {
+          setPos(touchDown,     1, 0, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+          setPos(touchDrop,     1, -1, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+        }
+        else {
+          setPos(touchDown,     0, -1, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+          setPos(touchDrop,     1, 0, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+        }
+        setPos(touchRotLeft,  0, -1.2, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        setPos(touchRotRight, 0, -2.4, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        setPos(touchHold,     0, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        setPos(touchRot180,   0, -3.6, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+      },
+      
+      "DELUXE":
+      function() {
+        setPos(touchLeft,     0, 0, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+        setPos(touchRight,    1, 0, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+        
+        setPos(touchDown,     0, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        setPos(touchDrop,     0, -1.2, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        
+        setPos(touchRotLeft,  -1, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        setPos(touchRotRight, -1, -1.2, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        setPos(touchHold,     0.5, -1.2, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+        //setPos(touchRot180,   0, -buttonH*2.4, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+        touchRot180.style.display = "none";
+      },
+      
     };
+    
+    setPos(touchLayout, 0, 0, buttonW, buttonH, 2, 0, 0, 0, winW, winH);
     if(currLayout === -1) { // auto detection
       if(winW<buttonW*3) {
         layouts["NONE"]();
@@ -613,14 +658,17 @@ function resize() {
       else if(winH-winW>0) {
         layouts["NARROW"]();
       }
+      else if(winW>=buttonW*4) {
+        layouts["DELUXE"]();
+      }
       else {
         layouts["NONE"]();
       }
     }
     else {
-      layouts[["KBD_R","KBD_L","JOY","NARROW","NONE"][currLayout]]();
+      layouts[["NONE","KBD_R","KBD_L","JOY","NARROW","NARROW_L","DELUXE"][currLayout]]();
     }
-    setPos(touchLayout, 0, 0, buttonW, buttonH, 2, 0, 0, 0, winW, winH);
+    
   }
 
   // Redraw graphics
@@ -1074,6 +1122,18 @@ function touch(e)
   var winH = window.innerHeight, winW = window.innerWidth;
   //if (e.type==="touchmove")
     //e.preventDefault();
+  if ((e.type === "touchstart" || e.type === "click") && e.target === touchLayout) {
+    if (currLayout === -1) {
+      currLayout = 0;
+    }
+    else {
+      currLayout++;
+      if (currLayout === nLayouts) {
+        currLayout = -1;
+      }
+    }
+    resize();
+  }
   if (e.type === "touchstart" || e.type === "touchmove" || e.type === "touchend") {
     for (var i in binds)
       keyUpDown({
@@ -1109,18 +1169,6 @@ function touch(e)
         }
       }
     }
-  }
-  if ((e.type === "touchstart" || e.type === "click") && e.target === touchLayout) {
-    if (currLayout === -1) {
-      currLayout = 0;
-    }
-    else {
-      currLayout++;
-      if (currLayout === nLayouts) {
-        currLayout = -1;
-      }
-    }
-    resize();
   }
 }
 
@@ -1226,7 +1274,59 @@ function update() {
   if (gametype === 0) { // 40L
     if (lines >= lineLimit) {
       gameState = 1;
-      msg.innerHTML = 'GREAT!';
+      var rank = null;
+      var time = (Date.now() - startTime - pauseTime) / 1000;
+      var ranks= [
+        {t:300, u:"再见", b:"BYE."},
+        {t:240, u:"终于……", b:"Finally..."},
+        {t:210, u:"一个能打的都没有", b:"Too slow."},
+        {t:180, u:"渣渣", b:"Well..."},
+        {t:160, u:"速度速度加快", b:"Go faster."},
+        {t:140, u:"还能再给力点么", b:"Any more?"},
+        {t:120, u:"2分钟太难了", b:"Can't beat 2 min."},
+        {t:100, u:"比乌龟快点了", b:"Wins turtles."},
+        {t: 90, u:"超越秒针", b:"1 drop/sec!"},
+        {t: 80, u:"恭喜入门", b:"Not bad."},
+        {t: 73, u:"渐入佳境", b:"Going deeper."},
+        {t: 69, u:"就差10秒", b:"10 sec faster."},
+        {t: 62, u:"还有几秒", b:"Approaching."},
+        {t: 60, u:"最后一点", b:"Almost there!"},
+        {t: 56, u:"1分钟就够了", b:"1-min Sprinter!"},
+        {t: 53, u:"并不是沙包", b:"No longer rookie."},
+        {t: 50, u:"50不是梦", b:"Beat 50."},
+        {t: 48, u:"每秒2块", b:"2 drops/sec!"},
+        {t: 45, u:"很能打嘛", b:"u can tetris."},
+        {t: 42, u:"有点厉害", b:"You are the one"},
+        {t: 40, u:"于是呢？", b:"So?"},
+        {t: 38, u:"高手", b:"Good."},
+        {t: 35, u:"停不下来", b:"Unstoppable."},
+        {t: 33, u:"触手", b:"Octopus"},
+        {t: 31, u:"每秒3块", b:"3 drops/sec!"},
+        {t: 30, u:"别这样", b:"Noooo"},
+        {t: 29, u:"你赢了", b:"You win."},
+        {t: 27, u:"这不魔法", b:"Magic."},
+        {t: 25, u:"闪电", b:"Lightning!"},
+        {t: 24, u:"每秒4块", b:"4 drops/sec!"},
+        {t: 23, u:"神兽", b:"Alien."},
+        {t: 22, u:"神兽他妈", b:"Beats Alien."},
+        {t: 21, u:"拯救地球", b:"Save the world?"},
+        {t: 20, u:"你确定？", b:"r u sure?"},
+        {t: 19, u:"5块每秒", b:"5pps"},
+        {t: 16.66, u:"…………", b:"..."},
+        {t: 14.28, u:"6块每秒", b:"6pps"},
+        {t: 12.50, u:"7块每秒", b:"7pps"},
+        {t: 11.11, u:"8块每秒", b:"8pps"},
+        {t: 10.00, u:"9块每秒", b:"9pps"},
+        {t:  9.00, u:"10块每秒", b:"10pps"},
+        {t:  0.00, u:"←_←", b:"→_→"}
+      ];
+      for (var i in ranks) {
+        if (time > ranks[i].t) {
+          rank = ranks[i];
+          break;
+        }
+      }
+      msg.innerHTML = rank.u + "<br /><small>" + rank.b +"</small>";
       menu(3);
     }
   } else if (gametype === 1) { // Marathon

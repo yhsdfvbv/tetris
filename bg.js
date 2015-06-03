@@ -20,6 +20,7 @@
 //  bgCanvas.style.opacity = 1;
 //  bgResize();
 //}
+/*
 var bgCanvas = document.getElementById('bg');
 var vidAr = bgCanvas.offsetWidth / bgCanvas.offsetHeight;
 function bgResize() {
@@ -44,3 +45,4 @@ function bgResize() {
 }
 addEventListener('resize', bgResize, false);
 bgResize();
+*/

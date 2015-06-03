@@ -180,18 +180,24 @@ nav a {
     position: absolute;
     z-index: 3;
   }
+  #msgdiv {
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    line-height: 642px;
+    z-index: 4;
+  }
   #msg {
 /*    font: 900 4rem 'Source Sans Pro', sans-serif; */
     font-family: 'Trebuchet MS', 'Microsoft Yahei';
     font-weight: bold;
     font-size: 4rem;
     color: #fff;
-    position: absolute;
-    text-align: center;
-    width: 100%;
-    line-height: 642px;
     margin: 0;
     z-index: 4;
+    display:inline-block;
+    vertical-align:middle;
   }
 
 #d {
