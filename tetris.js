@@ -24,6 +24,7 @@ var statsLines = document.getElementById('line');
 var statsPiece = document.getElementById('piece');
 var h3 = document.getElementsByTagName('h3');
 var set = document.getElementById('settings');
+var leaderboard = document.getElementById('leaderboard');
 
 // Get canvases and contexts
 var holdCanvas = document.getElementById('hold');
@@ -428,6 +429,7 @@ var lines;
 var statsFinesse;
 var piecesSet;
 var startTime;
+var scoreTime;
 var digLines;
 
 // Keys
@@ -842,6 +844,7 @@ var rng = new (function() {
  */
 function statistics() {
   var time = Date.now() - startTime - pauseTime;
+  scoreTime = time;
   var seconds = (time / 1000 % 60).toFixed(2);
   var minutes = ~~(time / 60000);
   statsTime.innerHTML = (minutes < 10 ? '0' : '') + minutes +
@@ -1437,8 +1440,32 @@ function gameLoop() {
           toGreyRow--;
         }
       } else {
+        trysubmitscore();
         gameState = 3;
       }
     }
+  }
+}
+
+function trysubmitscore() {
+  var time = scoreTime;
+  if(gametype===0 && gameState===1) //40L
+    submitscore({
+      mode:"sprint",
+      score:lines,
+      "time":time
+    });
+  else if(gametype===3 && gameState===9) // dig
+    submitscore({
+      mode:"dig" + (gameparams&&gameparams.digOffset?gameparams.digOffset:""),
+      score:lines,
+      "time":time
+    });
+  else if(gametype===1 && settings.Gravity === 0) { // marathon
+    submitscore({
+      mode:"marathon",
+      score:lines,
+      "time":time
+    });
   }
 }

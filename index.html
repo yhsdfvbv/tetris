@@ -54,11 +54,11 @@
     </div>
 
     <nav class='menu on'>
-      <h1>Tetr.js - Dig v0.3</h1>
-      <p>Original: <span onclick="window.location='http://simon.lc/tetr.js/'"><u>&gt;&gt;simonlc</u></a></p>
+      <h1>Tetr.js - Dig v0.31</h1>
+      <p>forked from: <span onclick="window.location='http://simon.lc/tetr.js/'"><u>&gt;&gt;simonlc</u></a></p>
       <p>farter's DIG mod</p>
       <ul>
-        <li><a onclick=init(0)>Sprint 40行</a></li>
+        <li><a onclick=init(0)>Sprint 40行竞速</a></li>
         <li><a onclick=init(1)>Marathon 马拉松</a></li>
         <!-- <li><a onclick=init(2)>Play Ultra</a></li> -->
         <li><a onclick="init(3,{digOffset:0})">Dig! 挖掘机</a></li>
@@ -101,6 +101,7 @@
       <ul>
         <li><a onclick=init(gametype,gameparams)>Retry 再来</a></li>
         <li><a onclick=init('replay')>Replay 回放</a></li>
+        <li><a onclick=menu(5)>Rankings 排行</a></li>
         <li><a onclick=menu(0)>Back 回菜单</a></li>
       </ul>
     </nav>
@@ -112,6 +113,13 @@
         <li><a onclick=menu(0)>Back 回菜单</a></li>
       </ul>
     </nav>
+    
+    <div id=leader class=menu>
+      <h2>Rankings 排行</h2>
+      <div id=leaderboard>
+      </div>
+      <div style=clear:both><a class=button onclick=menu(3)>Back 返回</a></div>
+    </div>
   </div>
 
   <div id=c>
@@ -129,6 +137,7 @@
 <script src=preview.js></script>
 <script src=menu.js></script>
 <script src=bg.js></script>
+<script src=ranking.js></script>
 <!--
 <script>_gaq=[['_setAccount','UA-30472693-1'],['_trackPageview']];(function(d){var g=d.createElement('script'),s=d.scripts[0];g.src='//www.google-analytics.com/ga.js';s.parentNode.insertBefore(g,s)})(document)</script>
 -->
