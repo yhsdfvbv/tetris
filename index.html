@@ -62,12 +62,15 @@
         <li><a onclick=init(1)>Marathon 马拉松</a></li>
         <!-- <li><a onclick=init(2)>Play Ultra</a></li> -->
         <li><a onclick="init(3,{digOffset:0})">Dig! 挖掘机</a></li>
+        <li><a onclick="init(4)">Dig Race 挖掘练习</a></li>
         <li><a onclick=menu(2)><i class=></i>Controls 调整按键</a></li>
         <li><a onclick=menu(1)><i class=icon-cog></i>Settings 调整设定</a></li>
         <li><a onclick="init(3,{digOffset:500})">Dig - 500+</a></li>
         <li><a onclick="init(3,{digOffset:1000})">Dig - 1000+</a></li>
         <li><a onclick="init(3,{digOffset:1500})">Dig - 1500+</a></li>
-        <li><a onclick="init(3,{digOffset:2000})">*MONSTER*</a></li>
+        <li><a onclick="init(3,{digOffset:2000})">*DANGER*</a></li>
+        <li><a onclick="tryreplaydata()">Replay(α) 回放(测试)</a></li>
+        
       </ul>
     </nav>
 
@@ -100,7 +103,7 @@
     <nav id=go class=menu>
       <ul>
         <li><a onclick=init(gametype,gameparams)>Retry 再来</a></li>
-        <li><a onclick=init('replay')>Replay 回放</a></li>
+        <li><a onclick=init('replay')>Replay 回放 <span onclick="showreplaydata()"><u>&gt;&gt; ★</u></span></a></li>
         <li><a onclick=menu(5)>Rankings 排行</a></li>
         <li><a onclick=menu(0)>Back 回菜单</a></li>
       </ul>
@@ -138,6 +141,8 @@
 <script src=menu.js></script>
 <script src=bg.js></script>
 <script src=ranking.js></script>
+<script src=compress.js></script>
+
 <!--
 <script>_gaq=[['_setAccount','UA-30472693-1'],['_trackPageview']];(function(d){var g=d.createElement('script'),s=d.scripts[0];g.src='//www.google-analytics.com/ga.js';s.parentNode.insertBefore(g,s)})(document)</script>
 -->

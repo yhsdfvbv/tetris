@@ -59,7 +59,7 @@ Stack.prototype.addPiece = function(tetro) {
     // TODO Ponder during the day and see if there is a more elegant solution.
     if (count === 10) {
       lines++; // NOTE stats
-      if (gametype === 3) {
+      if (gametype === 4) { // dig race
         if (digLines.indexOf(row) !== -1) {
           digLines.splice(digLines.indexOf(row), 1);
         }
@@ -91,8 +91,10 @@ Stack.prototype.rowRise = function(arrRow, objPiece) {
     }
     this.grid[x][this.grid[x].length-1]=arrRow[x];
   }
-  for(var y = 0; y < digLines.length; y++) {
-    digLines[y]--;
+  if(digLines) {
+    for(var y = 0; y < digLines.length; y++) {
+      digLines[y]--;
+    }
   }
   digLines.push(21);
   if (!piece.moveValid(0, 0, piece.tetro)) {

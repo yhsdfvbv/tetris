@@ -30,7 +30,8 @@ Preview.prototype.gen = function() {
   /* farter */ // proven random shuffle algorithm
   for (var i=0;i<7-1;i++)
   {
-    var temp=pieceList[i], rand=~~((7-i)*rng.next())+i;
+    var temp=pieceList[i];
+    var rand=~~((7-i)*rng.next())+i;
     pieceList[i]=pieceList[rand];
     pieceList[rand]=temp;
   }

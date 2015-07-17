@@ -76,7 +76,9 @@ function XMLHTTP(url,obj)
       }
       else
       {
-        leaderboard.innerText = "Problem retrieving leaderboard data" + xmlhttp.status;
+        leaderboard.innerText = "Problem retrieving leaderboard data\n" + 
+          xmlhttp.status + "\n" + xmlhttp.readyState + "\n" + xmlhttp.statusText + "\n" +
+          xmlhttp.responseText;
       }
     }
   }
@@ -108,6 +110,8 @@ function submitscore(obj)
     playername=prompt("Enter your nick: 请输入大名：");
   if(playername===null)
     return;
+  if(playername==="")
+    playername="unnamed";
   obj.name=playername;
   console.log(obj);
   XMLHTTP("http://farter.tk:8888", obj);

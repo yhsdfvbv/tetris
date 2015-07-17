@@ -351,15 +351,16 @@ var arrStages = [
       {begin: 750, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
       {begin: 780, delay: 60*2.5, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
       {begin: 800, delay: 60*2, gen:function(arr){arrRowGen.simplemessy(arr,0.9)}},
-      {begin: 900, delay: 60*1.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin: 950, delay: 60*1.2, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin: 900, delay: 60*1.75, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+      {begin: 950, delay: 60*1.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
       
       {begin:1000, delay: 60*5, gen:function(arr){arrRowGen.simplemessy(arr,0.0)}},
-      {begin:1050, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.0)}},
-      {begin:1100, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,1,1,8)}},
-      {begin:1150, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,2,1,6)}},
-      {begin:1180, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,3,1,4)}},
+      {begin:1020, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.0)}},
+      {begin:1050, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,1,1,8)}},
+      {begin:1100, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,2,1,6)}},
+      {begin:1150, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,3,1,4)}},
       {begin:1200, delay: 60*2, gen:function(arr){arrRowGen.simple(arr,4,1,2)}},
+      {begin:1210, delay: 60*1.5, gen:function(arr){arrRowGen.simple(arr,4,1,2)}},
       {begin:1210, delay: 60*1, gen:function(arr){arrRowGen.simple(arr,4,1,2)}},
       {begin:1250, delay: 60*2, gen:function(arr){arrRowGen.simple(arr,9,1,1)}},
       {begin:1260, delay: 60*0.5, gen:function(arr){arrRowGen.simple(arr,9,1,1)}},
@@ -415,7 +416,7 @@ var gameState = 3;
 var paused = false;
 var lineLimit;
 
-var replayKeys;
+var replay;
 var watchingReplay = false;
 var toGreyRow;
 var gametype;
@@ -430,7 +431,7 @@ var statsFinesse;
 var piecesSet;
 var startTime;
 var scoreTime;
-var digLines;
+var digLines = [];
 
 // Keys
 var keysDown;
@@ -704,13 +705,36 @@ addEventListener('resize', resize, false);
 function init(gt, params) {
   if (gt === 'replay') {
     watchingReplay = true;
+    if(params) {
+      try {
+        params = Decompress(params);
+        if(params === null)
+          throw "decompress fail";
+        var len = params.length-1;
+        while(len>0 && params.charCodeAt(len)===0)
+          len--;
+        params = params.slice(0,len+1);
+        replay = JSON.parse(params);
+        if(replay === null)
+          throw "parse fail";
+      } catch(e) {
+        alert("invalid replay data... 回放数据有误...\n" + e.toString());
+        return;
+      }
+      gametype = replay.gametype;
+      gameparams = replay.gameparams;
+      console.log("wa");
+    }
   } else {
     watchingReplay = false;
-    replayKeys = {};
+    replay={};
+    replay.keys = {};
     // TODO Make new seed and rng method.
-    replayKeys.seed = ~~(Math.random() * 2147483645) + 1;
+    replay.seed = ~~(Math.random() * 2147483645) + 1;
     gametype = gt;
     gameparams = params || {};
+    replay.gametype = gametype;
+    replay.gameparams = gameparams;
   }
 
   if(gametype === void 0) //sometimes happens.....
@@ -728,14 +752,13 @@ function init(gt, params) {
   piece.shiftDir = 0;
   piece.shiftReleased = true;
 
-  rng.seed = replayKeys.seed;
+  rng.seed = replay.seed;
   toGreyRow = 21;
   frame = 0;
   lastPos = 'reset';
   stack.new(10, 22);
   hold.piece = void 0;
   if (settings.Gravity === 0) gravity = gravityUnit;
-  startTime = Date.now();
 
   preview.init()
   //preview.draw();
@@ -749,15 +772,29 @@ function init(gt, params) {
   clear(holdCtx);
 
   if (gametype === 3) {
+    frameLastRise = 0;
+
+    //statsLines.innerHTML = "0";
+    
+    //stack.draw();
+  }
+  if (gametype === 4) {
     // Dig Race
     // make ten random numbers, make sure next isn't the same as last? t=rnd()*(size-1);t>=arr[i-1]?t++:; /* farter */
     //TODO make into function or own file.
+    // harder digrace: checkerboard
 
-    digLines = [];
-    frameLastRise = 0;
+    digLines = [12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
 
-    statsLines.innerHTML = "0";
-    
+    statsLines.innerHTML = 10;
+    statsLines.innerHTML = 10;
+    var randomNums = [];
+    for (var y = 21; y > 11; y--) {
+      for (var x = 0; x < 10; x++) {
+        if ((x+y)&1)
+          stack.grid[x][y] = 8;
+      }
+    }
     stack.draw();
   }
 
@@ -769,6 +806,7 @@ function init(gt, params) {
   if (paused || gameState === 3) {
     requestAnimFrame(gameLoop);
   }
+  startTime = Date.now();
   startPauseTime = 0;
   pauseTime = 0;
   paused = false;
@@ -868,6 +906,12 @@ function statisticsStack() {
         // /* farter */
     else
       statsLines.innerHTML = lines;
+  }
+  //else if (gametype === 4){
+  //  statsLines.innerHTML = digLines.length;
+  //}
+  else{
+    statsLines.innerHTML = lines;
   }
 }
 // ========================== View ============================================
@@ -1196,9 +1240,9 @@ document.addEventListener('gesturechange',preventDefault,false);
 function update() {
   //TODO Das preservation broken.
   if (lastKeys !== keysDown && !watchingReplay) {
-    replayKeys[frame] = keysDown;
-  } else if (frame in replayKeys) {
-    keysDown = replayKeys[frame];
+    replay.keys[frame] = keysDown;
+  } else if (frame in replay.keys) {
+    keysDown = replay.keys[frame];
   }
   
   //if (piece.dead) {
@@ -1330,23 +1374,24 @@ function update() {
         }
       }
       msg.innerHTML = rank.u + "<br /><small>" + rank.b +"</small>";
+      piece.dead = true;
       menu(3);
     }
   } else if (gametype === 1) { // Marathon
     if (settings.Gravity !== 0 && lines>=200) { // not Auto, limit to 200 Lines
       gameState = 1;
       msg.innerHTML = 'GREAT!';
+      piece.dead = true;
       menu(3);
     }
-  }
-  
-  /* else {
+  } else if (gametype === 4) { // Dig race
     if (digLines.length === 0) {
       gameState = 1;
       msg.innerHTML = 'GREAT!';
+      piece.dead = true;
       menu(3);
     }
-  } */
+  } 
   /* farter */
 
   statistics();
@@ -1407,9 +1452,9 @@ function gameLoop() {
       }
       // DAS Preload
       if (lastKeys !== keysDown && !watchingReplay) {
-        replayKeys[frame] = keysDown;
-      } else if (frame in replayKeys) {
-        keysDown = replayKeys[frame];
+        replay.keys[frame] = keysDown;
+      } else if (frame in replay.keys) {
+        keysDown = replay.keys[frame];
       }
       if (keysDown & flags.moveLeft) {
         lastKeys = keysDown;
@@ -1448,24 +1493,46 @@ function gameLoop() {
 }
 
 function trysubmitscore() {
+  if(watchingReplay)
+    return;
   var time = scoreTime;
-  if(gametype===0 && gameState===1) //40L
+  if(gametype===0 && gameState===1) // 40L
     submitscore({
-      mode:"sprint",
-      score:lines,
+      "mode":"sprint",
+      "score":lines,
       "time":time
     });
   else if(gametype===3 && gameState===9) // dig
     submitscore({
-      mode:"dig" + (gameparams&&gameparams.digOffset?gameparams.digOffset:""),
-      score:lines,
+      "mode":"dig" + (gameparams&&gameparams.digOffset?gameparams.digOffset:""),
+      "score":lines,
+      "time":time
+    });
+  else if(gametype===4 && gameState===1) // dig race
+    submitscore({
+      "mode":"digrace",
+      "score":lines,
       "time":time
     });
   else if(gametype===1 && settings.Gravity === 0) { // marathon
     submitscore({
-      mode:"marathon",
-      score:lines,
+      "mode":"marathon",
+      "score":lines,
       "time":time
     });
   }
+}
+
+function tryreplaydata() {
+  var strreplay = prompt("Paste replay data here: 在此贴入录像数据：");
+  if (strreplay === null)
+    return;
+  init('replay',strreplay);
+}
+
+function showreplaydata() {
+  var strreplay = Compress(JSON.stringify(replay));
+  var objblob = new Blob([strreplay],{type:"text/plain"});
+  var url=URL.createObjectURL(objblob);
+  window.open(url);
 }
