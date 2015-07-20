@@ -1,7 +1,6 @@
 function Compress(strNormalString)
 {
   var strCompressedString = "";
-  var strBase52 = "";
 
   var ht = new HashTable;
   for(i = 0; i < 128; i++) {
@@ -60,53 +59,11 @@ function Compress(strNormalString)
     strCompressedString += String.fromCharCode( intOutputCode );
   }
 
-  //return strCompressedString;
-  
-  for(var i=0;i<strCompressedString.length;i++) {
-    var ch=0,ch0=0,ch1=0,ch2=0;
-    ch = strCompressedString.charCodeAt(i);
-    ch0 = ch%52;
-    ch /= 52;
-    ch1 = ch%52;
-    ch /= 52;
-    ch2 = ch%52;
-    ch0 += (ch0<26?65:(97-26));
-    ch1 += (ch1<26?65:(97-26));
-    ch2 += (ch2<26?65:(97-26));
-    strBase52 += String.fromCharCode(ch0,ch1,ch2); 
-  }
-  
-  return strBase52;
+  return strCompressedString;
 }
 
-function Decompress(/*strCompressedString*/ strBase52)
+function Decompress(strCompressedString)
 {
-  var strCompressedString = "";
-  
-  var Base52Unit = function(num) {
-    if(num>=65&&num<65+26) num-=65;
-    else if(num>=97&&ch0<97+26) num-=(97-26);
-    else return null;
-    return num;
-  }
-  
-  if(strBase52.length % 3 != 0)
-    return null;
-  
-  for(var i=0;i<strBase52.length;i+=3) {
-    var ch=0,ch0=0,ch1=0,ch2=0;
-    ch0 = strBase52.charCodeAt(i);
-    ch1 = strBase52.charCodeAt(i+1);
-    ch2 = strBase52.charCodeAt(i+2);
-    ch0 = Base52Unit(ch0);
-    ch1 = Base52Unit(ch1);
-    ch2 = Base52Unit(ch2);
-    if(ch0==null||ch1==null||ch2==null)
-      return null;
-    ch = ch0 + 52 * (ch1 + 52 * ch2);
-    strCompressedString += String.fromCharCode(ch); 
-  }
-  
   var strNormalString = "";
   var ht = new Array;
 
@@ -180,4 +137,150 @@ function HashTable()
       arr[arr.length] = e;
     }
   }
+}
+
+function writeVL4(arr, num) {
+  var halfByte;
+  do {
+    halfByte = num & 7;
+    num >>= 3;
+    if(num !== 0)
+      halfByte |= 8;
+    arr.push(halfByte);
+  } while (num !== 0)
+}
+
+function scanVL4(arr, ptr, refNum) {
+  var halfByte;
+  var len = 0;
+  var num = 0;
+  do {
+    halfByte = arr[ptr];
+    if(halfByte === void 0)
+      return null; // error
+      //throw 4;
+    num |= (halfByte & 7) << (len * 3);
+    if((halfByte & 8) === 8)
+      len++;
+    ptr++;
+  } while ((halfByte & 8) === 8)
+  if(len > 0 && num < 8)
+    return -1;
+  else {
+    refNum[0] = num;
+    return ptr;
+  }
+}
+
+var base67 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_+=@"; // 67*67 < 16*16*16 + 16*16 + 16
+var base67rev = (function() {
+  var rev = {};
+  for(var i=0; i<base67.length; i++) {
+    rev[base67[i]] = i;
+  }
+  return rev;
+})();
+
+function keysEncode(keys) {
+  var lastFrame = 0;
+  var lastKeys = 0;
+  var arrHB = [];
+  var arrBase67 = [];
+  var curFrame, curKeys;
+  for(var i in keys) {
+    curFrame = +i;
+    curKeys = keys[i];
+    for(var xhb=0; xhb<8; xhb++) {
+      if((curKeys ^ lastKeys) & (1 << xhb)) {
+        writeVL4(arrHB, curFrame - lastFrame);
+        arrHB.push(xhb);
+        //console.log("key", curFrame - lastFrame, xhb, i)
+        lastFrame = curFrame;
+      }
+    }
+    lastKeys = curKeys;
+  }
+  arrHB.push(8);
+  arrHB.push(0);
+  
+  //console.log(arrHB);
+  
+  var nHB = arrHB.length;
+  var sum;
+  for(var ptr=0; ptr<nHB; ptr+=3) {
+    if(nHB - ptr >= 3) {
+      sum = (arrHB[ptr] + arrHB[ptr+1]*16 + arrHB[ptr+2]*16*16);
+    } else if(nHB - ptr == 2) {
+      sum = (arrHB[ptr] + arrHB[ptr+1]*16 + 16*16*16);
+    } else if(nHB - ptr == 1) {
+      sum = (arrHB[ptr] + 16*16 + 16*16*16);
+    }
+    //console.log(sum);
+    arrBase67.push(base67[sum%67] + base67[~~(sum/67)]);
+  }
+  
+  return arrBase67.join("");
+}
+
+function keysDecode(str) {
+  var lastFrame = 0;
+  var lastKeys = 0;
+  var keys = {};
+  var arrHB = [];
+  var arrBase67 = [];
+  var objNum = [0]; // pass by reference
+  
+  if(str.length%2 !== 0)
+    return null;
+  
+  for(var ptr=0; ptr<str.length; ptr+=2) {
+    var lo67 = base67rev[str[ptr]], hi67 = base67rev[str[ptr+1]];
+    //console.log(lo67 + " " + hi67 + " " + (lo67 + hi67 * 67));
+    if((lo67 === void 0) || (hi67 === void 0))
+      return null;
+      //throw 1;
+    arrBase67.push(lo67 + hi67 * 67);
+  }
+  
+  for(var i=0; i<arrBase67.length; i++) {
+    var data = arrBase67[i];
+    //console.log(data);
+    if(data < 16*16*16) {
+      arrHB.push(data & 15); data >>= 4;
+      arrHB.push(data & 15); data >>= 4;
+      arrHB.push(data & 15);
+    } else if(data < 16*16*16 + 16*16) {
+      data -= 16*16*16;
+      arrHB.push(data & 15); data >>= 4;
+      arrHB.push(data & 15);
+    } else if(data < 16*16*16 + 16*16 + 16) {
+      data -= 16*16*16 + 16*16;
+      arrHB.push(data & 15);
+    } else {
+      //return null;
+      throw 2;
+    }
+  }
+  
+  //console.log(arrHB.length, arrHB.toString());
+  
+  for(var i=0; i<arrHB.length;) {
+    var nexti;
+    nexti = scanVL4(arrHB, i, objNum);
+    if(nexti === null) {
+      //return null;
+      console.log("scanVL4 null:",i,arrHB.length);
+      throw 3;
+    }
+    if(nexti === -1)
+      break;
+    i = nexti;
+    lastFrame += objNum[0];
+    lastKeys ^= (1 << arrHB[i]); // flip that bit
+    keys[lastFrame] = lastKeys;
+    //console.log("event:",objNum[0],"F interval, key:", arrHB[i]);
+    i++;
+  }
+  
+  return keys;
 }

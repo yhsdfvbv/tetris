@@ -233,7 +233,7 @@ var gravityArr = (function() {
 
 var lockDelayLimit = void 0;
 
-var settings = {
+var mySettings = {
   DAS: 9,
   ARR: 1,
   Gravity: 0,
@@ -247,6 +247,8 @@ var settings = {
   Grid: 1,
   Outline: 1
 };
+
+var settings = mySettings; // used in current game; by reference; replaced for replay
 
 var settingName = {
   DAS: "DAS 加速延迟",
@@ -707,34 +709,46 @@ function init(gt, params) {
     watchingReplay = true;
     if(params) {
       try {
-        params = Decompress(params);
+        //params = Decompress(params);
         if(params === null)
           throw "decompress fail";
+        /*
         var len = params.length-1;
         while(len>0 && params.charCodeAt(len)===0)
           len--;
         params = params.slice(0,len+1);
+        */
         replay = JSON.parse(params);
         if(replay === null)
-          throw "parse fail";
+          throw "json parse fail";
+        replay.keys = keysDecode(replay.keys);
+        if(replay.keys === null)
+          throw "keys decode fail"
       } catch(e) {
         alert("invalid replay data... 回放数据有误...\n" + e.toString());
         return;
       }
-      gametype = replay.gametype;
-      gameparams = replay.gameparams;
-      console.log("wa");
     }
+    gametype = replay.gametype;
+    gameparams = replay.gameparams;
+    settings = replay.settings;
+    rng.seed = replay.seed;
   } else {
     watchingReplay = false;
-    replay={};
-    replay.keys = {};
-    // TODO Make new seed and rng method.
-    replay.seed = ~~(Math.random() * 2147483645) + 1;
+    settings = mySettings; // by reference
     gametype = gt;
     gameparams = params || {};
+    
+    var seed = ~~(Math.random() * 2147483645) + 1;
+    rng.seed = seed;
+    
+    replay = {};
+    replay.keys = {};
+    // TODO Make new seed and rng method.
+    replay.seed = seed;
     replay.gametype = gametype;
     replay.gameparams = gameparams;
+    replay.settings = settings;
   }
 
   if(gametype === void 0) //sometimes happens.....
@@ -752,7 +766,6 @@ function init(gt, params) {
   piece.shiftDir = 0;
   piece.shiftReleased = true;
 
-  rng.seed = replay.seed;
   toGreyRow = 21;
   frame = 0;
   lastPos = 'reset';
@@ -1457,15 +1470,16 @@ function gameLoop() {
         keysDown = replay.keys[frame];
       }
       if (keysDown & flags.moveLeft) {
-        lastKeys = keysDown;
         piece.shiftDelay = settings.DAS;
         piece.shiftReleased = false;
         piece.shiftDir = -1;
       } else if (keysDown & flags.moveRight) {
-        lastKeys = keysDown;
         piece.shiftDelay = settings.DAS;
         piece.shiftReleased = false;
         piece.shiftDir = 1;
+      }
+      if (lastKeys !== keysDown) {
+        lastKeys = keysDown;
       }
     } else if (gameState === 9 || gameState === 1) {
       if (toGreyRow >= 2) {
@@ -1531,7 +1545,12 @@ function tryreplaydata() {
 }
 
 function showreplaydata() {
-  var strreplay = Compress(JSON.stringify(replay));
+  //var strreplay = Compress(JSON.stringify(replay));
+  var objKeys = replay.keys;
+  replay.keys = keysEncode(replay.keys);
+  var strreplay = JSON.stringify(replay);
+  replay.keys = objKeys;
+  //strreplay = strreplay + Compress(strreplay);
   var objblob = new Blob([strreplay],{type:"text/plain"});
   var url=URL.createObjectURL(objblob);
   window.open(url);

@@ -91,9 +91,9 @@ addEventListener('keyup', function(e) {
 function settingsLoop() {
   if (arrowReleased || arrowDelay >= 6) {
     if (settingsArrow)
-      settings[s] = (settings[s] === 0) ? setting[s].length - 1 : settings[s] - 1;
+      mySettings[s] = (mySettings[s] === 0) ? setting[s].length - 1 : mySettings[s] - 1;
     else
-      settings[s] = (settings[s] === setting[s].length - 1) ? 0 : settings[s] + 1;
+      mySettings[s] = (mySettings[s] === setting[s].length - 1) ? 0 : mySettings[s] + 1;
     saveSetting(s);
     arrowReleased = false;
   } else {
@@ -143,9 +143,9 @@ function saveSetting(s) {
 
   document.getElementById(s)
   .getElementsByTagName('span')[0]
-  .innerHTML = setting[s][settings[s]];
+  .innerHTML = setting[s][mySettings[s]];
 
-  localStorage['settings'] = JSON.stringify(settings);
+  localStorage['settings'] = JSON.stringify(mySettings);
 }
 function loadLocalData() {
   if (localStorage['binds']) {
@@ -160,12 +160,12 @@ function loadLocalData() {
     localStorage.removeItem('binds');
   }
   if (localStorage['settings']) {
-    settings = JSON.parse(localStorage.getItem('settings'));
+    mySettings = JSON.parse(localStorage.getItem('settings'));
   }
 }
 
 loadLocalData();
-for (var s in settings) {
+for (var s in mySettings) {
   var div = document.createElement('div');
   var sname = document.createElement('b');
   var iLeft = document.createElement('i');
@@ -174,7 +174,7 @@ for (var s in settings) {
 
   div.id = s;
   sname.innerHTML = settingName[s];
-  span.innerHTML = setting[s][settings[s]];
+  span.innerHTML = setting[s][mySettings[s]];
   iLeft.className = 'left';
   iRight.className = 'right';
   iLeft.onmousedown = left;
