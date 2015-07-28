@@ -34,12 +34,28 @@ var key = {
  * Show and hide menus.
  */
 var menus = document.getElementsByClassName('menu');
-function menu(menuIndex) {
+var menuStack = [];
+function menu(menuIndex, stackOper) {
+  var current = void 0;
   for (var i = 0, len = menus.length; i < len; i++) {
+    if (menus[i].classList.contains('on'))
+      current = i;
     menus[i].classList.remove('on');
   }
+  
   if (menuIndex !== void 0)
     menus[menuIndex].classList.add('on');
+    
+  if (stackOper === 1) {
+    if(current !== void 0)
+      menuStack.push(current);
+  } else if (stackOper === -1) {
+    current = menuStack.pop();
+    if((current !== void 0) && (menuIndex === void 0))
+      menus[current].classList.add('on');
+  } else if (stackOper !== 0) {
+    menuStack=[];
+  }
 }
 
 /**

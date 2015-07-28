@@ -54,23 +54,22 @@
     </div>
 
     <nav class='menu on'>
-      <h1>Tetr.js - Dig v0.31</h1>
-      <p>forked from: <span onclick="window.location='http://simon.lc/tetr.js/'"><u>&gt;&gt;simonlc</u></a></p>
-      <p>farter's DIG mod</p>
+      <h1>Tetr.js - Dig v0.4</h1>
+      <p>forked from: <span onclick="window.location='http://simon.lc/tetr.js/'"><u>&gt;&gt;simonlc</u></span><br/>
+      farter's Dig Mod</p>
       <ul>
-        <li><a onclick=init(0)>Sprint 40行竞速</a></li>
-        <li><a onclick=init(1)>Marathon 马拉松</a></li>
+        <li><a onclick=init(0)>⚡ Sprint 40行竞速</a></li>
+        <li><a onclick=init(1)>⚐ Marathon 马拉松</a></li>
         <!-- <li><a onclick=init(2)>Play Ultra</a></li> -->
-        <li><a onclick="init(3,{digOffset:0})">Dig! 挖掘机</a></li>
-        <li><a onclick="init(4)">Dig Race 挖掘练习</a></li>
-        <li><a onclick=menu(2)><i class=></i>Controls 调整按键</a></li>
-        <li><a onclick=menu(1)><i class=icon-cog></i>Settings 调整设定</a></li>
-        <li><a onclick="init(3,{digOffset:500})">Dig - 500+</a></li>
-        <li><a onclick="init(3,{digOffset:1000})">Dig - 1000+</a></li>
-        <li><a onclick="init(3,{digOffset:1500})">Dig - 1500+</a></li>
-        <li><a onclick="init(3,{digOffset:2000})">*DANGER*</a></li>
-        <li><a onclick="tryreplaydata()">Replay(α) 回放(测试)</a></li>
-        
+        <li><a onclick="init(3,{digOffset:0})">⚠ Dig! 挖掘机</a></li>
+        <li><a onclick="init(4)">☕ Dig Race 挖掘练习</a></li>
+        <li><a onclick="menu(6,1)">Replay(α) 回放(测试)</a></li>
+        <li><a onclick=menu(2)>✜ Controls 调整按键</a></li>
+        <li><a onclick=menu(1)>☑ Settings 调整设定</a></li>
+        <li><a onclick="init(3,{digOffset:500})">✶ Dig - 500+</a></li>
+        <li><a onclick="init(3,{digOffset:1000})">✹ Dig - 1000+</a></li>
+        <li><a onclick="init(3,{digOffset:1500})">✺ Dig - 1500+</a></li>
+        <li><a onclick="init(3,{digOffset:2000})">☢ NUKE 核能</a></li>
       </ul>
     </nav>
 
@@ -83,8 +82,8 @@
 
     <div class=menu>
       <h2>Controls 调整按键</h2>
-      <p>Click on the control you want to change, then press any key.</p>
-      <p>点击要设置的键位，然后按键。</p>
+      <p>Click on the item you want to change, then press any key.<br />
+      点击要修改的键位，然后按键。</p>
       <table id=controls>
         <tr> <th>Move ← 左移</th><td id=moveLeft>←</td> </tr>
         <tr> <th>Move → 右移</th><td id=moveRight>→</td> </tr>
@@ -103,8 +102,11 @@
     <nav id=go class=menu>
       <ul>
         <li><a onclick=init(gametype,gameparams)>Retry 再来</a></li>
-        <li><a onclick=init('replay')>Replay 回放 <span onclick="showreplaydata()"><u>&gt;&gt; ★</u></span></a></li>
-        <li><a onclick=menu(5)>Rankings 排行</a></li>
+        <li>
+          <a onclick="init('replay')" style="width: 46%;">Replay 回放 </a>
+          <a onclick="showreplaydata()" style="width: 7%;">★</a>
+        </li>
+        <li><a onclick="menu(5,1)">Rankings 排行</a></li>
         <li><a onclick=menu(0)>Back 回菜单</a></li>
       </ul>
     </nav>
@@ -119,10 +121,20 @@
     
     <div id=leader class=menu>
       <h2>Rankings 排行</h2>
-      <div id=leaderboard>
-      </div>
-      <div style=clear:both><a class=button onclick=menu(3)>Back 返回</a></div>
+      <div id=leaderboard></div>
+      <div style=clear:both><a class=button onclick="menu(void 0,-1)">Back 返回</a></div>
     </div>
+    
+    <nav id=replay class=menu>
+      <h2>Replay 回放数据</h2>
+      <p>Ctrl+C 复制 / Ctrl+V 粘贴</p>
+      <textarea id=replaydata spellcheck=false></textarea>
+      <ul>
+        <li><a onclick="tryreplaydata()">Watch 观看</a></li>
+        <li><a onclick="menu(void 0,-1)">Back 返回</a></li>
+      </ul>
+    </nav>
+    
   </div>
 
   <div id=c>

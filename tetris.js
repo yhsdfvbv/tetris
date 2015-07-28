@@ -25,6 +25,7 @@ var statsPiece = document.getElementById('piece');
 var h3 = document.getElementsByTagName('h3');
 var set = document.getElementById('settings');
 var leaderboard = document.getElementById('leaderboard');
+var replaydata = document.getElementById('replaydata');
 
 // Get canvases and contexts
 var holdCanvas = document.getElementById('hold');
@@ -707,20 +708,22 @@ addEventListener('resize', resize, false);
 function init(gt, params) {
   if (gt === 'replay') {
     watchingReplay = true;
-    if(params) {
+    if(params !== void 0) {
       try {
-        //params = Decompress(params);
-        if(params === null)
-          throw "decompress fail";
-        /*
-        var len = params.length-1;
-        while(len>0 && params.charCodeAt(len)===0)
-          len--;
-        params = params.slice(0,len+1);
-        */
+        if(typeof params !== "string")
+          throw "wtf";
+        if(params === "" || params.slice(0,1) !=="{")
+          throw "please paste replay data, correctly..."
         replay = JSON.parse(params);
-        if(replay === null)
+        if(typeof replay !== "object")
           throw "json parse fail";
+        if((replay.gametype === void 0)
+          || (replay.keys === void 0)
+          || (replay.settings === void 0)
+          || (replay.seed === void 0)
+        ) {
+          throw "something's missing...";
+        }
         replay.keys = keysDecode(replay.keys);
         if(replay.keys === null)
           throw "keys decode fail"
@@ -1356,7 +1359,7 @@ function update() {
         {t: 50, u:"50不是梦", b:"Beat 50."},
         {t: 48, u:"每秒2块", b:"2 drops/sec!"},
         {t: 45, u:"很能打嘛", b:"u can tetris."},
-        {t: 42, u:"有点厉害", b:"You are the one"},
+        {t: 42, u:"有点厉害", b:"Interesting."},
         {t: 40, u:"于是呢？", b:"So?"},
         {t: 38, u:"高手", b:"Good."},
         {t: 35, u:"停不下来", b:"Unstoppable."},
@@ -1433,24 +1436,24 @@ function gameLoop() {
 
       // TODO improve this with 'dirty' flags.
       /* farter */ // as you draw for lock delay brightness gradient... give this up..
-  /*
+  
       if (piece.x !== lastX ||
       Math.floor(piece.y) !== lastY ||
       piece.pos !== lastPos ||
       piece.lockDelay !== lastLockDelay ||
       piece.dirty) {
-  */
+  
         clear(activeCtx);
         piece.drawGhost();
         piece.draw();
-  /*
+  
       }
       lastX = piece.x;
       lastY = Math.floor(piece.y);
       lastPos = piece.pos;
       lastLockDelay = piece.lockDelay;
       piece.dirty = false;
-  */
+  
     } else if (gameState === 2) {
       // Count Down
       if (frame < 50) {
@@ -1477,6 +1480,10 @@ function gameLoop() {
         piece.shiftDelay = settings.DAS;
         piece.shiftReleased = false;
         piece.shiftDir = 1;
+      } else {
+        piece.shiftDelay = 0;
+        piece.shiftReleased = true;
+        piece.shiftDir = 0;
       }
       if (lastKeys !== keysDown) {
         lastKeys = keysDown;
@@ -1538,9 +1545,12 @@ function trysubmitscore() {
 }
 
 function tryreplaydata() {
+/*
   var strreplay = prompt("Paste replay data here: 在此贴入录像数据：");
   if (strreplay === null)
     return;
+*/
+  var strreplay = replaydata.value;
   init('replay',strreplay);
 }
 
@@ -1551,7 +1561,12 @@ function showreplaydata() {
   var strreplay = JSON.stringify(replay);
   replay.keys = objKeys;
   //strreplay = strreplay + Compress(strreplay);
+  /*
   var objblob = new Blob([strreplay],{type:"text/plain"});
   var url=URL.createObjectURL(objblob);
   window.open(url);
+  */
+  replaydata.value = strreplay;
+  replaydata.select();
+  menu(6,1);
 }

@@ -33,15 +33,18 @@
 - Responsive design
 - Preload das preservation during countdown
 - Finesse faults counter.
+- Farter's Dig mod:
+    - Dig modes
+    - Mobile design
+    - Replays
+    - Leaderboards
 
 ## Planned future mechanics and features
 
-- Mobile design
 - More game modes (ultra, etc)
+- More rotation systems
 - Training mode, 2step trainer, patterns, etc
-- Replays
 - Stats logging
-- Leaderboards
 - Sound effects
 - T-spin and twist detection
 - Custom mino skins (or at least a selection)
@@ -50,4 +53,3 @@
 
 - Help page
 - Feedback button
-- Include license

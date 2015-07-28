@@ -1,29 +1,9 @@
+﻿
 @font-face {
   font-family: 'Lato';
   font-style: normal;
   font-weight: 400;
   src: local('Lato Regular'), local('Lato-Regular'), url(http://themes.googleusercontent.com/static/fonts/lato/v6/9k-RPmcnxYEPm8CNFsH2gg.woff) format('woff');
-}
-@font-face {
-  font-family: 'Source Sans Pro';
-  font-style: normal;
-  font-weight: 400;
-  src: local('Source Sans Pro'), local('SourceSansPro-Regular'), url(http://themes.googleusercontent.com/static/fonts/sourcesanspro/v5/ODelI1aHBYDBqgeIAH2zlBM0YzuT7MdOe03otPbuUS0.woff) format('woff');
-}
-@font-face {
-  font-family: 'Source Sans Pro';
-  font-style: normal;
-  font-weight: 900;
-  src: local('Source Sans Pro Black'), local('SourceSansPro-Black'), url(http://themes.googleusercontent.com/static/fonts/sourcesanspro/v5/toadOcfmlt9b38dHJxOBGHiec-hVyr2k4iOzEQsW1iE.woff) format('woff');
-}
-@font-face {
-  font-family: 'FontAwesome';
-  src: url('fontawesome-webfont.eot?v=3.0.1');
-  src: url('fontawesome-webfont.eot?#iefix&v=3.0.1') format('embedded-opentype'),
-    url('fontawesome-webfont.woff?v=3.0.1') format('woff'),
-    url('fontawesome-webfont.ttf?v=3.0.1') format('truetype');
-  font-weight: normal;
-  font-style: normal;
 }
 /* General */
 @-ms-viewport {
@@ -37,7 +17,6 @@ html {
   user-select: none;
 }
 body {
-/*  font: 1em 'Source Sans Pro'; */
   font-family: 'Trebuchet MS', 'Microsoft Yahei';
   font-size: 1em;
   margin: 0;
@@ -106,16 +85,6 @@ nav a {
 .button {
   margin: 0;
 }
-[class^="icon-"],
-[class*=" icon-"] {
-  font-family: FontAwesome;
-  font-weight: normal;
-  font-style: normal;
-  text-decoration: inherit;
-  margin: 0 0.4em 0 0;
-  -webkit-font-smoothing: antialiased;
-}
-.icon-cog:before{content:'\f021'}
 
 /* Content */
 #content {
@@ -189,7 +158,6 @@ nav a {
     z-index: 4;
   }
   #msg {
-/*    font: 900 4rem 'Source Sans Pro', sans-serif; */
     font-family: 'Trebuchet MS', 'Microsoft Yahei';
     font-weight: bold;
     font-size: 4rem;
@@ -267,7 +235,7 @@ nav a {
 
 /* Controls */
 #controls {
-  margin: 0 auto 1em;
+  margin: 1em auto;
 }
 #controls th {
   font-weight: bold;
@@ -278,7 +246,7 @@ nav a {
   font-weight: bold;
   cursor: pointer;
   display: block;
-  margin: 0.2em 0 0.2em 2em;
+  margin: 0.2em 0 0.2em 1.5em;
   text-align: center;
   width: 6em;
   line-height: 1.6;
@@ -297,7 +265,6 @@ nav a {
 /* Settings */
 .left,
 .right {
-  font-family: FontAwesome;
   font-weight: normal;
   font-style: normal;
   cursor: pointer;
@@ -314,8 +281,8 @@ nav a {
   text-decoration: inherit;
   display: inline-block;
 }
-.left:before  { content: "\f022"; }
-.right:before { content: "\f023"; }
+.left:before  { content: "❮"; }
+.right:before { content: "❯"; }
 
 #settings {
   margin: 0 0 1em;
@@ -344,6 +311,17 @@ nav a {
   overflow: hidden;
 }
 
+#replay #replaydata {
+  width: 85%;
+  height: 50%;
+  font-family: 'Lucida Console';
+  font-size: 0.5em;
+  word-break:break-all;
+  background-color: #000;
+  color: #bfb;
+  margin: 1rem auto;
+  display: block;
+}
 /* Special Menus */
 #go {
   background: none;
