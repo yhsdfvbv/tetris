@@ -768,6 +768,7 @@ function init(gt, params) {
   //TODO Check if needed.
   piece.shiftDir = 0;
   piece.shiftReleased = true;
+  piece.dead = true;
 
   toGreyRow = 21;
   frame = 0;
@@ -811,7 +812,7 @@ function init(gt, params) {
           stack.grid[x][y] = 8;
       }
     }
-    stack.draw();
+    //stack.draw(); //resize
   }
 
   menu();
@@ -830,6 +831,7 @@ function init(gt, params) {
   
   statistics();
   statisticsStack();
+  resize();
 }
 
 function range(start, end, inc) {
