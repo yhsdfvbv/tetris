@@ -85,7 +85,7 @@ Stack.prototype.addPiece = function(tetro) {
 
   var scoreAdd = bigInt(level + 1);
   if (lineClear !== 0) {
-    console.log("C"+combo+" B"+b2b)
+    //console.log("C"+combo+" B"+b2b)
     if (isSpin) {
       scoreAdd = scoreAdd.mul(
         bigInt([800,1200,1600,2000][lineClear - 1])
@@ -121,8 +121,8 @@ Stack.prototype.addPiece = function(tetro) {
   if (gametype === 1)
     level = ~~(lines / 10);
   score = score.add(scoreAdd);
-  if (scoreAdd.cmp(0) > 0)
-    console.log(scoreAdd.toString());
+  //if (scoreAdd.cmp(0) > 0)
+    //console.log(scoreAdd.toString());
 
   statsFinesse += piece.finesse - finesse[piece.index][piece.pos][column];
   piecesSet++; // NOTE Stats

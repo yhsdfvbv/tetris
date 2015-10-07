@@ -8,6 +8,16 @@ the game so you know why some things are done a certain way.
 */
 'use strict';
 
+// boom.
+function ObjectClone(obj) {
+  var copy = (obj instanceof Array) ? [] : {};
+  for (var attr in obj) {
+    if (!obj.hasOwnProperty(attr)) continue;
+    copy[attr] = (typeof obj[attr] == "object")?ObjectClone(obj[attr]):obj[attr];
+  }
+  return copy;
+};
+
 /**
  * Playfield.
  */
@@ -74,99 +84,159 @@ var nLayouts = 7, currLayout = -1 /* auto */;
  * Piece data
  */
 
-// NOTE y values are inverted since our matrix counts from top to bottom.
-var kickData = [
-  [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]],
-  [[0, 0], [1, 0], [1, 1], [0, -2], [1, -2]],
-  [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]],
-  [[0, 0], [-1, 0], [-1, 1], [0, -2], [-1, -2]]
-];
-var kickDataI = [
-  [[0, 0], [-1, 0], [2, 0], [-1, 0], [2, 0]],
-  [[-1, 0], [0, 0], [0, 0], [0, -1], [0, 2]],
-  [[-1, -1], [1, -1], [-2, -1], [1, 0], [-2, 0]],
-  [[0, -1], [0, -1], [0, -1], [0, 1], [0, -2]]
-];
-// TODO get rid of this lol.
-var kickDataO = [
-  [[0, 0]],
-  [[0, 0]],
-  [[0, 0]],
-  [[0, 0]]
-];
+// [r][x][y]
+var TetroI = [
+  [[0,1,0,0],[0,1,0,0],[0,1,0,0],[0,1,0,0]],
+  [[0,0,0,0],[0,0,0,0],[1,1,1,1],[0,0,0,0]],
+  [[0,0,1,0],[0,0,1,0],[0,0,1,0],[0,0,1,0]],
+  [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]]];
+var TetroJ = [
+  [[2,2,0,0],[0,2,0,0],[0,2,0,0],[0,0,0,0]],
+  [[0,0,0,0],[2,2,2,0],[2,0,0,0],[0,0,0,0]],
+  [[0,2,0,0],[0,2,0,0],[0,2,2,0],[0,0,0,0]],
+  [[0,0,2,0],[2,2,2,0],[0,0,0,0],[0,0,0,0]]];
+var TetroL = [
+  [[0,3,0,0],[0,3,0,0],[3,3,0,0],[0,0,0,0]],
+  [[0,0,0,0],[3,3,3,0],[0,0,3,0],[0,0,0,0]],
+  [[0,3,3,0],[0,3,0,0],[0,3,0,0],[0,0,0,0]],
+  [[3,0,0,0],[3,3,3,0],[0,0,0,0],[0,0,0,0]]];
+var TetroO = [
+  [[0,0,0,0],[4,4,0,0],[4,4,0,0],[0,0,0,0]],
+  [[0,0,0,0],[4,4,0,0],[4,4,0,0],[0,0,0,0]],
+  [[0,0,0,0],[4,4,0,0],[4,4,0,0],[0,0,0,0]],
+  [[0,0,0,0],[4,4,0,0],[4,4,0,0],[0,0,0,0]]];
+var TetroS = [
+  [[0,5,0,0],[5,5,0,0],[5,0,0,0],[0,0,0,0]],
+  [[0,0,0,0],[5,5,0,0],[0,5,5,0],[0,0,0,0]],
+  [[0,0,5,0],[0,5,5,0],[0,5,0,0],[0,0,0,0]],
+  [[5,5,0,0],[0,5,5,0],[0,0,0,0],[0,0,0,0]]];
+var TetroT = [
+  [[0,6,0,0],[6,6,0,0],[0,6,0,0],[0,0,0,0]],
+  [[0,0,0,0],[6,6,6,0],[0,6,0,0],[0,0,0,0]],
+  [[0,6,0,0],[0,6,6,0],[0,6,0,0],[0,0,0,0]],
+  [[0,6,0,0],[6,6,6,0],[0,0,0,0],[0,0,0,0]]];
+var TetroZ = [
+  [[7,0,0,0],[7,7,0,0],[0,7,0,0],[0,0,0,0]],
+  [[0,0,0,0],[0,7,7,0],[7,7,0,0],[0,0,0,0]],
+  [[0,7,0,0],[0,7,7,0],[0,0,7,0],[0,0,0,0]],
+  [[0,7,7,0],[7,7,0,0],[0,0,0,0],[0,0,0,0]]];
+var WKTableSRSI_R = [
+  [[ 0, 0],[-2, 0],[+1, 0],[-2,+1],[+1,-2]],
+  [[ 0, 0],[-1, 0],[+2, 0],[-1,-2],[+2,+1]],
+  [[ 0, 0],[+2, 0],[-1, 0],[+2,-1],[-1,+2]],
+  [[ 0, 0],[+1, 0],[-2, 0],[+1,+2],[-2,-1]]];
+var WKTableSRSI_L = [
+  [[ 0, 0],[-1, 0],[+2, 0],[-1,-2],[+2,+1]],
+  [[ 0, 0],[+2, 0],[-1, 0],[+2,-1],[-1,+2]],
+  [[ 0, 0],[+1, 0],[-2, 0],[+1,+2],[-2,-1]],
+  [[ 0, 0],[-2, 0],[+1, 0],[-2,+1],[+1,-2]]];
+var WKTableSRSI_2 = [
+  [[ 0, 0],[-1, 0],[-2, 0],[+1, 0],[+2, 0],[ 0,+1]],
+  [[ 0, 0],[ 0,+1],[ 0,+2],[ 0,-1],[ 0,-2],[-1, 0]],
+  [[ 0, 0],[+1, 0],[+2, 0],[-1, 0],[-2, 0],[ 0,-1]],
+  [[ 0, 0],[ 0,+1],[ 0,+2],[ 0,-1],[ 0,-2],[+1, 0]]];
+var WKTableSRSX_R = [
+  [[ 0, 0],[-1, 0],[-1,-1],[ 0,+2],[-1,+2]],
+  [[ 0, 0],[+1, 0],[+1,+1],[ 0,-2],[+1,-2]],
+  [[ 0, 0],[+1, 0],[+1,-1],[ 0,+2],[+1,+2]],
+  [[ 0, 0],[-1, 0],[-1,+1],[ 0,-2],[-1,-2]]];
+var WKTableSRSX_L = [
+  [[ 0, 0],[+1, 0],[+1,-1],[ 0,+2],[+1,+2]],
+  [[ 0, 0],[+1, 0],[+1,+1],[ 0,-2],[+1,-2]],
+  [[ 0, 0],[-1, 0],[-1,-1],[ 0,+2],[-1,+2]],
+  [[ 0, 0],[-1, 0],[-1,+1],[ 0,-2],[-1,-2]]];
+var WKTableSRSX_2 = [
+  [[ 0, 0],[+1, 0],[+2, 0],[+1,+1],[+2,+1],[-1, 0],[-2, 0],[-1,+1],[-2,+1],[ 0,-1],[+3, 0],[-3, 0]],
+  [[ 0, 0],[ 0,+1],[ 0,+2],[-1,+1],[-1,+2],[ 0,-1],[ 0,-2],[-1,-1],[-1,-2],[+1, 0],[ 0,+3],[ 0,-3]],
+  [[ 0, 0],[-1, 0],[-2, 0],[-1,-1],[-2,-1],[+1, 0],[+2, 0],[+1,-1],[+2,-1],[ 0,+1],[-3, 0],[+3, 0]],
+  [[ 0, 0],[ 0,+1],[ 0,+2],[+1,+1],[+1,+2],[ 0,-1],[ 0,-2],[+1,-1],[+1,-2],[-1, 0],[ 0,+3],[ 0,-3]]];
+var WKTableSRSI = [WKTableSRSI_R,WKTableSRSI_L,WKTableSRSI_2];
+var WKTableSRSX = [WKTableSRSX_R,WKTableSRSX_L,WKTableSRSX_2];
+var WKTableSRS = [WKTableSRSI,WKTableSRSX,WKTableSRSX,WKTableSRSX,WKTableSRSX,WKTableSRSX,WKTableSRSX];
+
+var WKTableCultris = [[ 0, 0],[-1, 0],[+1, 0],[ 0,+1],[-1,+1],[+1,+1],[-2, 0],[+2, 0],[ 0,-1]];
+
+var OffsetSRS = [
+  [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]]];
+var OffsetARS = [
+  [[ 0, 0],[ 0, 0],[ 0,-1],[+1, 0]],
+  [[ 0,+1],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0,+1],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0,+1],[ 0,+1],[ 0,+1],[ 0,+1]],
+  [[ 0,+1],[-1, 0],[ 0, 0],[ 0, 0]],
+  [[ 0,+1],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0,+1],[ 0, 0],[ 0, 0],[+1, 0]]];
+
+//x, y, r
+var InitInfoSRS = [[0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0]];
+var InitInfoARS = [[0, 0, 0],[ 0,-1, 2],[ 0,-1, 2],[ 0, 0, 0],[ 0, 0, 0],[ 0,-1, 2],[ 0, 0, 0]];
+
+//SRS, C2, ARS
+var RotSys = [
+  {
+    initinfo: InitInfoSRS,
+    offset: OffsetSRS
+  },
+  {
+    initinfo: InitInfoSRS,
+    offset: OffsetSRS
+  },
+  {
+    initinfo: InitInfoARS,
+    offset: OffsetARS
+  }
+]
 
 // Define shapes and spawns.
 var PieceI = {
   index: 0,
-  x: 2,
-  y: -1,
-  kickData: kickDataI,
-  tetro: [
-    [0, 0, 0, 0, 0],
-    [0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0]]
+  x: 3,
+  y: 0,
+  tetro: TetroI
 };
 var PieceJ = {
   index: 1,
   x: 3,
   y: 0,
-  kickData: kickData,
-  tetro: [
-    [2, 2, 0],
-    [0, 2, 0],
-    [0, 2, 0]]
+  tetro: TetroJ
 };
 var PieceL = {
   index: 2,
   x: 3,
   y: 0,
-  kickData: kickData,
-  tetro: [
-    [0, 3, 0],
-    [0, 3, 0],
-    [3, 3, 0]]
+  tetro: TetroL
 };
 var PieceO = {
   index: 3,
-  x: 4,
+  x: 3,
   y: 0,
-  kickData: kickDataO,
-  tetro: [
-    [4, 4],
-    [4, 4]]
+  tetro: TetroO
 };
 var PieceS = {
   index: 4,
   x: 3,
   y: 0,
-  kickData: kickData,
-  tetro: [
-    [0, 5, 0],
-    [5, 5, 0],
-    [5, 0, 0]]
+  tetro: TetroS
 };
 var PieceT = {
   index: 5,
   x: 3,
   y: 0,
-  kickData: kickData,
-  tetro: [
-    [0, 6, 0],
-    [6, 6, 0],
-    [0, 6, 0]]
+  tetro: TetroT
 };
 var PieceZ = {
   index: 6,
   x: 3,
   y: 0,
-  kickData: kickData,
-  tetro: [
-    [7, 0, 0],
-    [7, 7, 0],
-    [0, 7, 0]]
+  tetro: TetroZ
 };
+
 var pieces = [PieceI, PieceJ, PieceL, PieceO, PieceS, PieceT, PieceZ];
 
 // Finesse data
@@ -241,6 +311,7 @@ var mySettings = {
   Gravity: 0,
   'Soft Drop': 6,
   'Lock Delay': 30,
+  RotSys: 0,
   Size: 0,
   Sound: 0,
   Volume: 100,
@@ -250,14 +321,15 @@ var mySettings = {
   Outline: 1
 };
 
-var settings = mySettings; // used in current game; by reference; replaced for replay
+var settings = mySettings; // initialized by reference; replaced when game starts and replay
 
 var settingName = {
   DAS: "DAS 加速延迟",
   ARR: "ARR 重复延迟",
-  Gravity: "Gravity<br>下落速度",
-  'Soft Drop': "Soft Drop<br>软降速度",
-  'Lock Delay': "Lock Delay<br>锁定延迟",
+  Gravity: "Gravity<br />下落速度",
+  'Soft Drop': "Soft Drop<br />软降速度",
+  'Lock Delay': "Lock Delay<br />锁定延迟",
+  RotSys: "Rotation<br />旋转系统",
   Size: "Size 大小",
   Sound: "Sound 声音",
   Volume: "Volume 音量",
@@ -288,6 +360,7 @@ var setting = {
     return array;
   })(),
   'Lock Delay': range(0,101),
+  RotSys: ['Super', 'C2', 'ArikaEasy'],
   Size: ['Auto', 'Small', 'Medium', 'Large'],
   Sound: ['Off', 'On'],
   Volume: range(0, 101),
@@ -696,7 +769,7 @@ function resize() {
     piece.draw();
     stack.draw();
     preview.draw();
-    if (hold.piece) {
+    if (hold.piece !== void 0) {
       hold.draw();
     }
   } catch(e) {
@@ -741,11 +814,11 @@ function init(gt, params) {
     }
     gametype = replay.gametype;
     gameparams = replay.gameparams;
-    settings = replay.settings;
+    settings = replay.settings; // by reference
     rng.seed = replay.seed;
   } else {
     watchingReplay = false;
-    settings = mySettings; // by reference
+    settings = ObjectClone(mySettings); // by value: prevent from being modified when paused
     gametype = gt;
     gameparams = params || {};
     
@@ -1298,8 +1371,7 @@ function update() {
     piece.rotate(1);
     piece.finesse++;
   } else if (flags.rot180 & keysDown && !(lastKeys & flags.rot180)) {
-    piece.rotate(1);
-    piece.rotate(1);
+    piece.rotate(2);
     piece.finesse++;
   }
 

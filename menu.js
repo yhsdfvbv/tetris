@@ -176,7 +176,12 @@ function loadLocalData() {
     localStorage.removeItem('binds');
   }
   if (localStorage['settings']) {
-    mySettings = JSON.parse(localStorage.getItem('settings'));
+    var storedSettings = JSON.parse(localStorage.getItem('settings'));
+    for (var i in mySettings) {
+      if (i in storedSettings) {
+        mySettings[i] = storedSettings[i];
+      }
+    }
   }
 }
 
