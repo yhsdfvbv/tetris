@@ -22,6 +22,7 @@ var stats = document.getElementById('stats');
 var statsTime = document.getElementById('time');
 var statsLines = document.getElementById('line');
 var statsPiece = document.getElementById('piece');
+var statsScore = document.getElementById('score');
 var h3 = document.getElementsByTagName('h3');
 var set = document.getElementById('settings');
 var leaderboard = document.getElementById('leaderboard');
@@ -428,8 +429,14 @@ var gameparams;
 // var dirtyHold, dirtyActive, dirtyStack, dirtyPreview;
 var lastX, lastY, lastPos, lastLockDelay, landed;
 
+// Scoreing related status
+var b2b;
+var combo;
+var level;
+
 // Stats
 var lines;
+var score;
 var statsFinesse;
 var piecesSet;
 var startTime;
@@ -780,8 +787,12 @@ function init(gt, params) {
   preview.init()
   //preview.draw();
 
+  b2b = 0;
+  combo = 0;
+  level = 0;
   statsFinesse = 0;
   lines = 0;
+  score = bigInt(0);
   piecesSet = 0;
 
   clear(stackCtx);
@@ -931,6 +942,14 @@ function statisticsStack() {
   else{
     statsLines.innerHTML = lines;
   }
+  
+  var strsplit = score.toString().split("");
+  var spacetoggle = 0;
+  for (var i = strsplit.length - 1 - 3; i >= 0; i -= 3) {
+    strsplit[i] += spacetoggle===0?"&#8239;":"&#8202;";
+    spacetoggle ^= 1;
+  }
+  statsScore.innerHTML = strsplit.join("");
 }
 // ========================== View ============================================
 

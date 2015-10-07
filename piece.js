@@ -50,7 +50,6 @@ Piece.prototype.new = function(index) {
   if (settings.Gravity !== 0) {
     this.gravity = gravityArr[settings.Gravity - 1];
   } else if (gametype === 1) { //Marathon
-    var level = ~~((lines)/10);
     if (level < 20) {
       this.gravity = [
         1/60, 1/30, 1/25, 1/20, 1/15, 1/12, 1/10, 1/8,  1/6,  1/6,
@@ -67,9 +66,11 @@ Piece.prototype.new = function(index) {
   
   // Check for blockout.
   if (!this.moveValid(0, 0, this.tetro)) {
+    this.dead = true;
     gameState = 9;
     msg.innerHTML = 'BLOCK OUT!';
     menu(3);
+    return;
   }
   
   piece.checkFall(); //real 20G !
