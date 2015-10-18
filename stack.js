@@ -120,7 +120,7 @@ Stack.prototype.addPiece = function(tetro) {
   lines += lineClear;
   if (gametype === 1)
     level = ~~(lines / 10);
-  score = score.add(scoreAdd);
+  score = score.add(scoreAdd.mul(bigInt(16).pow(allclear)));
   
   var pc = true;
   for (var x = 0; x < 10; x++)

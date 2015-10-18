@@ -1626,18 +1626,34 @@ function gameLoop() {
 
 var playername=void 0;
 
-function trysubmitscore() {
-  if(watchingReplay)
-    return;
+function requireplayername(){
   if(playername===void 0)
     playername=prompt("Enter your name for leaderboard: 请输入上榜大名：","");
   if(playername===null)
     playername="anonymous";
   if(playername==="")
     playername="unnamed";
+}
 
+function trysubmitscore() {
+  if(watchingReplay)
+    return;
   var obj={};
   var time = scoreTime;
+  
+  if(gametype===0) // 40L
+    obj.mode="sprint";
+  else if(gametype===3) // dig
+    obj.mode="dig" + (gameparams&&gameparams.digOffset?gameparams.digOffset:"");
+  else if(gametype===4) // dig race
+    obj.mode="digrace";
+  else if(gametype===1) // marathon
+    obj.mode="marathon";
+  else if(gametype===5) // score attack
+    obj.mode="score";
+  else
+    return;
+  
   if(
     (gametype===0 && gameState===1)||
     (gametype===3 && gameState===9)||
@@ -1645,23 +1661,14 @@ function trysubmitscore() {
     (gametype===1 && settings.Gravity === 0)||
     (gametype===5)
   ){
-    if(gametype===0 && gameState===1) // 40L
-      obj.mode="sprint";
-    else if(gametype===3 && gameState===9) // dig
-      obj.mode="dig" + (gameparams&&gameparams.digOffset?gameparams.digOffset:"");
-    else if(gametype===4 && gameState===1) // dig race
-      obj.mode="digrace";
-    else if(gametype===1 && settings.Gravity === 0) // marathon
-      obj.mode="marathon";
-    else if(gametype===5) // score attack
-      obj.mode="score";
-    
-    
+    requireplayername();
     obj.lines=lines;
     obj.time=time;
     obj.score=score.toString();
     obj.name=playername;
     
+    submitscore(obj);
+  }else{
     submitscore(obj);
   }
 }
