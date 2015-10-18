@@ -37,6 +37,7 @@ var h3 = document.getElementsByTagName('h3');
 var set = document.getElementById('settings');
 var leaderboard = document.getElementById('leaderboard');
 var replaydata = document.getElementById('replaydata');
+var hidescroll = document.getElementById('hidescroll');
 
 // Get canvases and contexts
 var holdCanvas = document.getElementById('hold');
@@ -370,26 +371,26 @@ var setting = {
   Outline: ['Off', 'On']
 };
 var arrRowGen = {
-      'simple':
-      function(arr,offset,range,width) {
-        var holex = ~~(rng.next()*range)+offset;
-        for(var x = 0; x < width; x++){
-          arr[holex + x] = 0;
-        }
-      },
-      'simplemessy':
-      function(arr,ratio) {
-        var hashole = false;
-        for(var x = 0; x < 10; x++){
-          if(rng.next()>=ratio) {
-            hashole=true;
-            arr[x] = 0;
-          }
-        }
-        if(hashole===false){
-          arr[~~(rng.next()*10)] = 0;
-        }
-      },
+  'simple':
+  function(arr,offset,range,width) {
+    var holex = ~~(rng.next()*range)+offset;
+    for(var x = 0; x < width; x++){
+      arr[holex + x] = 0;
+    }
+  },
+  'simplemessy':
+  function(arr,ratio) {
+    var hashole = false;
+    for(var x = 0; x < 10; x++){
+      if(rng.next()>=ratio) {
+        hashole=true;
+        arr[x] = 0;
+      }
+    }
+    if(hashole===false){
+      arr[~~(rng.next()*10)] = 0;
+    }
+  },
 };
 
 var arrStages = [
@@ -506,6 +507,7 @@ var lastX, lastY, lastPos, lastLockDelay, landed;
 var b2b;
 var combo;
 var level;
+var allclear;
 
 // Stats
 var lines;
@@ -837,8 +839,12 @@ function init(gt, params) {
   if(gametype === void 0) //sometimes happens.....
     gametype = 0;
 
-  if(gametype === 0)
+  if(gametype === 0) // sprint
     lineLimit = 40;
+  else if(gametype === 5) // score attack
+    lineLimit = 200;
+  else
+    lineLimit = 0;
 
   //Reset
   column = 0;
@@ -863,6 +869,7 @@ function init(gt, params) {
   b2b = 0;
   combo = 0;
   level = 0;
+  allclear = 0;
   statsFinesse = 0;
   lines = 0;
   score = bigInt(0);
@@ -979,6 +986,16 @@ var rng = new (function() {
   }
 })();
 
+function scorestring(s, n){
+  var strsplit = s.split("");
+  var spacetoggle = 0;
+  for (var i = strsplit.length - 1 - 3; i >= 0; i -= 3) {
+    strsplit[i] += (spacetoggle === n-1 ?" ":"&#8239;");
+    spacetoggle = (spacetoggle + 1) % n;
+  }
+  return strsplit.join("");
+}
+
 /**
  * Draws the stats next to the tetrion.
  */
@@ -997,7 +1014,7 @@ function statistics() {
 function statisticsStack() {
   statsPiece.innerHTML = piecesSet;
 
-  if(gametype === 0)
+  if(gametype === 0 || gametype === 5)
     statsLines.innerHTML = lineLimit - lines;
   else if(gametype === 1)
     statsLines.innerHTML = lines;
@@ -1016,13 +1033,7 @@ function statisticsStack() {
     statsLines.innerHTML = lines;
   }
   
-  var strsplit = score.toString().split("");
-  var spacetoggle = 0;
-  for (var i = strsplit.length - 1 - 3; i >= 0; i -= 3) {
-    strsplit[i] += spacetoggle===0?"&#8239;":"&#8202;";
-    spacetoggle ^= 1;
-  }
-  statsScore.innerHTML = strsplit.join("");
+  statsScore.innerHTML = scorestring(score.toString(), 2);
 }
 // ========================== View ============================================
 
@@ -1435,17 +1446,17 @@ function update() {
       var ranks= [
         {t:300, u:"再见", b:"BYE."},
         {t:240, u:"终于……", b:"Finally..."},
-        {t:210, u:"一个能打的都没有", b:"Too slow."},
+        {t:210, u:"<small>你一定是在逗我</small>", b:"Too slow."},
         {t:180, u:"渣渣", b:"Well..."},
-        {t:160, u:"速度速度加快", b:"Go faster."},
-        {t:140, u:"还能再给力点么", b:"Any more?"},
-        {t:120, u:"2分钟太难了", b:"Can't beat 2 min."},
-        {t:100, u:"比乌龟快点了", b:"Wins turtles."},
+        {t:160, u:"<small>速度速度加快</small>", b:"Go faster."},
+        {t:140, u:"<small>还能再给力点么</small>", b:"Any more?"},
+        {t:120, u:"2分钟", b:"Beat 2 min."},
+        {t:100, u:"新世界", b:"New world."},
         {t: 90, u:"超越秒针", b:"1 drop/sec!"},
         {t: 80, u:"恭喜入门", b:"Not bad."},
         {t: 73, u:"渐入佳境", b:"Going deeper."},
         {t: 69, u:"就差10秒", b:"10 sec faster."},
-        {t: 62, u:"还有几秒", b:"Approaching."},
+        {t: 63, u:"还有几秒", b:"Approaching."},
         {t: 60, u:"最后一点", b:"Almost there!"},
         {t: 56, u:"1分钟就够了", b:"1-min Sprinter!"},
         {t: 53, u:"并不是沙包", b:"No longer rookie."},
@@ -1488,6 +1499,13 @@ function update() {
     }
   } else if (gametype === 1) { // Marathon
     if (settings.Gravity !== 0 && lines>=200) { // not Auto, limit to 200 Lines
+      gameState = 1;
+      msg.innerHTML = 'GREAT!';
+      piece.dead = true;
+      menu(3);
+    }
+  } else if (gametype === 5) { // Score Attack
+    if (lines>=lineLimit) { // not Auto, limit to 200 Lines
       gameState = 1;
       msg.innerHTML = 'GREAT!';
       piece.dead = true;
@@ -1606,34 +1624,45 @@ function gameLoop() {
   }
 }
 
+var playername=void 0;
+
 function trysubmitscore() {
   if(watchingReplay)
     return;
+  if(playername===void 0)
+    playername=prompt("Enter your name for leaderboard: 请输入上榜大名：","");
+  if(playername===null)
+    playername="anonymous";
+  if(playername==="")
+    playername="unnamed";
+
+  var obj={};
   var time = scoreTime;
-  if(gametype===0 && gameState===1) // 40L
-    submitscore({
-      "mode":"sprint",
-      "score":lines,
-      "time":time
-    });
-  else if(gametype===3 && gameState===9) // dig
-    submitscore({
-      "mode":"dig" + (gameparams&&gameparams.digOffset?gameparams.digOffset:""),
-      "score":lines,
-      "time":time
-    });
-  else if(gametype===4 && gameState===1) // dig race
-    submitscore({
-      "mode":"digrace",
-      "score":lines,
-      "time":time
-    });
-  else if(gametype===1 && settings.Gravity === 0) { // marathon
-    submitscore({
-      "mode":"marathon",
-      "score":lines,
-      "time":time
-    });
+  if(
+    (gametype===0 && gameState===1)||
+    (gametype===3 && gameState===9)||
+    (gametype===4 && gameState===1)||
+    (gametype===1 && settings.Gravity === 0)||
+    (gametype===5)
+  ){
+    if(gametype===0 && gameState===1) // 40L
+      obj.mode="sprint";
+    else if(gametype===3 && gameState===9) // dig
+      obj.mode="dig" + (gameparams&&gameparams.digOffset?gameparams.digOffset:"");
+    else if(gametype===4 && gameState===1) // dig race
+      obj.mode="digrace";
+    else if(gametype===1 && settings.Gravity === 0) // marathon
+      obj.mode="marathon";
+    else if(gametype===5) // score attack
+      obj.mode="score";
+    
+    
+    obj.lines=lines;
+    obj.time=time;
+    obj.score=score.toString();
+    obj.name=playername;
+    
+    submitscore(obj);
   }
 }
 

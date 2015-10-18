@@ -121,6 +121,17 @@ Stack.prototype.addPiece = function(tetro) {
   if (gametype === 1)
     level = ~~(lines / 10);
   score = score.add(scoreAdd);
+  
+  var pc = true;
+  for (var x = 0; x < 10; x++)
+    for (var y = 0; y < 22; y++)
+      if (this.grid[x][y])
+        pc = false;
+  if (pc) {
+    score = score.add(bigInt(1000000).mul(bigInt(16).pow(allclear)));
+    allclear ++;
+  }
+  
   //if (scoreAdd.cmp(0) > 0)
     //console.log(scoreAdd.toString());
 
