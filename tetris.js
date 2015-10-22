@@ -121,6 +121,15 @@ var TetroZ = [
   [[0,0,0,0],[0,7,7,0],[7,7,0,0],[0,0,0,0]],
   [[0,7,0,0],[0,7,7,0],[0,0,7,0],[0,0,0,0]],
   [[0,7,7,0],[7,7,0,0],[0,0,0,0],[0,0,0,0]]];
+// [r][MINX MINY MAXX MAXY]
+var RectI = [[0,1,4,2],[1,0,2,4],[0,2,4,3],[2,0,3,4]]; // hacked for next display
+var RectJ = [[0,0,3,2],[1,0,3,3],[0,1,3,3],[0,0,2,3]];
+var RectL = [[0,0,3,2],[1,0,3,3],[0,1,3,3],[0,0,2,3]];
+var RectO = [[1,0,3,2],[1,0,3,2],[1,0,3,2],[1,0,3,2]];
+var RectS = [[0,0,3,2],[1,0,3,3],[0,1,3,3],[0,0,2,3]];
+var RectT = [[0,0,3,2],[1,0,3,3],[0,1,3,3],[0,0,2,3]];
+var RectZ = [[0,0,3,2],[1,0,3,3],[0,1,3,3],[0,0,2,3]];
+
 var WKTableSRSI_R = [
   [[ 0, 0],[-2, 0],[+1, 0],[-2,+1],[+1,-2]],
   [[ 0, 0],[-1, 0],[+2, 0],[-1,-2],[+2,+1]],
@@ -157,6 +166,10 @@ var WKTableSRS = [WKTableSRSI,WKTableSRSX,WKTableSRSX,WKTableSRSX,WKTableSRSX,WK
 
 var WKTableCultris = [[ 0, 0],[-1, 0],[+1, 0],[ 0,+1],[-1,+1],[+1,+1],[-2, 0],[+2, 0],[ 0,-1]];
 
+var WKTableDRS_R = [[ 0, 0],[+1, 0],[-1, 0],[ 0,+1],[+1,+1],[-1,+1],[ 0,-1]];
+var WKTableDRS_L = [[ 0, 0],[-1, 0],[+1, 0],[ 0,+1],[-1,+1],[+1,+1],[ 0,-1]];
+var WKTableDRS = [WKTableDRS_R,WKTableDRS_L,WKTableDRS_L];
+
 var OffsetSRS = [
   [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
   [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
@@ -173,12 +186,29 @@ var OffsetARS = [
   [[ 0,+1],[-1, 0],[ 0, 0],[ 0, 0]],
   [[ 0,+1],[ 0, 0],[ 0, 0],[ 0, 0]],
   [[ 0,+1],[ 0, 0],[ 0, 0],[+1, 0]]];
-
+var OffsetDRS = [
+  [[ 0,+1],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0,+1],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0,+1],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0,+1],[ 0,+1],[ 0,+1],[ 0,+1]],
+  [[ 0,+1],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0,+1],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0,+1],[ 0, 0],[ 0, 0],[ 0, 0]]];
+var OffsetQRS = [
+  [[ 0, 0],[ 0, 0],[ 0,-1],[+1, 0]],
+  [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0, 0],[ 0, 0],[ 0,-1],[+1, 0]],
+  [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0, 0],[ 0, 0],[ 0,-1],[+1, 0]]];
 //x, y, r
 var InitInfoSRS = [[0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0]];
-var InitInfoARS = [[0, 0, 0],[ 0,-1, 2],[ 0,-1, 2],[ 0, 0, 0],[ 0, 0, 0],[ 0,-1, 2],[ 0, 0, 0]];
+var InitInfoARS = [[0, 0, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0,+1, 0],[ 0,+1, 0],[ 0, 0, 2],[ 0,+1, 0]];
+var InitInfoDRS = [[0,+1, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0,+1, 0],[ 0,+1, 0],[ 0, 0, 2],[ 0,+1, 0]];
+var InitInfoQRS = [[0, 0, 0],[ 0, 0, 1],[ 0, 0, 3],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 2],[ 0, 0, 0]];
 
-//SRS, C2, ARS
+//SRS, C2, ARS, QRS, DRS
 var RotSys = [
   {
     initinfo: InitInfoSRS,
@@ -191,51 +221,52 @@ var RotSys = [
   {
     initinfo: InitInfoARS,
     offset: OffsetARS
+  },
+  {
+    initinfo: InitInfoDRS,
+    offset: OffsetDRS
+  },
+  {
+    initinfo: InitInfoQRS,
+    offset: OffsetQRS
   }
-]
+];
 
 // Define shapes and spawns.
 var PieceI = {
   index: 0,
-  x: 3,
-  y: 0,
-  tetro: TetroI
+  tetro: TetroI,
+  rect: RectI
 };
 var PieceJ = {
   index: 1,
-  x: 3,
-  y: 0,
-  tetro: TetroJ
+  tetro: TetroJ,
+  rect: RectJ
 };
 var PieceL = {
   index: 2,
-  x: 3,
-  y: 0,
-  tetro: TetroL
+  tetro: TetroL,
+  rect: RectL
 };
 var PieceO = {
   index: 3,
-  x: 3,
-  y: 0,
-  tetro: TetroO
+  tetro: TetroO,
+  rect: RectO
 };
 var PieceS = {
   index: 4,
-  x: 3,
-  y: 0,
-  tetro: TetroS
+  tetro: TetroS,
+  rect: RectS
 };
 var PieceT = {
   index: 5,
-  x: 3,
-  y: 0,
-  tetro: TetroT
+  tetro: TetroT,
+  rect: RectT
 };
 var PieceZ = {
   index: 6,
-  x: 3,
-  y: 0,
-  tetro: TetroZ
+  tetro: TetroZ,
+  rect: RectZ
 };
 
 var pieces = [PieceI, PieceJ, PieceL, PieceO, PieceS, PieceT, PieceZ];
@@ -361,7 +392,7 @@ var setting = {
     return array;
   })(),
   'Lock Delay': range(0,101),
-  RotSys: ['Super', 'C2', 'ArikaEasy'],
+  RotSys: ['Super', 'C2', 'ArikaEasy', 'DTET', 'QQHuopin'],
   Size: ['Auto', 'Small', 'Medium', 'Large'],
   Sound: ['Off', 'On'],
   Volume: range(0, 101),
@@ -381,7 +412,7 @@ var arrRowGen = {
   'simplemessy':
   function(arr,ratio) {
     var hashole = false;
-    for(var x = 0; x < 10; x++){
+    for(var x = 0; x < stack.width; x++){
       if(rng.next()>=ratio) {
         hashole=true;
         arr[x] = 0;
@@ -527,6 +558,8 @@ var binds = {
   pause: 27,
   moveLeft: 37,
   moveRight: 39,
+  moveLeft3: 0,
+  moveRight3: 0,
   moveDown: 40,
   hardDrop: 32,
   holdPiece: 67,
@@ -544,6 +577,8 @@ var flags = {
   rotRight: 32,
   rotLeft: 64,
   rot180: 128,
+  moveRight3: 256,
+  moveLeft3: 512,
 };
 
 function resize() {
@@ -588,7 +623,7 @@ function resize() {
   b.style.height = stackCanvas.height + 'px';
 
   holdCanvas.width = cellSize * 4;
-  holdCanvas.height = cellSize * 2;
+  holdCanvas.height = cellSize * 3;
   a.style.width = holdCanvas.width + 'px';
   a.style.height = holdCanvas.height + 'px';
 
@@ -607,21 +642,12 @@ function resize() {
 
   stats.style.width = a.style.width;
   for (var i = 0, len = h3.length; i < len; i++) {
-    h3[i].style.lineHeight = a.style.height;
+    h3[i].style.lineHeight = (cellSize * 2) + 'px';
     h3[i].style.fontSize = stats.style.fontSize;
   }
   
   // position of touch buttons
   {
-    /*
-    var tmpNode = document.createElement("div");
-    tmpNode.style.cssText = 
-      "width:1in;height:1in;position:absolute;left:0px;top:0px;z-index:-100;visibility:hidden";
-    document.body.appendChild(tmpNode);
-    var dpiX = parseInt(tmpNode.clientWidth);
-    var dpiY = parseInt(tmpNode.clientHeight);
-    tmpNode.parentNode.removeChild(tmpNode);
-    */
     var dpiX = 96;
     var dpiY = 96;
     var winW = window.innerWidth / dpiX;
@@ -856,10 +882,10 @@ function init(gt, params) {
   piece.shiftReleased = true;
   piece.dead = true;
 
-  toGreyRow = 21;
   frame = 0;
   lastPos = 'reset';
-  stack.new(10, 22);
+  stack.new(10, 20, 4);
+  toGreyRow = stack.height - 1;
   hold.piece = void 0;
   if (settings.Gravity === 0) gravity = gravityUnit;
 
@@ -879,6 +905,7 @@ function init(gt, params) {
   clear(activeCtx);
   clear(holdCtx);
 
+  digLines = [];
   if (gametype === 3) {
     frameLastRise = 0;
 
@@ -892,13 +919,12 @@ function init(gt, params) {
     //TODO make into function or own file.
     // harder digrace: checkerboard
 
-    digLines = [12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
+    digLines = range(stack.height - 10, stack.height);
 
     statsLines.innerHTML = 10;
-    statsLines.innerHTML = 10;
     var randomNums = [];
-    for (var y = 21; y > 11; y--) {
-      for (var x = 0; x < 10; x++) {
+    for (var y = stack.height - 1; y > stack.height - 10 - 1; y--) {
+      for (var x = 0; x < stack.width; x++) {
         if ((x+y)&1)
           stack.grid[x][y] = 8;
       }
@@ -1055,9 +1081,8 @@ function bg(ctx) {
  * Draws a pre-rendered mino.
  */
 function drawCell(x, y, color, ctx, darkness) {
-  x = x * cellSize;
-  x = ~~x;
-  y = ~~y * cellSize - 2 * cellSize;
+  x = Math.floor(x * cellSize);
+  y = Math.floor(y * cellSize);
   ctx.drawImage(spriteCanvas, color * cellSize, 0, cellSize, cellSize, x, y, cellSize, cellSize);
   if (darkness !== void 0) {
     //ctx.globalCompositeOperation = 'source-atop';
@@ -1256,6 +1281,10 @@ function keyUpDown(e) {
         keysDown |= flags.rotLeft;
       } else if (e.keyCode === binds.rot180) {
         keysDown |= flags.rot180;
+      } else if (e.keyCode === binds.moveLeft3) {
+        keysDown |= flags.moveLeft3;
+      } else if (e.keyCode === binds.moveRight3) {
+        keysDown |= flags.moveRight3;
       } else if (e.keyCode === binds.holdPiece) {
         keysDown |= flags.holdPiece;
       }
@@ -1276,6 +1305,10 @@ function keyUpDown(e) {
         keysDown ^= flags.rotLeft;
       } else if (e.keyCode === binds.rot180 && keysDown & flags.rot180) {
         keysDown ^= flags.rot180;
+      } else if (e.keyCode === binds.moveLeft3 && keysDown & flags.moveLeft3) {
+        keysDown ^= flags.moveLeft3;
+      } else if (e.keyCode === binds.moveRight3 && keysDown & flags.moveRight3) {
+        keysDown ^= flags.moveRight3;
       } else if (e.keyCode === binds.holdPiece && keysDown & flags.holdPiece) {
         keysDown ^= flags.holdPiece;
       }
@@ -1421,7 +1454,7 @@ function update() {
           idxRainbow = arrRainbow.length - 1;
         }
         colorUsed = arrRainbow[idxRainbow];
-        for(var x=0; x<10; x+=(flagAll===1?1:9)) {
+        for(var x=0; x<stack.width; x+=(flagAll===1?1:(stack.width-1))) {
           if(colorUsed===-1) {
             arrRow[x]=~~(rng.next()*8+1);
           } else {
@@ -1459,7 +1492,7 @@ function update() {
         {t: 63, u:"还有几秒", b:"Approaching."},
         {t: 60, u:"最后一点", b:"Almost there!"},
         {t: 56, u:"1分钟就够了", b:"1-min Sprinter!"},
-        {t: 53, u:"并不是沙包", b:"No longer rookie."},
+        {t: 53, u:"并不是沙包", b:"<small>No longer rookie.</small>"},
         {t: 50, u:"50不是梦", b:"Beat 50."},
         {t: 48, u:"每秒2块", b:"2 drops/sec!"},
         {t: 45, u:"很能打嘛", b:"u can tetris."},
@@ -1476,10 +1509,11 @@ function update() {
         {t: 24, u:"每秒4块", b:"4 drops/sec!"},
         {t: 23, u:"神兽", b:"Alien."},
         {t: 22, u:"神兽他妈", b:"Beats Alien."},
-        {t: 21, u:"拯救地球", b:"Save the world?"},
+        {t: 21, u:"拯救地球", b:"<small>Save the world?</small>"},
         {t: 20, u:"你确定？", b:"r u sure?"},
         {t: 19, u:"5块每秒", b:"5pps"},
-        {t: 16.66, u:"…………", b:"..."},
+        {t: 18, u:"……", b:"..."},
+        {t: 16.66, u:"…………", b:"......"},
         {t: 14.28, u:"6块每秒", b:"6pps"},
         {t: 12.50, u:"7块每秒", b:"7pps"},
         {t: 11.11, u:"8块每秒", b:"8pps"},
@@ -1600,14 +1634,14 @@ function gameLoop() {
         lastKeys = keysDown;
       }
     } else if (gameState === 9 || gameState === 1) {
-      if (toGreyRow >= 2) {
+      if (toGreyRow >= stack.hiddenHeight) {
         /**
          * Fade to grey animation played when player loses.
          */
-        if (toGreyRow === 21)
+        if (toGreyRow === stack.height - 1)
           clear(activeCtx);
         if (frame % 2) {
-          for (var x = 0; x < 10; x++) {
+          for (var x = 0; x < stack.width; x++) {
              /* farter */ //WTF gamestate-1
             if (stack.grid[x][toGreyRow])
               stack.grid[x][toGreyRow] =

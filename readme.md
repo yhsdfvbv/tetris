@@ -1,7 +1,5 @@
 #tetr.js
 
-[Have a try](http://farter.tk/tetr.js) in your browser.
-
 ### Default Controls:
 
 - **Rotate Left:** Z

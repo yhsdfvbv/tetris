@@ -4,11 +4,14 @@ function Stack() {
 /**
  * Creates a matrix for the playfield.
  */
-Stack.prototype.new = function(x, y) {
+Stack.prototype.new = function(x, y, hy) {
   var cells = new Array(x);
   for (var i = 0; i < x; i++) {
-    cells[i] = new Array(y);
+    cells[i] = new Array(hy + y);
   }
+  this.width = x;
+  this.height = hy + y;
+  this.hiddenHeight = hy;
   this.grid = cells;
 }
 /**
@@ -33,7 +36,7 @@ Stack.prototype.addPiece = function(tetro) {
   var valid = false;
   for (var x = 0; x < tetro.length; x++) {
     for (var y = 0; y < tetro[x].length; y++) {
-      if (tetro[x][y]) {
+      if (tetro[x][y] && y + piece.y >= 0) {
         this.grid[x + piece.x][y + piece.y] = tetro[x][y];
         // Get column for finesse
         if (!once || x + piece.x < column) {
@@ -45,7 +48,7 @@ Stack.prototype.addPiece = function(tetro) {
           range.push(y + piece.y);
           // This checks if any cell is in the play field. If there
           //  isn't any this is called a lock out and the game ends.
-          if (y + piece.y > 1) valid = true;
+          if (y + piece.y >= this.hiddenHeight) valid = true;
         }
       }
     }
@@ -63,22 +66,27 @@ Stack.prototype.addPiece = function(tetro) {
   range = range.sort(function(a,b){return a-b});
   for (var row = range[0], len = row + range.length; row < len; row++) {
     var count = 0;
-    for (var x = 0; x < 10; x++) {
+    for (var x = 0; x < this.width; x++) {
       if (this.grid[x][row]) count++;
     }
     // Clear the line. This basically just moves down the stack.
     // TODO Ponder during the day and see if there is a more elegant solution.
-    if (count === 10) {
+    if (count === this.width) {
       lineClear++; // NOTE stats
-      if (gametype === 4) { // dig race
-        if (digLines.indexOf(row) !== -1) {
-          digLines.splice(digLines.indexOf(row), 1);
+      var rowInDig = digLines.indexOf(row);
+      if (rowInDig !== -1) {
+        for (var y = 0; y < rowInDig; y++) {
+          digLines[y]++;
         }
+        digLines.splice(rowInDig, 1);
       }
-      for (var y = row; y >= -1; y--) {
-        for (var x = 0; x < 10; x++) {
+      for (var y = row; y >= 1; y--) {
+        for (var x = 0; x < this.width; x++) {
           this.grid[x][y] = this.grid[x][y - 1];
         }
+      }
+      for (var x = 0; x < this.width; x++) {
+        this.grid[x][0] = void 0;
       }
     }
   }
@@ -123,8 +131,8 @@ Stack.prototype.addPiece = function(tetro) {
   score = score.add(scoreAdd.mul(bigInt(16).pow(allclear)));
   
   var pc = true;
-  for (var x = 0; x < 10; x++)
-    for (var y = 0; y < 22; y++)
+  for (var x = 0; x < this.width; x++)
+    for (var y = 0; y < this.height; y++)
       if (this.grid[x][y])
         pc = false;
   if (pc) {
@@ -148,21 +156,33 @@ Stack.prototype.addPiece = function(tetro) {
  * Raise a garbage line. farter
  */
 Stack.prototype.rowRise = function(arrRow, objPiece) {
-  for(var x = 0; x < 10; x++) {
-    for(var y = 0; y < this.grid[x].length - 1; y++) {
-      this.grid[x][y]=this.grid[x][y+1];
+  var isEmpty = true;
+  for(var x = 0; x < this.width; x++) {
+    for(var y = 0; y < this.height - 1; y++) {
+      this.grid[x][y] = this.grid[x][y+1];
     }
-    this.grid[x][this.grid[x].length-1]=arrRow[x];
+    if(arrRow[x])
+      isEmpty = false;
+    this.grid[x][this.height-1]=arrRow[x];
   }
-  if(digLines) {
-    for(var y = 0; y < digLines.length; y++) {
-      digLines[y]--;
+  var topout = false;
+  for(var y = 0; y < digLines.length; y++) {
+    digLines[y]--;
+    if(digLines[y] < 0) { // top out, but only detecting added lines
+      topout = true;
     }
   }
-  digLines.push(21);
+  if(topout) {
+    gameState = 9;
+    msg.innerHTML = 'TOP OUT!';
+    menu(3);
+  }
+  if(!isEmpty) {
+    digLines.push(this.height - 1);
+  }
   if (!piece.moveValid(0, 0, piece.tetro)) {
     piece.y-=1;
-    if (piece.y < pieces[piece.index].y - 2) {
+    if (piece.y + pieces[piece.index].rect[3] <= this.hiddenHeight - 2) { // the bottom is >=2 cell away from visible part
       gameState = 9;
       msg.innerHTML = 'OOPS!';
       menu(3);
@@ -177,7 +197,7 @@ Stack.prototype.rowRise = function(arrRow, objPiece) {
 Stack.prototype.draw = function() {
   
   clear(stackCtx);
-  draw(this.grid, 0, 0, stackCtx, void 0, 0.3);
+  draw(this.grid, 0, -this.hiddenHeight, stackCtx, void 0, 0.3);
 
   // Darken Stack
   // TODO wrap this with an option.
@@ -190,6 +210,8 @@ Stack.prototype.draw = function() {
   if (settings.Outline) {
     var b = ~~(cellSize / 8);
     var c = cellSize;
+    var hhc = stack.hiddenHeight * c;
+    var pi = Math.PI;
     var lineCanvas = document.createElement('canvas');
     lineCanvas.width = stackCanvas.width;
     lineCanvas.height = stackCanvas.height;
@@ -200,61 +222,61 @@ Stack.prototype.draw = function() {
     for (var x = 0, len = this.grid.length; x < len; x++) {
       for (var y = 0, wid = this.grid[x].length; y < wid; y++) {
         if (this.grid[x][y]) {
-          if (x < 9 && !this.grid[x + 1][y]) {
-            lineCtx.fillRect(x * c + c - b, y * c - (2 * c), b, c);
+          if (x < this.width - 1 && !this.grid[x + 1][y]) {
+            lineCtx.fillRect(x * c + c - b, y * c - hhc, b, c);
           }
           if (x > 0 && !this.grid[x - 1][y]) {
-            lineCtx.fillRect(x * c, y * c - (2 * c), b, c);
+            lineCtx.fillRect(x * c, y * c - hhc, b, c);
           }
-          if (y < 21 && !this.grid[x][y + 1]) {
-            lineCtx.fillRect(x * c, y * c - (2 * c) + c - b, c, b);
+          if (y < this.height - 1 && !this.grid[x][y + 1]) {
+            lineCtx.fillRect(x * c, y * c - hhc + c - b, c, b);
           }
           if (!this.grid[x][y - 1]) {
-            lineCtx.fillRect(x * c, y * c - (2 * c), c, b);
+            lineCtx.fillRect(x * c, y * c - hhc, c, b);
           }
           // Diags
-          if (x < 9 && y < 21) {
+          if (x < this.width - 1 && y < this.height - 1) {
             if (!this.grid[x + 1][y] && !this.grid[x][y + 1]) {
-              lineCtx.clearRect(x * c + c - b, y * c - (2 * c) + c - b, b, b);
-              lineCtx.fillRect(x * c + c - b, y * c - (2 * c) + c - b, b, b);
+              lineCtx.clearRect(x * c + c - b, y * c - hhc + c - b, b, b);
+              lineCtx.fillRect(x * c + c - b, y * c - hhc + c - b, b, b);
             } else if (!this.grid[x + 1][y + 1] && this.grid[x + 1][y] && this.grid[x][y + 1]) {
-              lineCtx.moveTo(x * c + c, y * c - (2 * c) + c - b);
-              lineCtx.lineTo(x * c + c, y * c - (2 * c) + c);
-              lineCtx.lineTo(x * c + c - b, y * c - (2 * c) + c);
-              lineCtx.arc(x * c + c, y * c - (2 * c) + c, b, 3 * Math.PI / 2, Math.PI, true);
+              lineCtx.moveTo(x * c + c, y * c - hhc + c - b);
+              lineCtx.lineTo(x * c + c, y * c - hhc + c);
+              lineCtx.lineTo(x * c + c - b, y * c - hhc + c);
+              lineCtx.arc(x * c + c, y * c - hhc + c, b, 3 * pi / 2, pi, true);
             }
           }
-          if (x < 9) {
+          if (x < this.width - 1) {
             if (!this.grid[x + 1][y] && !this.grid[x][y - 1]) {
-              lineCtx.clearRect(x * c + c - b, y * c - (2 * c), b, b);
-              lineCtx.fillRect(x * c + c - b, y * c - (2 * c), b, b);
+              lineCtx.clearRect(x * c + c - b, y * c - hhc, b, b);
+              lineCtx.fillRect(x * c + c - b, y * c - hhc, b, b);
             } else if (!this.grid[x + 1][y - 1] && this.grid[x + 1][y] && this.grid[x][y - 1]) {
-              lineCtx.moveTo(x * c + c - b, y * c - (2 * c));
-              lineCtx.lineTo(x * c + c, y * c - (2 * c));
-              lineCtx.lineTo(x * c + c, y * c - (2 * c) + b);
-              lineCtx.arc(x * c + c, y * c - (2 * c), b, Math.PI / 2, Math.PI, false);
+              lineCtx.moveTo(x * c + c - b, y * c - hhc);
+              lineCtx.lineTo(x * c + c, y * c - hhc);
+              lineCtx.lineTo(x * c + c, y * c - hhc + b);
+              lineCtx.arc(x * c + c, y * c - hhc, b, pi / 2, pi, false);
             }
           }
-          if (x > 0 && y < 21) {
+          if (x > 0 && y < this.height - 1) {
             if (!this.grid[x - 1][y] && !this.grid[x][y + 1]) {
-              lineCtx.clearRect(x * c, y * c - (2 * c) + c - b, b, b);
-              lineCtx.fillRect(x * c, y * c - (2 * c) + c - b, b, b);
+              lineCtx.clearRect(x * c, y * c - hhc + c - b, b, b);
+              lineCtx.fillRect(x * c, y * c - hhc + c - b, b, b);
             } else if (!this.grid[x - 1][y + 1] && this.grid[x - 1][y] && this.grid[x][y + 1]) {
-              lineCtx.moveTo(x * c, y * c - (2 * c) + c - b);
-              lineCtx.lineTo(x * c, y * c - (2 * c) + c);
-              lineCtx.lineTo(x * c + b, y * c - (2 * c) + c);
-              lineCtx.arc(x * c, y * c - (2 * c) + c, b, Math.PI * 2, 3 * Math.PI / 2, true);
+              lineCtx.moveTo(x * c, y * c - hhc + c - b);
+              lineCtx.lineTo(x * c, y * c - hhc + c);
+              lineCtx.lineTo(x * c + b, y * c - hhc + c);
+              lineCtx.arc(x * c, y * c - hhc + c, b, pi * 2, 3 * pi / 2, true);
             }
           }
           if (x > 0) {
             if (!this.grid[x - 1][y] && !this.grid[x][y - 1]) {
-              lineCtx.clearRect(x * c, y * c - (2 * c), b, b);
-              lineCtx.fillRect(x * c, y * c - (2 * c), b, b);
+              lineCtx.clearRect(x * c, y * c - hhc, b, b);
+              lineCtx.fillRect(x * c, y * c - hhc, b, b);
             } else if (!this.grid[x - 1][y - 1] && this.grid[x - 1][y] && this.grid[x][y - 1]) {
-              lineCtx.moveTo(x * c + b, y * c - (2 * c));
-              lineCtx.lineTo(x * c, y * c - (2 * c));
-              lineCtx.lineTo(x * c, y * c - (2 * c) + b);
-              lineCtx.arc(x * c, y * c - (2 * c), b, Math.PI / 2, Math.PI * 2, true);
+              lineCtx.moveTo(x * c + b, y * c - hhc);
+              lineCtx.lineTo(x * c, y * c - hhc);
+              lineCtx.lineTo(x * c, y * c - hhc + b);
+              lineCtx.arc(x * c, y * c - hhc, b, pi / 2, pi * 2, true);
             }
           }
         }

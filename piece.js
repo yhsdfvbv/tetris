@@ -4,7 +4,6 @@ function Piece() {
   this.pos = 0;
   this.tetro;
   this.index;
-  this.kickData;
   this.gravity = gravityUnit;
   this.lockDelay = 0;
   this.lockDelayLimit = 30;
@@ -34,9 +33,8 @@ Piece.prototype.new = function(index) {
   // TODO Do this better. Make clone object func maybe.
   //for property in pieces, this.prop = piece.prop
   this.tetro = pieces[index].tetro[this.pos];
-  this.kickData = pieces[index].kickData;
-  this.x = pieces[index].x + RotSys[settings.RotSys].initinfo[index][0];
-  this.y = pieces[index].y + RotSys[settings.RotSys].initinfo[index][1];
+  this.x = ~~((stack.width - 4) / 2) + RotSys[settings.RotSys].initinfo[index][0];
+  this.y = stack.hiddenHeight - 2 + RotSys[settings.RotSys].initinfo[index][1];
   this.index = index;
 
   // TODO ---------------- snip
@@ -123,10 +121,12 @@ Piece.prototype.rotate = function(direction) {
   } else {
     var kickIndex = [ 1, -1 ,2].indexOf(direction); // kickDataDirectionIndex
     var kickList;
-    if (settings.RotSys === 1)
-      kickList = WKTableCultris;
-    else
+    if(settings.RotSys === 0)
       kickList = WKTableSRS[this.index][kickIndex][curPos];
+    else if (settings.RotSys === 1)
+      kickList = WKTableCultris;
+    else if (settings.RotSys === 3 || settings.RotSys === 4)
+      kickList = WKTableDRS[kickIndex];
     this.tryKickList(kickList, rotated, newPos, offsetX, offsetY);
   }
 }
@@ -201,6 +201,13 @@ Piece.prototype.checkShift = function() {
       }
     }
   }
+  if (flags.moveLeft3 & keysDown && !(lastKeys & flags.moveLeft3)) {
+    this.multiShift(-1, 3);
+    this.finesse++;
+  } else if (flags.moveRight3 & keysDown && !(lastKeys & flags.moveRight3)) {
+    this.multiShift(1, 3);
+    this.finesse++;
+  }
 }
 Piece.prototype.shift = function(direction) {
   this.arrDelay = 0;
@@ -225,6 +232,21 @@ Piece.prototype.shift = function(direction) {
     }
   } else if (this.moveValid(direction, 0, this.tetro)) {
     this.x += direction;
+  }
+}
+Piece.prototype.multiShift = function(direction, count) {
+  for (var i = 0; i < count && this.moveValid(direction, 0, this.tetro); ++i) {
+    this.x += direction;
+    if(this.gravity >= 20) {
+      this.checkFall();
+    }
+    if (flags.moveDown & keysDown) {
+      var grav = gravityArr[settings['Soft Drop'] + 1];
+      if (grav >= 20) // 20G softdrop vs. 20G das
+        this.y += this.getDrop(grav);
+      piece.shiftDown();
+      //piece.finesse++;
+    }
   }
 }
 Piece.prototype.shiftDown = function() {
@@ -275,9 +297,10 @@ Piece.prototype.moveValid = function(cx, cy, tetro) {
 
   for (var x = 0; x < tetro.length; x++) {
     for (var y = 0; y < tetro[x].length; y++) {
-      if (tetro[x][y] &&
-      ((cx + x < 0 || cx + x >= 10 || cy + y >= 22) ||
-      stack.grid[cx + x][cy + y])) {
+      if (tetro[x][y] && (
+        (cx + x < 0 || cx + x >= stack.width || cy + y >= stack.height) ||
+        (cy + y >=0 && stack.grid[cx + x][cy + y])
+      )) {
         return false;
       }
     }
@@ -322,7 +345,7 @@ Piece.prototype.draw = function() {
       a = this.lockDelay / this.lockDelayLimit;
       a = Math.pow(a,2)*0.5;
     }
-    draw(this.tetro, this.x, this.y, activeCtx, void 0, a);
+    draw(this.tetro, this.x, Math.floor(this.y) - stack.hiddenHeight, activeCtx, void 0, a);
   }
 }
 Piece.prototype.drawGhost = function() {
@@ -330,10 +353,10 @@ Piece.prototype.drawGhost = function() {
     activeCtx.globalAlpha = 0.4;
     if (settings.Ghost === 0 && !landed) {
       draw(this.tetro, this.x,
-           this.y + this.getDrop(22), activeCtx, 0);
+           Math.floor(this.y + this.getDrop(2147483647)) - stack.hiddenHeight, activeCtx, 0);
     } else if (settings.Ghost === 1 && !landed) {
       draw(this.tetro, this.x,
-           this.y + this.getDrop(22), activeCtx);
+           Math.floor(this.y + this.getDrop(2147483647)) - stack.hiddenHeight, activeCtx);
     }
     activeCtx.globalAlpha = 1;
   }
