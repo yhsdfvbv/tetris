@@ -25,7 +25,7 @@ var cellSize;
 var column;
 
 /**
- * Get html elements. 
+ * Get html elements.
  */
 var msg = document.getElementById('msg');
 var stats = document.getElementById('stats');
@@ -358,17 +358,17 @@ var settings = mySettings; // initialized by reference; replaced when game start
 var settingName = {
   DAS: "DAS 加速延迟",
   ARR: "ARR 重复延迟",
-  Gravity: "Gravity<br />下落速度",
-  'Soft Drop': "Soft Drop<br />软降速度",
-  'Lock Delay': "Lock Delay<br />锁定延迟",
-  RotSys: "Rotation<br />旋转系统",
+  Gravity: "Gravity 下落速度",
+  'Soft Drop': "Soft Drop 软降速度",
+  'Lock Delay': "Lock Delay 锁定延迟",
+  RotSys: "Rotation 旋转系统",
   Size: "Size 大小",
   Sound: "Sound 声音",
   Volume: "Volume 音量",
   Block: "Block 样式",
   Ghost: "Ghost 影子",
   Grid: "Grid 网格",
-  Outline: "Outline<br>方块边缘"
+  Outline: "Outline 方块边缘"
 };
 var setting = {
   DAS: range(0,31),
@@ -433,16 +433,16 @@ var arrStages = [
       {begin:  70, delay: 60*5, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
       {begin:  80, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
       {begin:  90, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
-      
+
       {begin: 100, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
       {begin: 120, delay: 60*3.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
       {begin: 150, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
       {begin: 170, delay: 60*3.5, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
-      
+
       {begin: 200, delay: 60*3.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
       {begin: 220, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
       {begin: 250, delay: 60*2.5, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
-      
+
       {begin: 300, delay: 60*3.5, gen:function(arr){arrRowGen.simplemessy(arr,0.9)}},
       {begin: 320, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.9)}},
       {begin: 350, delay: 60*3.5, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
@@ -450,7 +450,7 @@ var arrStages = [
       {begin: 400, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.6)}},
       {begin: 430, delay: 60*5, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
       {begin: 450, delay: 60*7, gen:function(arr){arrRowGen.simplemessy(arr,0.1)}},
-      
+
       {begin: 470, delay: 60*7, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
       {begin: 500, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
       {begin: 550, delay: 60*2.5, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
@@ -462,7 +462,7 @@ var arrStages = [
       {begin: 800, delay: 60*2, gen:function(arr){arrRowGen.simplemessy(arr,0.9)}},
       {begin: 900, delay: 60*1.75, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
       {begin: 950, delay: 60*1.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      
+
       {begin:1000, delay: 60*5, gen:function(arr){arrRowGen.simplemessy(arr,0.0)}},
       {begin:1020, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.0)}},
       {begin:1050, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,1,1,8)}},
@@ -488,7 +488,7 @@ var arrStages = [
       {begin:1850, delay: 60*1.15, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
       {begin:1900, delay: 60*1.1, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
       {begin:1950, delay: 60*1.05, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      
+
       {begin:2000, delay: 60*1.0, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
       {begin:2050, delay: 60*0.95, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
       {begin:2100, delay: 60*0.9, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
@@ -500,8 +500,8 @@ var arrStages = [
       {begin:2400, delay: 60*0.7, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
       {begin:2450, delay: 60*0.6, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
       {begin:2500, delay: 60*0.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      
-      
+
+
 ];
 var frame;
 var frameLastRise;
@@ -607,13 +607,13 @@ function resize() {
     //"0 0";
     //(pad / 2) + 'px' + ' 0';
     (padFinal) + 'px' + ' 0';
-    
+
   stats.style.bottom =
     //(pad) + 'px';
     //(pad / 2) + 'px';
     (pad - padFinal) + 'px';
     //(pad - padH) + 'px';
-  
+
   // Size elements
   a.style.padding = '0 0.5rem ' + ~~(cellSize / 2) + 'px';
 
@@ -631,7 +631,7 @@ function resize() {
   previewCanvas.height = stackCanvas.height - cellSize * 2;
   c.style.width = previewCanvas.width + 'px';
   c.style.height = b.style.height;
-  
+
   // Scale the text so it fits in the thing.
   // TODO get rid of extra font sizes here.
   msgdiv.style.lineHeight = b.style.height;
@@ -645,7 +645,7 @@ function resize() {
     h3[i].style.lineHeight = (cellSize * 2) + 'px';
     h3[i].style.fontSize = stats.style.fontSize;
   }
-  
+
   // position of touch buttons
   {
     var dpiX = 96;
@@ -653,7 +653,7 @@ function resize() {
     var winW = window.innerWidth / dpiX;
     var winH = window.innerHeight / dpiY;
     var buttonH = 0.7, buttonW = 1, fontSize=0.55, unit="in";
-    
+
     var setPos = function(elem, posX, posY, sizeW, sizeH,
       alignX, alignY, offsetX, offsetY, clientW, clientH)
     {
@@ -665,7 +665,7 @@ function resize() {
       elem.style.display = "block";
       elem.style.fontSize = "" + fontSize + unit;
     }
-    
+
     var layouts = { //function array
       "NONE":
       function() {
@@ -739,24 +739,24 @@ function resize() {
         setPos(touchHold,     0, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
         setPos(touchRot180,   0, -3.6, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
       },
-      
+
       "DELUXE":
       function() {
         setPos(touchLeft,     0, 0, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
         setPos(touchRight,    1, 0, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
-        
+
         setPos(touchDown,     0, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
         setPos(touchDrop,     0, -1.2, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
-        
+
         setPos(touchRotLeft,  -1, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
         setPos(touchRotRight, -1, -1.2, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
         setPos(touchHold,     0.5, -1.2, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
         //setPos(touchRot180,   0, -buttonH*2.4, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
         touchRot180.style.display = "none";
       },
-      
+
     };
-    
+
     setPos(touchLayout, 0, 0, buttonW, buttonH, 2, 0, 0, 0, winW, winH);
     if(currLayout === -1) { // auto detection
       if(winW<buttonW*3) {
@@ -782,7 +782,7 @@ function resize() {
     else {
       layouts[["NONE","KBD_R","KBD_L","JOY","NARROW","NARROW_L","DELUXE"][currLayout]]();
     }
-    
+
   }
 
   // Redraw graphics
@@ -849,10 +849,10 @@ function init(gt, params) {
     settings = ObjectClone(mySettings); // by value: prevent from being modified when paused
     gametype = gt;
     gameparams = params || {};
-    
+
     var seed = ~~(Math.random() * 2147483645) + 1;
     rng.seed = seed;
-    
+
     replay = {};
     replay.keys = {};
     // TODO Make new seed and rng method.
@@ -910,7 +910,7 @@ function init(gt, params) {
     frameLastRise = 0;
 
     //statsLines.innerHTML = "0";
-    
+
     //stack.draw();
   }
   if (gametype === 4) {
@@ -945,7 +945,7 @@ function init(gt, params) {
   pauseTime = 0;
   paused = false;
   gameState = 2;
-  
+
   statistics();
   statisticsStack();
   resize();
@@ -985,7 +985,7 @@ function pause() {
     paused = true;
     startPauseTime = Date.now();
     msg.innerHTML = "Paused";
-    menu(4);    
+    menu(4);
   }
 }
 
@@ -1058,7 +1058,7 @@ function statisticsStack() {
   else{
     statsLines.innerHTML = lines;
   }
-  
+
   statsScore.innerHTML = scorestring(score.toString(), 2);
 }
 // ========================== View ============================================
@@ -1129,7 +1129,7 @@ function makeSprite() {
     ['#f828f8', '#780078', '#e020e0', '#880088'],
     ['#00e8f0', '#0070a0', '#00d0e0', '#0080a8'],
     ['#78f800', '#007800', '#58e000', '#008800'],
-    ['#7b7b7b', '#303030', '#6b6b6b', '#363636'],
+    ['#7b7b7b', '#303030', '#6b6b6b', '#363636']
   ];
   var world = [];
   world[0] = tgm[0];
@@ -1384,7 +1384,7 @@ document.addEventListener('click',touch, false);
 document.addEventListener('gesturestart',preventDefault,false);
 document.addEventListener('gestureend',preventDefault,false);
 document.addEventListener('gesturechange',preventDefault,false);
-    
+
 // ========================== Loop ============================================
 
 //TODO Cleanup gameloop and update.
@@ -1398,12 +1398,12 @@ function update() {
   } else if (frame in replay.keys) {
     keysDown = replay.keys[frame];
   }
-  
+
   //if (piece.dead) {
   //  piece.new(preview.next());
   //}
 
-    
+
   if (!(lastKeys & flags.holdPiece) && flags.holdPiece & keysDown) {
     piece.hold();
   }
@@ -1430,7 +1430,7 @@ function update() {
   }
 
   piece.update();
-  
+
   if(gametype === 3) { //Dig
     var fromLastRise = frame-frameLastRise;
     var arrRow = [8,8,8,8,8,8,8,8,8,8];
@@ -1461,14 +1461,14 @@ function update() {
             arrRow[x]=colorUsed;
           }
         }
-        
+
         objCurStage.gen(arrRow);
         stack.rowRise(arrRow, piece);
         frameLastRise=frame;
       }
     }
   }
-	
+
   // Win
   // TODO
   if (gametype === 0) { // 40L
@@ -1552,7 +1552,7 @@ function update() {
       piece.dead = true;
       menu(3);
     }
-  } 
+  }
   /* farter */
 
   statistics();
@@ -1565,40 +1565,40 @@ function update() {
 function gameLoop() {
 
   //if (frame % 60 == 0) console.log("running");
-  
+
   if (!paused && gameState !== 3) {
     requestAnimFrame(gameLoop);
-    
+
     //setTimeout(gameLoop, 33);
-    
+
     //TODO check to see how pause works in replays.
     frame++;
 
     if (gameState === 0) {
       // Playing
-      
+
         update();
 
       // TODO improve this with 'dirty' flags.
       /* farter */ // as you draw for lock delay brightness gradient... give this up..
-  
+
       if (piece.x !== lastX ||
       Math.floor(piece.y) !== lastY ||
       piece.pos !== lastPos ||
       piece.lockDelay !== lastLockDelay ||
       piece.dirty) {
-  
+
         clear(activeCtx);
         piece.drawGhost();
         piece.draw();
-  
+
       }
       lastX = piece.x;
       lastY = Math.floor(piece.y);
       lastPos = piece.pos;
       lastLockDelay = piece.lockDelay;
       piece.dirty = false;
-  
+
     } else if (gameState === 2) {
       // Count Down
       if (frame < 50) {
@@ -1674,7 +1674,7 @@ function trysubmitscore() {
     return;
   var obj={};
   var time = scoreTime;
-  
+
   if(gametype===0) // 40L
     obj.mode="sprint";
   else if(gametype===3) // dig
@@ -1687,7 +1687,7 @@ function trysubmitscore() {
     obj.mode="score";
   else
     return;
-  
+
   if(
     (gametype===0 && gameState===1)||
     (gametype===3 && gameState===9)||
@@ -1700,7 +1700,7 @@ function trysubmitscore() {
     obj.time=time;
     obj.score=score.toString();
     obj.name=playername;
-    
+
     submitscore(obj);
   }else{
     submitscore(obj);
