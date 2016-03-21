@@ -136,6 +136,6 @@ function XMLHTTP(url,obj)
 function submitscore(obj)
 {
   console.log(obj);
-  XMLHTTP("http://farter.tk:8888", obj);
+  XMLHTTP("http://xn--egt.tk:8888", obj);
   //XMLHTTP("http://localhost:8888", obj);
 }

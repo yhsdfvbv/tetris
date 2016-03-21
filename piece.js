@@ -68,6 +68,7 @@ Piece.prototype.new = function(index) {
     gameState = 9;
     msg.innerHTML = 'BLOCK OUT!';
     menu(3);
+    sound.playse("gameover");
     return;
   }
   
@@ -340,12 +341,14 @@ Piece.prototype.update = function() {
 }
 Piece.prototype.draw = function() {
   if (!this.dead) {
-    var a = void 0;
-    if (landed) {
-      a = this.lockDelay / this.lockDelayLimit;
-      a = Math.pow(a,2)*0.5;
+    if (settings.Ghost !== 3) {
+      var a = void 0;
+      if (landed) {
+        a = this.lockDelay / this.lockDelayLimit;
+        a = Math.pow(a,2)*0.5;
+      }
+      draw(this.tetro, this.x, Math.floor(this.y) - stack.hiddenHeight, activeCtx, void 0, a);
     }
-    draw(this.tetro, this.x, Math.floor(this.y) - stack.hiddenHeight, activeCtx, void 0, a);
   }
 }
 Piece.prototype.drawGhost = function() {

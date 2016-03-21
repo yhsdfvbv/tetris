@@ -391,15 +391,15 @@ var setting = {
       array.push(i + 'G');
     return array;
   })(),
-  'Lock Delay': range(0,101),
-  RotSys: ['Super', 'C2', 'ArikaEasy', 'DTET', 'QQHuopin'],
+  'Lock Delay': range(0, 101),
+  RotSys: ['Super', 'C2', 'Arika*', 'DTET', 'QQ'],
   Size: ['Auto', 'Small', 'Medium', 'Large'],
   Sound: ['Off', 'On'],
   Volume: range(0, 101),
   Block: ['Shaded', 'Solid', 'Glossy', 'Arika', 'World'],
-  Ghost: ['Normal', 'Colored', 'Off'],
+  Ghost: ['Normal', 'Colored', 'Off', 'Hidden'],
   Grid: ['Off', 'On'],
-  Outline: ['Off', 'On']
+  Outline: ['Off', 'On', 'Hidden', 'Only']
 };
 var arrRowGen = {
   'simple':
@@ -712,8 +712,7 @@ function resize() {
         if (winH-winW>buttonH*1.5) {
           setPos(touchDown,     -1, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
           setPos(touchDrop,     -1, -1, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
-        }
-        else {
+        } else {
           setPos(touchDown,     0, -1, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
           setPos(touchDrop,     -1, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
         }
@@ -723,6 +722,21 @@ function resize() {
         setPos(touchRot180,   0, -2.4, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
       },
       "NARROW_L":
+      function() {
+        setPos(touchRotLeft,   -2, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        setPos(touchRotRight,  -1, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        setPos(touchDrop,      0, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        if (winH-winW>buttonH*1.5) {
+          setPos(touchRot180,     -1, -1, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        } else {
+          setPos(touchRot180,      0, -1, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        }
+        setPos(touchLeft,    0, -1.2, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+        setPos(touchDown,    0, 0, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+        setPos(touchRight,   0, 1.2, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+        setPos(touchHold,    0, -2.4, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+      },
+      "NARROW_LM":
       function() {
         setPos(touchLeft,     0, 0, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
         setPos(touchRight,    2, 0, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
@@ -780,7 +794,7 @@ function resize() {
       }
     }
     else {
-      layouts[["NONE","KBD_R","KBD_L","JOY","NARROW","NARROW_L","DELUXE"][currLayout]]();
+      layouts[["NONE","KBD_R","KBD_L","JOY","NARROW","NARROW_L","NARROW_LM","DELUXE"][currLayout]]();
     }
 
   }
@@ -1059,7 +1073,22 @@ function statisticsStack() {
     statsLines.innerHTML = lines;
   }
 
-  statsScore.innerHTML = scorestring(score.toString(), 2);
+  var light=['#ffffff','#EFB08C','#EDDD82','#8489C7','#FFDB94','#EFAFC5','#98DF6E','#6FC5C5','#9A7FD1','#78D4A3'];
+  statsScore.innerHTML = '<span style="' +
+    (b2b===0?'':(
+      'color: '+
+      light[b2b%10]+
+      ';'
+    ))+
+    (combo===0?'':(
+      'text-shadow: '+
+      ('0 0 0.5em '+light[(combo-1)%10])+
+      ';'
+    ))+
+    '">'+
+    scorestring(score.toString(), 2)+
+    '</span>'
+    ;
 }
 // ========================== View ============================================
 
@@ -1465,6 +1494,7 @@ function update() {
         objCurStage.gen(arrRow);
         stack.rowRise(arrRow, piece);
         frameLastRise=frame;
+        sound.playse("garbage");
       }
     }
   }
@@ -1530,6 +1560,7 @@ function update() {
       msg.innerHTML = rank.u + "<br /><small>" + rank.b +"</small>";
       piece.dead = true;
       menu(3);
+      sound.playse("endingstart");
     }
   } else if (gametype === 1) { // Marathon
     if (settings.Gravity !== 0 && lines>=200) { // not Auto, limit to 200 Lines
@@ -1537,6 +1568,7 @@ function update() {
       msg.innerHTML = 'GREAT!';
       piece.dead = true;
       menu(3);
+      sound.playse("endingstart");
     }
   } else if (gametype === 5) { // Score Attack
     if (lines>=lineLimit) { // not Auto, limit to 200 Lines
@@ -1544,6 +1576,7 @@ function update() {
       msg.innerHTML = 'GREAT!';
       piece.dead = true;
       menu(3);
+      sound.playse("endingstart");
     }
   } else if (gametype === 4) { // Dig race
     if (digLines.length === 0) {
@@ -1551,6 +1584,7 @@ function update() {
       msg.innerHTML = 'GREAT!';
       piece.dead = true;
       menu(3);
+      sound.playse("endingstart");
     }
   }
   /* farter */
@@ -1662,7 +1696,7 @@ var playername=void 0;
 
 function requireplayername(){
   if(playername===void 0)
-    playername=prompt("Enter your name for leaderboard: 请输入上榜大名：","");
+    playername=prompt("Enter your name for leaderboard\n('cancel' = anonymous):\n请输入上榜大名：","");
   if(playername===null)
     playername="anonymous";
   if(playername==="")

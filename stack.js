@@ -59,6 +59,7 @@ Stack.prototype.addPiece = function(tetro) {
     gameState = 9;
     msg.innerHTML = 'LOCK OUT!';
     menu(3);
+    sound.playse("gameover");
     return;
   }
 
@@ -100,18 +101,21 @@ Stack.prototype.addPiece = function(tetro) {
           .mul(bigInt(2).pow(b2b + combo))
       );
       b2b += 1;
+      sound.playse("tspin",lineClear);
     } else if(lineClear === 4) {
       scoreAdd = scoreAdd.mul(
         bigInt(800)
           .mul(bigInt(2).pow(b2b + combo))
       );
       b2b += 1;
+      sound.playse("erase",lineClear);
     } else {
       scoreAdd = scoreAdd.mul(
         bigInt([100,300,500,800][lineClear - 1])
           .mul(bigInt(2).pow(combo))
       );
       b2b = 0;
+      sound.playse("erase",lineClear);
     }
     combo += 1;
   } else {
@@ -120,6 +124,7 @@ Stack.prototype.addPiece = function(tetro) {
         bigInt(2).pow(bigInt(b2b))
           .mul(bigInt(400))
       );
+      sound.playse("tspin",lineClear);
     } else {
       scoreAdd = bigInt(0);
     }
@@ -138,6 +143,7 @@ Stack.prototype.addPiece = function(tetro) {
   if (pc) {
     score = score.add(bigInt(1000000).mul(bigInt(16).pow(allclear)));
     allclear ++;
+    sound.playse("bravo");
   }
   
   //if (scoreAdd.cmp(0) > 0)
@@ -176,6 +182,7 @@ Stack.prototype.rowRise = function(arrRow, objPiece) {
     gameState = 9;
     msg.innerHTML = 'TOP OUT!';
     menu(3);
+    sound.playse("gameover");
   }
   if(!isEmpty) {
     digLines.push(this.height - 1);
@@ -186,6 +193,7 @@ Stack.prototype.rowRise = function(arrRow, objPiece) {
       gameState = 9;
       msg.innerHTML = 'OOPS!';
       menu(3);
+      sound.playse("gameover");
     }
   }
   piece.dirty = true;
@@ -197,7 +205,11 @@ Stack.prototype.rowRise = function(arrRow, objPiece) {
 Stack.prototype.draw = function() {
   
   clear(stackCtx);
-  draw(this.grid, 0, -this.hiddenHeight, stackCtx, void 0, 0.3);
+  if(settings.Outline === 0 || settings.Outline === 1 ||
+    (settings.Outline === 2 && (gameState === 9 || gameState === 1))
+  ) {
+    draw(this.grid, 0, -this.hiddenHeight, stackCtx, void 0, 0.3);
+  }
 
   // Darken Stack
   // TODO wrap this with an option.
@@ -207,7 +219,7 @@ Stack.prototype.draw = function() {
   //stackCtx.fillRect(0, 0, stackCanvas.width, stackCanvas.height);
   //stackCtx.globalCompositeOperation = 'source-over';
 
-  if (settings.Outline) {
+  if (settings.Outline === 1 || settings.Outline === 3) {
     var b = ~~(cellSize / 8);
     var c = cellSize;
     var hhc = stack.hiddenHeight * c;
