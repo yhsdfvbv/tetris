@@ -330,10 +330,10 @@ Piece.prototype.update = function() {
     this.y = Math.floor(this.y);
     if (this.lockDelay >= this.lockDelayLimit) {
       stack.addPiece(this.tetro);
+      sound.playse("lock");
       this.dead = true;
       this.new(preview.next()); // consider move to main update
       /* farter */
-      
     } else {
       this.lockDelay++;
     }

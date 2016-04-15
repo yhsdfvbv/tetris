@@ -66,7 +66,7 @@
     </div>
 
     <nav class="menu on">
-      <h1>Tetr.js - Dig v0.51</h1>
+      <h1>Tetr.js - Dig v0.52</h1>
 
       <p>forked from: <a class="link" href="http://simon.lc/tetr.js/">&gt;&gt;simonlc</a><br/>
         farter's Dig Mod</p>
@@ -76,16 +76,13 @@
         <a class="btn" onclick="init(1)"><i class="material-icons">&#xE153;</i> Marathon 马拉松</a>
         <!-- <a class="btn" onclick="init(2)">Play Ultra</a> -->
         <a class="btn" onclick="init(3,{digOffset:0})"><i class="material-icons">&#xE002;</i> Dig! 挖掘机</a>
-        <a class="btn" onclick="init(4)"><i class="material-icons">&#xE540;</i> Dig Race 挖掘练习</a>
+        <a class="btn" onclick="init(4,{digraceType:'easy'})"><i class="material-icons">&#xE91D;</i> Dig Race 挖掘练习</a>
         <a class="btn" onclick="init(5)"><i class="material-icons">&#xE905;</i> Zen 修仙模式</a>
 
         <a class="btn" onclick="menu(6,1)"><i class="material-icons">&#xE04A;</i> Replay 回放 (α)</a>
         <a class="btn" onclick="menu(2)"><i class="material-icons">&#xE021;</i> Controls 调整按键</a>
-        <a class="btn" onclick="menu(1)"><i class="material-icons">&#xE429;</i> Settings 调整设定</a>
-        <a class="btn" onclick="init(3,{digOffset:500})"><i class="material-icons">&#xE3A8;</i> Dig - 500+</a>
-        <a class="btn" onclick="init(3,{digOffset:1000})"><i class="material-icons">&#xE3A7;</i> Dig - 1000+</a>
-        <a class="btn" onclick="init(3,{digOffset:1500})"><i class="material-icons">&#xE3A6;</i> Dig - 1500+</a>
-        <a class="btn" onclick="init(3,{digOffset:2000})"><i class="material-icons">&#xE3E4;</i> NUKE 核能</a>
+        <a class="btn" onclick="menu(1)"><i class="material-icons">&#xE869;</i> Settings 调整设定</a>
+        <a class="btn" onclick="menu(7,1)"><i class="material-icons">&#xE8E5;</i> More 更多</a>
       </div>
     </nav>
 
@@ -184,11 +181,24 @@
       <h2>Replay 回放数据</h2>
 
       <p>Ctrl+C 复制 / Ctrl+V 粘贴</p>
-      <textarea id="replaydata" spellcheck=false></textarea>
+      <textarea id="replaydata" spellcheck="false"></textarea>
       <ul>
         <li><a class="btn" onclick="tryreplaydata()">Watch 观看</a></li>
         <li><a class="btn" onclick="menu(void 0,-1)">Back 返回</a></li>
       </ul>
+    </nav>
+    
+    <nav class="menu">
+      <h1>Tetr.js - Dig</h1>
+      <p>deep♂dark♂fantasy</p>
+      <div class="btn-container">
+        <a class="btn" onclick="init(3,{digOffset:500})"><i class="material-icons">&#xE3A8;</i> Dig - 500+</a>
+        <a class="btn" onclick="init(3,{digOffset:1000})"><i class="material-icons">&#xE3A7;</i> Dig - 1000+</a>
+        <a class="btn" onclick="init(3,{digOffset:1500})"><i class="material-icons">&#xE3A6;</i> Dig - 1500+</a>
+        <a class="btn" onclick="init(3,{digOffset:2000})"><i class="material-icons">&#xE3E4;</i> NUKE 核能</a>
+        <a class="btn" onclick="init(4,{digraceType:'checker'})"><i class="material-icons">&#xE540;</i> Dig Hard 疯狂挖掘</a>
+        <a class="btn" onclick="menu(void 0,-1)">Back 返回</a>
+      </div>
     </nav>
 
   </div>

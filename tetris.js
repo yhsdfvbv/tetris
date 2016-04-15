@@ -886,6 +886,10 @@ function init(gt, params) {
   else
     lineLimit = 0;
 
+  //html5 mobile device sound
+  if(settings.Sound === 1)
+    sound.init();
+  
   //Reset
   column = 0;
   keysDown = 0;
@@ -931,16 +935,26 @@ function init(gt, params) {
     // Dig Race
     // make ten random numbers, make sure next isn't the same as last? t=rnd()*(size-1);t>=arr[i-1]?t++:; /* farter */
     //TODO make into function or own file.
-    // harder digrace: checkerboard
-
-    digLines = range(stack.height - 10, stack.height);
-
-    statsLines.innerHTML = 10;
-    var randomNums = [];
-    for (var y = stack.height - 1; y > stack.height - 10 - 1; y--) {
-      for (var x = 0; x < stack.width; x++) {
-        if ((x+y)&1)
-          stack.grid[x][y] = 8;
+    if (gameparams["digraceType"] === void 0 || gameparams["digraceType"] === "checker") {
+      // harder digrace: checkerboard
+      digLines = range(stack.height - 10, stack.height);
+      statsLines.innerHTML = 10;
+      for (var y = stack.height - 1; y > stack.height - 10 - 1; y--) {
+        for (var x = 0; x < stack.width; x++) {
+          if ((x+y)&1)
+            stack.grid[x][y] = 8;
+        }
+      }
+    } else if(gameparams["digraceType"] === "easy") {
+      var begin = ~~(rng.next()*stack.width);
+      var dire = (~~(rng.next()*2))*2-1;
+      digLines = range(stack.height - 10, stack.height);
+      statsLines.innerHTML = 10;
+      for (var y = stack.height - 1; y > stack.height - 10 - 1; y--) {
+        for (var x = 0; x < stack.width; x++) {
+          if ((begin+dire*y+x+stack.width*2)%10 !== 0)
+            stack.grid[x][y] = 8;
+        }
       }
     }
     //stack.draw(); //resize
@@ -1030,7 +1044,7 @@ function scorestring(s, n){
   var strsplit = s.split("");
   var spacetoggle = 0;
   for (var i = strsplit.length - 1 - 3; i >= 0; i -= 3) {
-    strsplit[i] += (spacetoggle === n-1 ?" ":"&#8239;");
+    strsplit[i] += (spacetoggle === n-1 ?" ":"&#160;");
     spacetoggle = (spacetoggle + 1) % n;
   }
   return strsplit.join("");
@@ -1714,7 +1728,7 @@ function trysubmitscore() {
   else if(gametype===3) // dig
     obj.mode="dig" + (gameparams&&gameparams.digOffset?gameparams.digOffset:"");
   else if(gametype===4) // dig race
-    obj.mode="digrace";
+    obj.mode="digrace" + (gameparams&&gameparams.digraceType?gameparams.digraceType:"checker");
   else if(gametype===1) // marathon
     obj.mode="marathon";
   else if(gametype===5) // score attack
