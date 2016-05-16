@@ -7,6 +7,10 @@ function Piece() {
   this.gravity = gravityUnit;
   this.lockDelay = 0;
   this.lockDelayLimit = 30;
+  this.are = 0;
+  this.areLimit = 0;
+  this.irsDir = 0;
+  this.ihs = false;
   this.shiftDelay = 0;
   this.shiftDir;
   this.shiftReleased;
@@ -21,9 +25,14 @@ function Piece() {
  */
 Piece.prototype.new = function(index) {
   // TODO if no arguments, get next grabbag piece
+  console.log("new irs"+this.irsDir+", ihs"+this.ihs);
   this.pos = RotSys[settings.RotSys].initinfo[index][2];
+  this.x = ~~((stack.width - 4) / 2) + RotSys[settings.RotSys].initinfo[index][0];
+  this.y = stack.hiddenHeight - 2 + RotSys[settings.RotSys].initinfo[index][1];
+  this.index = index;
   this.tetro = [];
   this.held = false;
+  this.ihs = false;
   this.finesse = 0;
   this.dirty = true;
   this.dead = false;
@@ -32,11 +41,28 @@ Piece.prototype.new = function(index) {
 
   // TODO Do this better. Make clone object func maybe.
   //for property in pieces, this.prop = piece.prop
-  this.tetro = pieces[index].tetro[this.pos];
-  this.x = ~~((stack.width - 4) / 2) + RotSys[settings.RotSys].initinfo[index][0];
-  this.y = stack.hiddenHeight - 2 + RotSys[settings.RotSys].initinfo[index][1];
-  this.index = index;
-
+  if (this.irsDir !== 0) {
+    var curPos = this.pos;
+    var newPos = (this.pos+this.irsDir).mod(4);
+    var offsetX =
+      RotSys[settings.RotSys].offset[this.index][newPos][0] -
+      RotSys[settings.RotSys].offset[this.index][curPos][0];
+    var offsetY =
+      RotSys[settings.RotSys].offset[this.index][newPos][1] -
+      RotSys[settings.RotSys].offset[this.index][curPos][1];
+    this.tetro = pieces[index].tetro[newPos];
+    if (!this.moveValid(offsetX, offsetY, this.tetro)) {
+      this.tetro = pieces[index].tetro[curPos];
+    } else {
+      this.x += offsetX;
+      this.y += offsetY;
+      this.pos = newPos;
+    }
+    this.irsDir = 0;
+  } else {
+    this.tetro = pieces[index].tetro[this.pos];
+  }
+  
   // TODO ---------------- snip
 
   //TODO Do this better. (make grabbag object)
@@ -46,8 +72,10 @@ Piece.prototype.new = function(index) {
 
   this.lockDelayLimit = setting['Lock Delay'][settings['Lock Delay']];
   if (settings.Gravity !== 0) {
+    this.areLimit = 0;
     this.gravity = gravityArr[settings.Gravity - 1];
   } else if (gametype === 1) { //Marathon
+    this.areLimit = 0;
     if (level < 20) {
       this.gravity = [
         1/60, 1/30, 1/25, 1/20, 1/15, 1/12, 1/10, 1/8,  1/6,  1/6,
@@ -58,13 +86,29 @@ Piece.prototype.new = function(index) {
        this.gravity = 20;
        this.lockDelayLimit = ~~(30 * Math.pow(0.93, (Math.pow(level-20, 0.8)))); // magic!
     }
+  } else if (gametype === 6) { //Death
+    this.gravity = 20;
+    if (level < 20) {
+      this.lockDelayLimit = [
+        30, 25, 22, 20, 20, 18, 17, 17, 15, 15,
+        13, 13, 13, 13, 13, 12, 12, 12, 11, 11
+      ][level];
+      this.areLimit = [
+        18, 18, 18, 15, 15, 12, 12, 12, 12, 12,
+        12, 12, 10, 10, 10,  8,  8,  8,  8,  8
+      ][level];
+    } else {
+      this.lockDelayLimit = 11;
+      this.areLimit = 6;
+    }
   } else {
+    this.areLimit = 0;
     this.gravity = gravityUnit;
   }
   
   // Check for blockout.
   if (!this.moveValid(0, 0, this.tetro)) {
-    this.dead = true;
+    //this.dead = true; //show it?
     gameState = 9;
     msg.innerHTML = 'BLOCK OUT!';
     menu(3);
@@ -332,7 +376,14 @@ Piece.prototype.update = function() {
       stack.addPiece(this.tetro);
       sound.playse("lock");
       this.dead = true;
-      this.new(preview.next()); // consider move to main update
+      this.dirty = true;
+      this.held = false;
+      if (this.areLimit === 0) {
+        this.new(preview.next()); // consider move to main update
+      } else {
+        gameState = 4;
+        this.are = 0;
+      }
       /* farter */
     } else {
       this.lockDelay++;
@@ -340,7 +391,9 @@ Piece.prototype.update = function() {
   }
 }
 Piece.prototype.draw = function() {
+  clear(activeCtx);
   if (!this.dead) {
+    this.drawGhost();
     if (settings.Ghost !== 3) {
       var a = void 0;
       if (landed) {
@@ -352,17 +405,15 @@ Piece.prototype.draw = function() {
   }
 }
 Piece.prototype.drawGhost = function() {
-  if (!this.dead) {
-    activeCtx.globalAlpha = 0.4;
-    if (settings.Ghost === 0 && !landed) {
-      draw(this.tetro, this.x,
-           Math.floor(this.y + this.getDrop(2147483647)) - stack.hiddenHeight, activeCtx, 0);
-    } else if (settings.Ghost === 1 && !landed) {
-      draw(this.tetro, this.x,
-           Math.floor(this.y + this.getDrop(2147483647)) - stack.hiddenHeight, activeCtx);
-    }
-    activeCtx.globalAlpha = 1;
+  activeCtx.globalAlpha = 0.4;
+  if (settings.Ghost === 0 && !landed) {
+    draw(this.tetro, this.x,
+         Math.floor(this.y + this.getDrop(2147483647)) - stack.hiddenHeight, activeCtx, 0);
+  } else if (settings.Ghost === 1 && !landed) {
+    draw(this.tetro, this.x,
+         Math.floor(this.y + this.getDrop(2147483647)) - stack.hiddenHeight, activeCtx);
   }
+  activeCtx.globalAlpha = 1;
 }
 
 var piece = new Piece();

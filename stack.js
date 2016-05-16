@@ -131,7 +131,7 @@ Stack.prototype.addPiece = function(tetro) {
     combo = 0;
   }
   lines += lineClear;
-  if (gametype === 1)
+  if (gametype === 1 || gametype === 6)
     level = ~~(lines / 10);
   score = score.add(scoreAdd.mul(bigInt(16).pow(allclear)));
   

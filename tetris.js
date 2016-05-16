@@ -47,6 +47,8 @@ var activeCanvas = document.getElementById('active');
 var previewCanvas = document.getElementById('preview');
 var spriteCanvas = document.getElementById('sprite');
 
+var timeCanvas = document.getElementById('time').childNodes[0];
+
 var holdCtx = holdCanvas.getContext('2d');
 var bgStackCtx = bgStackCanvas.getContext('2d');
 var stackCtx = stackCanvas.getContext('2d');
@@ -54,6 +56,7 @@ var activeCtx = activeCanvas.getContext('2d');
 var previewCtx = previewCanvas.getContext('2d');
 var spriteCtx = spriteCanvas.getContext('2d');
 
+var timeCtx = timeCanvas.getContext('2d');
 
 var touchLeft = document.getElementById('touchLeft');
 var touchRight = document.getElementById('touchRight');
@@ -79,7 +82,7 @@ touchRotRight.bindsMemberName = "rotRight";
 touchRotLeft.bindsMemberName = "rotLeft";
 touchRot180.bindsMemberName = "rot180";
 
-var nLayouts = 7, currLayout = -1 /* auto */;
+var nLayouts = 8, currLayout = -1 /* auto */;
 
 /**
  * Piece data
@@ -505,6 +508,8 @@ var arrStages = [
 ];
 var frame;
 var frameLastRise;
+var frameLastHarddropDown;
+var frameSkipped;
 
 /**
 *Pausing variables
@@ -547,6 +552,7 @@ var statsFinesse;
 var piecesSet;
 var startTime;
 var scoreTime;
+var scoreStartTime;
 var digLines = [];
 
 // Keys
@@ -640,11 +646,19 @@ function resize() {
   stats.style.fontSize = ~~(stackCanvas.width / 11) + 'px';
   document.documentElement.style.fontSize = ~~(stackCanvas.width / 16) + 'px';
 
-  stats.style.width = a.style.width;
   for (var i = 0, len = h3.length; i < len; i++) {
     h3[i].style.lineHeight = (cellSize * 2) + 'px';
     h3[i].style.fontSize = stats.style.fontSize;
   }
+  stats.style.width = h3[0].clientWidth + 'px';
+  
+  timeCanvas.width = h3[0].clientWidth;
+  timeCanvas.height = timeCanvas.clientHeight || timeCanvas.offsetHeight || timeCanvas.getBoundingClientRect().height;
+  timeCtx.fillStyle = "#fff";
+  timeCtx.font = 'bold 1.125em "Trebuchet MS"';
+  timeCtx.textAlign = "center";
+  timeCtx.textBaseline = "middle";
+  
 
   // position of touch buttons
   {
@@ -652,7 +666,7 @@ function resize() {
     var dpiY = 96;
     var winW = window.innerWidth / dpiX;
     var winH = window.innerHeight / dpiY;
-    var buttonH = 0.7, buttonW = 1, fontSize=0.55, unit="in";
+    var buttonH = 0.7, buttonW = 1, fontSize=0.55, margin=0.1, unit="in";
 
     var setPos = function(elem, posX, posY, sizeW, sizeH,
       alignX, alignY, offsetX, offsetY, clientW, clientH)
@@ -660,8 +674,8 @@ function resize() {
       elem.style.width = "" + sizeW + unit;
       elem.style.height = "" + sizeH + unit;
       // border ignored, for now
-      elem.style.left = "" + (offsetX + alignX * 0.5 * (clientW - sizeW) + posX * sizeW - ( (alignX-1) * 0.05)) + unit;
-      elem.style.top = "" + (offsetY + alignY * 0.5 * (clientH - sizeH) + posY * sizeH - ( (alignY-1) * 0.05)) + unit;
+      elem.style.left = "" + (offsetX + alignX * 0.5 * (clientW - sizeW) + posX * sizeW - ( (alignX-1) * margin/2 )) + unit;
+      elem.style.top = "" + (offsetY + alignY * 0.5 * (clientH - sizeH) + posY * sizeH - ( (alignY-1) * margin/2 )) + unit;
       elem.style.display = "block";
       elem.style.fontSize = "" + fontSize + unit;
     }
@@ -696,14 +710,25 @@ function resize() {
       },
       "JOY":
       function() {
-        setPos(touchRotLeft,  -0.5, 1, buttonW, buttonH, 2, 1, 0, 0, winW, winH);
-        setPos(touchRot180,   -0.5, -1, buttonW, buttonH, 2, 1, 0, 0, winW, winH);
-        setPos(touchRotRight, 0, 0, buttonW, buttonH, 2, 1, 0, 0, winW, winH);
-        setPos(touchHold,     -1, 0, buttonW, buttonH, 2, 1, 0, 0, winW, winH);
-        setPos(touchRight,    1, 0, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
-        setPos(touchLeft,     0, 0, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
-        setPos(touchDown,     0.5, 1, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
-        setPos(touchDrop,     0.5, -1, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
+        var oy/*offset Y by block*/,ay/*align Y*/;
+        if (winH-winW>buttonH*1.5) {
+          oy=-1; ay=2;
+        } else {
+          oy=0; ay=1;
+        }
+        /* single finger */
+        buttonW = 0.8;
+        if ((winW-0.1)/4<buttonW) {
+          buttonW=(winW-0.1)/4;
+        }
+        setPos(touchRotLeft,  -0.5, 1+oy, buttonW, buttonH, 2, ay, 0, 0, winW, winH);
+        setPos(touchRot180,   -0.5, -1+oy, buttonW, buttonH, 2, ay, 0, 0, winW, winH);
+        setPos(touchRotRight, 0, 0+oy, buttonW, buttonH, 2, ay, 0, 0, winW, winH);
+        setPos(touchHold,     -1, 0+oy, buttonW, buttonH, 2, ay, 0, 0, winW, winH);
+        setPos(touchRight,    1, 0+oy, buttonW, buttonH, 0, ay, 0, 0, winW, winH);
+        setPos(touchLeft,     0, 0+oy, buttonW, buttonH, 0, ay, 0, 0, winW, winH);
+        setPos(touchDown,     0.5, 1+oy, buttonW, buttonH, 0, ay, 0, 0, winW, winH);
+        setPos(touchDrop,     0.5, -1+oy, buttonW, buttonH, 0, ay, 0, 0, winW, winH);
       },
       "NARROW":
       function() {
@@ -756,15 +781,17 @@ function resize() {
 
       "DELUXE":
       function() {
+        buttonW = 0.8;
+        if ((winW-0.1)/4<buttonW) {
+          buttonW=(winW-0.1)/4;
+        }
         setPos(touchLeft,     0, 0, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
         setPos(touchRight,    1, 0, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
-
         setPos(touchDown,     0, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
-        setPos(touchDrop,     0, -1.2, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
-
+        setPos(touchDrop,     0, -1, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
         setPos(touchRotLeft,  -1, 0, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
-        setPos(touchRotRight, -1, -1.2, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
-        setPos(touchHold,     0.5, -1.2, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
+        setPos(touchRotRight, -1, -1, buttonW, buttonH, 2, 2, 0, 0, winW, winH);
+        setPos(touchHold,     0.5, -1, buttonW, buttonH, 0, 2, 0, 0, winW, winH);
         //setPos(touchRot180,   0, -buttonH*2.4, buttonW, buttonH, 0, 1, 0, 0, winW, winH);
         touchRot180.style.display = "none";
       },
@@ -807,13 +834,14 @@ function resize() {
 
   //if (gameState === 0) {
   try {
-    piece.drawGhost();
     piece.draw();
     stack.draw();
     preview.draw();
     if (hold.piece !== void 0) {
       hold.draw();
     }
+    statistics();
+    statisticsStack();
   } catch(e) {
   }
   //}
@@ -898,9 +926,12 @@ function init(gt, params) {
   //TODO Check if needed.
   piece.shiftDir = 0;
   piece.shiftReleased = true;
+  piece.irsDir = 0;
+  piece.held = false;
   piece.dead = true;
 
   frame = 0;
+  frameSkipped = 0;
   lastPos = 'reset';
   stack.new(10, 20, 4);
   toGreyRow = stack.height - 1;
@@ -926,7 +957,7 @@ function init(gt, params) {
   digLines = [];
   if (gametype === 3) {
     frameLastRise = 0;
-
+    frameLastHarddropDown = 0;
     //statsLines.innerHTML = "0";
 
     //stack.draw();
@@ -971,11 +1002,10 @@ function init(gt, params) {
   startTime = Date.now();
   startPauseTime = 0;
   pauseTime = 0;
+  scoreTime = 0;
   paused = false;
   gameState = 2;
 
-  statistics();
-  statisticsStack();
   resize();
 }
 
@@ -1009,7 +1039,7 @@ window.requestAnimFrame = (function () {
 })();
 
 function pause() {
-  if (gameState === 0) {
+  if (gameState === 0 || gameState === 4) {
     paused = true;
     startPauseTime = Date.now();
     msg.innerHTML = "Paused";
@@ -1054,12 +1084,23 @@ function scorestring(s, n){
  * Draws the stats next to the tetrion.
  */
 function statistics() {
-  var time = Date.now() - startTime - pauseTime;
-  scoreTime = time;
+
+  var time = scoreTime || 0;
   var seconds = (time / 1000 % 60).toFixed(2);
   var minutes = ~~(time / 60000);
-  statsTime.innerHTML = (minutes < 10 ? '0' : '') + minutes +
-                        (seconds < 10 ? ':0' : ':') + seconds;
+  var displayTime =
+    (minutes < 10 ? '0' : '') + minutes +
+    (seconds < 10 ? ':0' : ':') + seconds;
+  var fsbl = 30; /* frameskip bar length */
+  var skipL = frameSkipped % (fsbl*2), skipR = frameSkipped % (fsbl*2);
+  skipL = (skipL-fsbl<0)?0:(skipL-fsbl);
+  skipR = (skipR>fsbl)?fsbl:skipR;
+  skipL = skipL/fsbl*timeCanvas.width;
+  skipR = skipR/fsbl*timeCanvas.width;
+  
+  timeCtx.clearRect(0, 0, timeCanvas.width, timeCanvas.height);
+  timeCtx.fillText(displayTime, timeCanvas.width/2, timeCanvas.height/2);
+  timeCtx.fillRect(skipL,timeCanvas.height-0.2,skipR,timeCanvas.height);
 }
 
 /**
@@ -1386,19 +1427,6 @@ function touch(e)
         preventDefault: function(){}
       });
     for (var i = 0, l = e.touches.length; i < l; i++) {
-  /*
-    //fails when dragged
-      if (e.touches[i].target) {
-        if (e.touches[i].target.hasOwnProperty("bindsMemberName")) {
-          keyUpDown({
-            type: "keydown",
-            keyCode: binds[e.touches[i].target.bindsMemberName],
-            preventDefault: function(){}
-          });
-          e.preventDefault();
-        }
-      }
-  */
       var tX = e.touches[i].pageX, tY = e.touches[i].pageY;
       for (var j in touchButtons) {
         var oRef = touchButtons[j];
@@ -1469,6 +1497,7 @@ function update() {
     //piece.finesse++;
   }
   if (!(lastKeys & flags.hardDrop) && flags.hardDrop & keysDown) {
+    frameLastHarddropDown = frame;
     piece.hardDrop();
   }
 
@@ -1476,40 +1505,41 @@ function update() {
 
   if(gametype === 3) { //Dig
     var fromLastRise = frame-frameLastRise;
+    var fromLastHD = (flags.hardDrop & keysDown)?(frame-frameLastHarddropDown):0;
+    
     var arrRow = [8,8,8,8,8,8,8,8,8,8];
-    {
-      var curStage = 0, objCurStage;
-      while(curStage<arrStages.length && arrStages[curStage].begin <= lines + (gameparams["digOffset"] || 0)) {
-        curStage++;
+    var curStage = 0, objCurStage;
+    
+    while(curStage<arrStages.length && arrStages[curStage].begin <= lines + (gameparams["digOffset"] || 0)) {
+      curStage++;
+    }
+    curStage--;
+    objCurStage = arrStages[curStage];
+    if(fromLastRise >= objCurStage.delay || (fromLastHD >= 20 && fromLastRise >= 15)) {
+      //IJLOSTZ
+      var arrRainbow=[
+        2,-1,1,5,4,3,7,6,-1,8,
+        8,8,8,6,6,2,1,5,8,-1,
+        7,7,-1,8,8];
+      var idxRainbow,flagAll,colorUsed;
+      idxRainbow = ~~(objCurStage.begin/100);
+      flagAll = (~~(objCurStage.begin/50))%2;
+      if(idxRainbow >= arrRainbow.length) {
+        idxRainbow = arrRainbow.length - 1;
       }
-      curStage--;
-      objCurStage = arrStages[curStage];
-      if(fromLastRise >= objCurStage.delay) {
-        //IJLOSTZ
-        var arrRainbow=[
-          2,-1,1,5,4,3,7,6,-1,8,
-          8,8,8,6,6,2,1,5,8,-1,
-          7,7,-1,8,8];
-        var idxRainbow,flagAll,colorUsed;
-        idxRainbow = ~~(objCurStage.begin/100);
-        flagAll = (~~(objCurStage.begin/50))%2;
-        if(idxRainbow >= arrRainbow.length) {
-          idxRainbow = arrRainbow.length - 1;
+      colorUsed = arrRainbow[idxRainbow];
+      for(var x=0; x<stack.width; x+=(flagAll===1?1:(stack.width-1))) {
+        if(colorUsed===-1) {
+          arrRow[x]=~~(rng.next()*8+1);
+        } else {
+          arrRow[x]=colorUsed;
         }
-        colorUsed = arrRainbow[idxRainbow];
-        for(var x=0; x<stack.width; x+=(flagAll===1?1:(stack.width-1))) {
-          if(colorUsed===-1) {
-            arrRow[x]=~~(rng.next()*8+1);
-          } else {
-            arrRow[x]=colorUsed;
-          }
-        }
+      }
 
-        objCurStage.gen(arrRow);
-        stack.rowRise(arrRow, piece);
-        frameLastRise=frame;
-        sound.playse("garbage");
-      }
+      objCurStage.gen(arrRow);
+      stack.rowRise(arrRow, piece);
+      frameLastRise=frame;
+      sound.playse("garbage");
     }
   }
 
@@ -1600,9 +1630,18 @@ function update() {
       menu(3);
       sound.playse("endingstart");
     }
+  } else if (gametype === 6) { // Score Attack
+    if (lines>=300) { // exp
+      gameState = 1;
+      msg.innerHTML = 'GREAT!';
+      piece.dead = true;
+      menu(3);
+      sound.playse("endingstart");
+    }
   }
   /* farter */
 
+  scoreTime = Date.now() - scoreStartTime - pauseTime;
   statistics();
 
   if (lastKeys !== keysDown) {
@@ -1617,90 +1656,129 @@ function gameLoop() {
   if (!paused && gameState !== 3) {
     requestAnimFrame(gameLoop);
 
-    //setTimeout(gameLoop, 33);
+    var repeat = ~~((Date.now() - startTime - pauseTime)/1000*60) - frame;
+    if (repeat>1) {
+      frameSkipped += repeat-1;
+    }
 
-    //TODO check to see how pause works in replays.
-    frame++;
+    for (var repf=0;repf<repeat;repf++) {
+      //TODO check to see how pause works in replays.
+      frame++;
+      
+      if (gameState === 0) {
+        // Playing
 
-    if (gameState === 0) {
-      // Playing
+          update();
 
-        update();
+        // TODO improve this with 'dirty' flags.
+        /* farter */ // as you draw for lock delay brightness gradient... give this up..
 
-      // TODO improve this with 'dirty' flags.
-      /* farter */ // as you draw for lock delay brightness gradient... give this up..
-
-      if (piece.x !== lastX ||
-      Math.floor(piece.y) !== lastY ||
-      piece.pos !== lastPos ||
-      piece.lockDelay !== lastLockDelay ||
-      piece.dirty) {
-
-        clear(activeCtx);
-        piece.drawGhost();
-        piece.draw();
-
-      }
-      lastX = piece.x;
-      lastY = Math.floor(piece.y);
-      lastPos = piece.pos;
-      lastLockDelay = piece.lockDelay;
-      piece.dirty = false;
-
-    } else if (gameState === 2) {
-      // Count Down
-      if (frame < 50) {
-        if (msg.innerHTML !== 'READY') msg.innerHTML = 'READY';
-      } else if (frame < 100) {
-        if (msg.innerHTML !== 'GO!') msg.innerHTML = 'GO!';
-      } else {
-        msg.innerHTML = '';
-        gameState = 0;
-        startTime = Date.now();
-        piece.new(preview.next());
-      }
-      // DAS Preload
-      if (lastKeys !== keysDown && !watchingReplay) {
-        replay.keys[frame] = keysDown;
-      } else if (frame in replay.keys) {
-        keysDown = replay.keys[frame];
-      }
-      if (keysDown & flags.moveLeft) {
-        piece.shiftDelay = settings.DAS;
-        piece.shiftReleased = false;
-        piece.shiftDir = -1;
-      } else if (keysDown & flags.moveRight) {
-        piece.shiftDelay = settings.DAS;
-        piece.shiftReleased = false;
-        piece.shiftDir = 1;
-      } else {
-        piece.shiftDelay = 0;
-        piece.shiftReleased = true;
-        piece.shiftDir = 0;
-      }
-      if (lastKeys !== keysDown) {
-        lastKeys = keysDown;
-      }
-    } else if (gameState === 9 || gameState === 1) {
-      if (toGreyRow >= stack.hiddenHeight) {
-        /**
-         * Fade to grey animation played when player loses.
-         */
-        if (toGreyRow === stack.height - 1)
-          clear(activeCtx);
-        if (frame % 2) {
-          for (var x = 0; x < stack.width; x++) {
-             /* farter */ //WTF gamestate-1
-            if (stack.grid[x][toGreyRow])
-              stack.grid[x][toGreyRow] =
-                (gameState === 9 ? 8 : 0);
-          }
-          stack.draw();
-          toGreyRow--;
+        if (piece.x !== lastX ||
+        Math.floor(piece.y) !== lastY ||
+        piece.pos !== lastPos ||
+        piece.lockDelay !== lastLockDelay ||
+        piece.dirty) {
+          piece.draw();
         }
-      } else {
-        trysubmitscore();
-        gameState = 3;
+        lastX = piece.x;
+        lastY = Math.floor(piece.y);
+        lastPos = piece.pos;
+        lastLockDelay = piece.lockDelay;
+        piece.dirty = false;
+
+      } else if (gameState === 2 || gameState === 4) {
+      
+        if (lastKeys !== keysDown && !watchingReplay) {
+          replay.keys[frame] = keysDown;
+        } else if (frame in replay.keys) {
+          keysDown = replay.keys[frame];
+        }
+        // DAS Preload
+        if (keysDown & flags.moveLeft) {
+          piece.shiftDelay = settings.DAS;
+          piece.shiftReleased = false;
+          piece.shiftDir = -1;
+        } else if (keysDown & flags.moveRight) {
+          piece.shiftDelay = settings.DAS;
+          piece.shiftReleased = false;
+          piece.shiftDir = 1;
+        } else {
+          piece.shiftDelay = 0;
+          piece.shiftReleased = true;
+          piece.shiftDir = 0;
+        }
+        if (flags.rotLeft & keysDown && !(lastKeys & flags.rotLeft)) {
+          piece.irsDir = -1;
+          piece.finesse++;
+          console.log("IRS");
+        } else if (flags.rotRight & keysDown && !(lastKeys & flags.rotRight)) {
+          piece.irsDir = 1;
+          piece.finesse++;
+          console.log("IRS");
+        } else if (flags.rot180 & keysDown && !(lastKeys & flags.rot180)) {
+          piece.irsDir = 2;
+          piece.finesse++;
+          console.log("IRS");
+        }
+        if (!(lastKeys & flags.holdPiece) && flags.holdPiece & keysDown) {
+          piece.ihs = true;
+          console.log("IHS");
+        }
+        if (lastKeys !== keysDown) {
+          lastKeys = keysDown;
+        }
+        if (gameState === 2) {
+          // Count Down
+          if (frame < 50) {
+            if (msg.innerHTML !== 'READY') msg.innerHTML = 'READY';
+          } else if (frame < 100) {
+            if (msg.innerHTML !== 'GO!') msg.innerHTML = 'GO!';
+          } else {
+            msg.innerHTML = '';
+            scoreStartTime = Date.now();
+            scoreTime = 0;
+          }
+        } else {
+          piece.are++;
+          scoreTime = Date.now() - scoreStartTime - pauseTime;
+        }
+        if (
+          (gameState === 2 && frame >= 100) ||
+          (gameState === 4 && piece.are >= piece.areLimit)
+        ) {
+          gameState = 0;
+          if (piece.ihs) {
+            piece.index = preview.next();
+            piece.hold();
+          } else {
+            piece.new(preview.next());
+          }
+          piece.draw();
+        }
+        
+        statistics();
+        
+      } else if (gameState === 9 || gameState === 1) {
+        if (toGreyRow >= stack.hiddenHeight) {
+          /**
+           * Fade to grey animation played when player loses.
+           */
+          if (frame % 2) {
+            for (var x = 0; x < stack.width; x++) {
+               /* farter */ //WTF gamestate-1
+              if (stack.grid[x][toGreyRow])
+                stack.grid[x][toGreyRow] =
+                  (gameState === 9 ? 8 : 0);
+            }
+            stack.draw();
+            toGreyRow--;
+          }
+        } else {
+          //clear(activeCtx);
+          //piece.dead = true;
+          trysubmitscore();
+          gameState = 3;
+        }
       }
     }
   }

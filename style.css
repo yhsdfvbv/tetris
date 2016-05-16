@@ -148,6 +148,7 @@ nav li {
 #stats {
   display: block;
   position: absolute;
+  padding: 0;
 }
 #stats tbody {
   display: block;
@@ -155,7 +156,6 @@ nav li {
 #stats tr {
   display: block;
   width: 100%;
-  padding: 0 0.5rem;
 }
 #stats th {
   text-transform: uppercase;
@@ -173,9 +173,11 @@ nav li {
 }
 #time {
   text-align: center;
-  font-weight: 900;
-  font-size: 1.125em;
   display: block;
+}
+#time > canvas {
+  width: 100%;
+  height: 1.125em;
 }
 #score {
   text-align: center;
