@@ -12,8 +12,8 @@ function Piece() {
   this.irsDir = 0;
   this.ihs = false;
   this.shiftDelay = 0;
-  this.shiftDir;
-  this.shiftReleased;
+  this.shiftDir = 0;
+  this.shiftReleased = false;
   this.arrDelay = 0;
   this.held = false;
   this.finesse = 0;
@@ -25,7 +25,8 @@ function Piece() {
  */
 Piece.prototype.new = function(index) {
   // TODO if no arguments, get next grabbag piece
-  console.log("new irs"+this.irsDir+", ihs"+this.ihs);
+  //console.log("new irs"+this.irsDir+", ihs"+this.ihs);
+
   this.pos = RotSys[settings.RotSys].initinfo[index][2];
   this.x = ~~((stack.width - 4) / 2) + RotSys[settings.RotSys].initinfo[index][0];
   this.y = stack.hiddenHeight - 2 + RotSys[settings.RotSys].initinfo[index][1];
@@ -36,8 +37,6 @@ Piece.prototype.new = function(index) {
   this.finesse = 0;
   this.dirty = true;
   this.dead = false;
-  //TODO change this
-  landed = false;
 
   // TODO Do this better. Make clone object func maybe.
   //for property in pieces, this.prop = piece.prop
@@ -116,7 +115,21 @@ Piece.prototype.new = function(index) {
     return;
   }
   
-  piece.checkFall(); //real 20G !
+  //real 20G !
+  if(this.gravity >= 20) {
+    this.checkFall();
+  }
+  if (flags.moveDown & keysDown) {
+    var grav = gravityArr[settings['Soft Drop'] + 1];
+    if (grav >= 20) // 20G softdrop vs. 20G das
+      this.y += this.getDrop(grav);
+    //piece.finesse++;
+  }
+  landed = !this.moveValid(0, 1, this.tetro);
+  
+  if(landed && (this.lockDelay >= this.lockDelayLimit)) {
+    this.checkLock();
+  }
 }
 Piece.prototype.tryKickList = function(kickList, rotated, newPos, offsetX, offsetY) {
   for (var k = 0, len = kickList.length; k < len; k++) {
@@ -170,7 +183,7 @@ Piece.prototype.rotate = function(direction) {
       kickList = WKTableSRS[this.index][kickIndex][curPos];
     else if (settings.RotSys === 1)
       kickList = WKTableCultris;
-    else if (settings.RotSys === 3 || settings.RotSys === 4)
+    else
       kickList = WKTableDRS[kickIndex];
     this.tryKickList(kickList, rotated, newPos, offsetX, offsetY);
   }
@@ -222,7 +235,7 @@ Piece.prototype.checkShift = function() {
   // here problem causes it taking 2 frames to move 1 grid even ARR=1
   if (this.shiftDir) {
     // 1. When key pressed instantly move over once.
-    if (this.shiftReleased) {
+    if (this.shiftReleased && settings.DAS !== 0) {
       this.shift(this.shiftDir);
       this.shiftDelay++;
       this.shiftReleased = false;
@@ -231,7 +244,7 @@ Piece.prototype.checkShift = function() {
       this.shiftDelay++;
     // 3. Once the delay is complete, move over once.
     //     Increment delay so this doesn't run again.
-    } else if (this.shiftDelay === settings.DAS && settings.DAS !== 0) {
+    } else if (this.shiftDelay === settings.DAS) {
       this.shift(this.shiftDir);
       if (settings.ARR !== 0) this.shiftDelay++;
     // 4. Apply ARR delay
@@ -268,7 +281,6 @@ Piece.prototype.shift = function(direction) {
           var grav = gravityArr[settings['Soft Drop'] + 1];
           if (grav >= 20) // 20G softdrop vs. 20G das
             this.y += this.getDrop(grav);
-          piece.shiftDown();
           //piece.finesse++;
         }
       } else {
@@ -289,7 +301,6 @@ Piece.prototype.multiShift = function(direction, count) {
       var grav = gravityArr[settings['Soft Drop'] + 1];
       if (grav >= 20) // 20G softdrop vs. 20G das
         this.y += this.getDrop(grav);
-      piece.shiftDown();
       //piece.finesse++;
     }
   }
@@ -365,13 +376,10 @@ Piece.prototype.checkFall = function() {
   if (Math.abs(this.y - Math.round(this.y))<0.000001)
     this.y = Math.round(this.y);
 }
-Piece.prototype.update = function() {
-  if (this.moveValid(0, 1, this.tetro)) {
-    landed = false;
-    this.checkFall();
-  } else {
-    landed = true;
-    this.y = Math.floor(this.y);
+
+Piece.prototype.checkLock = function() {
+  if (landed) {
+    this.y = Math.floor(this.y); //@sega
     if (this.lockDelay >= this.lockDelayLimit) {
       stack.addPiece(this.tetro);
       sound.playse("lock");
@@ -385,10 +393,18 @@ Piece.prototype.update = function() {
         this.are = 0;
       }
       /* farter */
-    } else {
-      this.lockDelay++;
     }
   }
+}
+Piece.prototype.update = function() {
+  if (this.moveValid(0, 1, this.tetro)) {
+    this.checkFall();
+  }
+  landed = !this.moveValid(0, 1, this.tetro);
+  if (landed) {
+    this.lockDelay++;
+  }
+  this.checkLock();
 }
 Piece.prototype.draw = function() {
   clear(activeCtx);
@@ -398,6 +414,8 @@ Piece.prototype.draw = function() {
       var a = void 0;
       if (landed) {
         a = this.lockDelay / this.lockDelayLimit;
+        if (this.lockDelayLimit === 0)
+          a = 0;
         a = Math.pow(a,2)*0.5;
       }
       draw(this.tetro, this.x, Math.floor(this.y) - stack.hiddenHeight, activeCtx, void 0, a);

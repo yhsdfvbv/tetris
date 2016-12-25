@@ -205,11 +205,21 @@ var OffsetQRS = [
   [[ 0, 0],[ 0, 0],[ 0,-1],[+1, 0]],
   [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
   [[ 0, 0],[ 0, 0],[ 0,-1],[+1, 0]]];
+var OffsetAtari = [
+  [[ 0,-1],[-1, 0],[ 0,-2],[ 0, 0]],
+  [[ 0, 0],[-1, 0],[ 0,-1],[ 0, 0]],
+  [[ 0, 0],[-1, 0],[ 0,-1],[ 0, 0]],
+  [[-2, 0],[-2, 0],[-2, 0],[-2, 0]],
+  [[ 0, 0],[-1, 0],[ 0,-1],[ 0, 0]],
+  [[ 0, 0],[-1, 0],[ 0,-1],[ 0, 0]],
+  [[ 0, 0],[-1, 0],[ 0,-1],[ 0, 0]]];
 //x, y, r
-var InitInfoSRS = [[0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0]];
-var InitInfoARS = [[0, 0, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0,+1, 0],[ 0,+1, 0],[ 0, 0, 2],[ 0,+1, 0]];
-var InitInfoDRS = [[0,+1, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0,+1, 0],[ 0,+1, 0],[ 0, 0, 2],[ 0,+1, 0]];
-var InitInfoQRS = [[0, 0, 0],[ 0, 0, 1],[ 0, 0, 3],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 2],[ 0, 0, 0]];
+var InitInfoSRS = [[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0]];
+var InitInfoARS = [[ 0, 0, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0,+1, 0],[ 0,+1, 0],[ 0, 0, 2],[ 0,+1, 0]];
+var InitInfoDRS = [[ 0,+1, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0,+1, 0],[ 0,+1, 0],[ 0, 0, 2],[ 0,+1, 0]];
+var InitInfoQRS = [[ 0, 0, 0],[ 0, 0, 1],[ 0, 0, 3],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 2],[ 0, 0, 0]];
+var InitInfoAtari = [[+1, 0, 0],[+1, 0, 2],[+1, 0, 2],[ 0,+1, 0],[+1,+1, 0],[+1, 0, 2],[+1,+1, 0]];
+
 
 //SRS, C2, ARS, QRS, DRS
 var RotSys = [
@@ -232,7 +242,12 @@ var RotSys = [
   {
     initinfo: InitInfoQRS,
     offset: OffsetQRS
-  }
+  },
+  {
+    initinfo: InitInfoAtari,
+    offset: OffsetAtari
+  },
+  
 ];
 
 // Define shapes and spawns.
@@ -395,7 +410,7 @@ var setting = {
     return array;
   })(),
   'Lock Delay': range(0, 101),
-  RotSys: ['Super', 'C2', 'Arika*', 'DTET', 'QQ'],
+  RotSys: ['Super', 'C2', 'Arika*', 'DTET', 'QQ', 'Atari'],
   Size: ['Auto', 'Small', 'Medium', 'Large'],
   Sound: ['Off', 'On'],
   Volume: range(0, 101),
@@ -428,84 +443,130 @@ var arrRowGen = {
 };
 
 var arrStages = [
-      {begin:   0, delay: 60*5, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
-      {begin:   5, delay: 60*7, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
-      {begin:  20, delay: 60*5, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
-      {begin:  40, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,2,3,4)}},
-      {begin:  50, delay: 60*2, gen:function(arr){arrRowGen.simple(arr,4,1,2)}},
-      {begin:  70, delay: 60*5, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
-      {begin:  80, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
-      {begin:  90, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
+  {begin:   0, delay: 60*5, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
+  {begin:   5, delay: 60*7, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
+  {begin:  20, delay: 60*5, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
+  {begin:  40, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,2,3,4)}},
+  {begin:  50, delay: 60*2, gen:function(arr){arrRowGen.simple(arr,4,1,2)}},
+  {begin:  70, delay: 60*5, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
+  {begin:  80, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
+  {begin:  90, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
 
-      {begin: 100, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin: 120, delay: 60*3.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin: 150, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
-      {begin: 170, delay: 60*3.5, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
+  {begin: 100, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+  {begin: 120, delay: 60*3.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+  {begin: 150, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
+  {begin: 170, delay: 60*3.5, gen:function(arr){arrRowGen.simple(arr,0,7,4)}},
 
-      {begin: 200, delay: 60*3.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin: 220, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin: 250, delay: 60*2.5, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
+  {begin: 200, delay: 60*3.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+  {begin: 220, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+  {begin: 250, delay: 60*2.5, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
 
-      {begin: 300, delay: 60*3.5, gen:function(arr){arrRowGen.simplemessy(arr,0.9)}},
-      {begin: 320, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.9)}},
-      {begin: 350, delay: 60*3.5, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
-      {begin: 390, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
-      {begin: 400, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.6)}},
-      {begin: 430, delay: 60*5, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
-      {begin: 450, delay: 60*7, gen:function(arr){arrRowGen.simplemessy(arr,0.1)}},
+  {begin: 300, delay: 60*3.5, gen:function(arr){arrRowGen.simplemessy(arr,0.9)}},
+  {begin: 320, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.9)}},
+  {begin: 350, delay: 60*3.5, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
+  {begin: 390, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
+  {begin: 400, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.6)}},
+  {begin: 430, delay: 60*5, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
+  {begin: 450, delay: 60*7, gen:function(arr){arrRowGen.simplemessy(arr,0.1)}},
 
-      {begin: 470, delay: 60*7, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
-      {begin: 500, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
-      {begin: 550, delay: 60*2.5, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
-      {begin: 600, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.6)}},
-      {begin: 650, delay: 60*2.5, gen:function(arr){arrRowGen.simplemessy(arr,0.6)}},
-      {begin: 700, delay: 60*3.5, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
-      {begin: 750, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
-      {begin: 780, delay: 60*2.5, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
-      {begin: 800, delay: 60*2, gen:function(arr){arrRowGen.simplemessy(arr,0.9)}},
-      {begin: 900, delay: 60*1.75, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin: 950, delay: 60*1.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+  {begin: 470, delay: 60*7, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
+  {begin: 500, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
+  {begin: 550, delay: 60*2.5, gen:function(arr){arrRowGen.simplemessy(arr,0.8)}},
+  {begin: 600, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.6)}},
+  {begin: 650, delay: 60*2.5, gen:function(arr){arrRowGen.simplemessy(arr,0.6)}},
+  {begin: 700, delay: 60*3.5, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
+  {begin: 750, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
+  {begin: 780, delay: 60*2.5, gen:function(arr){arrRowGen.simplemessy(arr,0.4)}},
+  {begin: 800, delay: 60*2, gen:function(arr){arrRowGen.simplemessy(arr,0.9)}},
+  {begin: 900, delay: 60*1.75, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+  {begin: 950, delay: 60*1.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
 
-      {begin:1000, delay: 60*5, gen:function(arr){arrRowGen.simplemessy(arr,0.0)}},
-      {begin:1020, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.0)}},
-      {begin:1050, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,1,1,8)}},
-      {begin:1100, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,2,1,6)}},
-      {begin:1150, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,3,1,4)}},
-      {begin:1200, delay: 60*2, gen:function(arr){arrRowGen.simple(arr,4,1,2)}},
-      {begin:1210, delay: 60*1.5, gen:function(arr){arrRowGen.simple(arr,4,1,2)}},
-      {begin:1210, delay: 60*1, gen:function(arr){arrRowGen.simple(arr,4,1,2)}},
-      {begin:1250, delay: 60*2, gen:function(arr){arrRowGen.simple(arr,9,1,1)}},
-      {begin:1260, delay: 60*0.5, gen:function(arr){arrRowGen.simple(arr,9,1,1)}},
-      {begin:1300, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.0)}},
-      {begin:1350, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.1)}},
-      {begin:1400, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.15)}},
-      {begin:1450, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.2)}},
-      {begin:1480, delay: 60*5, gen:function(arr){arrRowGen.simplemessy(arr,0.2)}},
+  {begin:1000, delay: 60*5, gen:function(arr){arrRowGen.simplemessy(arr,0.0)}},
+  {begin:1020, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.0)}},
+  {begin:1050, delay: 60*4, gen:function(arr){arrRowGen.simple(arr,1,1,8)}},
+  {begin:1100, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,2,1,6)}},
+  {begin:1150, delay: 60*3, gen:function(arr){arrRowGen.simple(arr,3,1,4)}},
+  {begin:1200, delay: 60*2, gen:function(arr){arrRowGen.simple(arr,4,1,2)}},
+  {begin:1210, delay: 60*1.5, gen:function(arr){arrRowGen.simple(arr,4,1,2)}},
+  {begin:1210, delay: 60*1, gen:function(arr){arrRowGen.simple(arr,4,1,2)}},
+  {begin:1250, delay: 60*2, gen:function(arr){arrRowGen.simple(arr,9,1,1)}},
+  {begin:1260, delay: 60*0.5, gen:function(arr){arrRowGen.simple(arr,9,1,1)}},
+  {begin:1300, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.0)}},
+  {begin:1350, delay: 60*3, gen:function(arr){arrRowGen.simplemessy(arr,0.1)}},
+  {begin:1400, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.15)}},
+  {begin:1450, delay: 60*4, gen:function(arr){arrRowGen.simplemessy(arr,0.2)}},
+  {begin:1480, delay: 60*5, gen:function(arr){arrRowGen.simplemessy(arr,0.2)}},
 
-      {begin:1500, delay: 60*1.5, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
-      {begin:1550, delay: 60*1.4, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
-      {begin:1600, delay: 60*1.3, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
-      {begin:1650, delay: 60*1.2, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
-      {begin:1700, delay: 60*1.3, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin:1800, delay: 60*1.2, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin:1850, delay: 60*1.15, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin:1900, delay: 60*1.1, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin:1950, delay: 60*1.05, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+  {begin:1500, delay: 60*1.5, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
+  {begin:1550, delay: 60*1.4, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
+  {begin:1600, delay: 60*1.3, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
+  {begin:1650, delay: 60*1.2, gen:function(arr){arrRowGen.simple(arr,0,9,2)}},
+  {begin:1700, delay: 60*1.3, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+  {begin:1800, delay: 60*1.2, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+  {begin:1850, delay: 60*1.15, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+  {begin:1900, delay: 60*1.1, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+  {begin:1950, delay: 60*1.05, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
 
-      {begin:2000, delay: 60*1.0, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin:2050, delay: 60*0.95, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin:2100, delay: 60*0.9, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin:2150, delay: 60*0.85, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin:2180, delay: 60*0.8, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin:2190, delay: 60*1.0, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin:2200, delay: 60*0.8, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin:2300, delay: 60*0.75, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin:2400, delay: 60*0.7, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin:2450, delay: 60*0.6, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-      {begin:2500, delay: 60*0.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
-
+  {begin:2000, delay: 60*1.0, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+  {begin:2050, delay: 60*0.95, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+  {begin:2100, delay: 60*0.9, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+  {begin:2150, delay: 60*0.85, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+  {begin:2180, delay: 60*0.8, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+  {begin:2190, delay: 60*1.0, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+  {begin:2200, delay: 60*0.8, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+  {begin:2300, delay: 60*0.75, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+  {begin:2400, delay: 60*0.7, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+  {begin:2450, delay: 60*0.6, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
+  {begin:2500, delay: 60*0.5, gen:function(arr){arrRowGen.simple(arr,0,10,1)}},
 
 ];
+
+var sprintRanks= [
+  {t:300, u:"再见", b:"BYE."},
+  {t:240, u:"终于……", b:"Finally..."},
+  {t:210, u:"<small>你一定是在逗我</small>", b:"Too slow."},
+  {t:180, u:"渣渣", b:"Well..."},
+  {t:160, u:"<small>速度速度加快</small>", b:"Go faster."},
+  {t:140, u:"<small>还能再给力点么</small>", b:"Any more?"},
+  {t:120, u:"2分钟", b:"Beat 2 min."},
+  {t:100, u:"新世界", b:"New world."},
+  {t: 90, u:"超越秒针", b:"1 drop/sec!"},
+  {t: 80, u:"恭喜入门", b:"Not bad."},
+  {t: 73, u:"渐入佳境", b:"Going deeper."},
+  {t: 69, u:"就差10秒", b:"10 sec faster."},
+  {t: 63, u:"还有几秒", b:"Approaching."},
+  {t: 60, u:"最后一点", b:"Almost there!"},
+  {t: 56, u:"1分钟就够了", b:"1-min Sprinter!"},
+  {t: 53, u:"并不是沙包", b:"<small>No longer rookie.</small>"},
+  {t: 50, u:"50不是梦", b:"Beat 50."},
+  {t: 48, u:"每秒2块", b:"2 drops/sec!"},
+  {t: 45, u:"很能打嘛", b:"u can tetris."},
+  {t: 42, u:"有点厉害", b:"Interesting."},
+  {t: 40, u:"于是呢？", b:"So?"},
+  {t: 38, u:"高手", b:"Good."},
+  {t: 35, u:"停不下来", b:"Unstoppable."},
+  {t: 33, u:"触手", b:"Octopus"},
+  {t: 31, u:"每秒3块", b:"3 drops/sec!"},
+  {t: 30, u:"别这样", b:"Noooo"},
+  {t: 29, u:"你赢了", b:"You win."},
+  {t: 27, u:"这不魔法", b:"Magic."},
+  {t: 25, u:"闪电", b:"Lightning!"},
+  {t: 24, u:"每秒4块", b:"4 drops/sec!"},
+  {t: 23, u:"神兽", b:"Alien."},
+  {t: 22, u:"神兽他妈", b:"Beats Alien."},
+  {t: 21, u:"拯救地球", b:"<small>Save the world?</small>"},
+  {t: 20, u:"你确定？", b:"r u sure?"},
+  {t: 19, u:"5块每秒", b:"5pps"},
+  {t: 18, u:"……", b:"..."},
+  {t: 16.66, u:"…………", b:"......"},
+  {t: 14.28, u:"6块每秒", b:"6pps"},
+  {t: 12.50, u:"7块每秒", b:"7pps"},
+  {t: 11.11, u:"8块每秒", b:"8pps"},
+  {t: 10.00, u:"9块每秒", b:"9pps"},
+  {t:  9.00, u:"10块每秒", b:"10pps"},
+  {t:  0.00, u:"←_←", b:"→_→"}
+];
+
 var frame;
 var frameLastRise;
 var frameLastHarddropDown;
@@ -924,11 +985,7 @@ function init(gt, params) {
   lastKeys = 0;
   released = 255;
   //TODO Check if needed.
-  piece.shiftDir = 0;
-  piece.shiftReleased = true;
-  piece.irsDir = 0;
-  piece.held = false;
-  piece.dead = true;
+  piece = new Piece();
 
   frame = 0;
   frameSkipped = 0;
@@ -997,6 +1054,8 @@ function init(gt, params) {
   // don't keep looping when not played
   console.log(paused,gameState);
   if (paused || gameState === 3) {
+    console.log("start inloop",inloop);
+    inloop=true;
     requestAnimFrame(gameLoop);
   }
   startTime = Date.now();
@@ -1052,6 +1111,8 @@ function unpause() {
   pauseTime += (Date.now() - startPauseTime);
   msg.innerHTML = '';
   menu();
+  console.log("start inloop", inloop);
+  inloop = true;
   requestAnimFrame(gameLoop);
 }
 
@@ -1550,54 +1611,9 @@ function update() {
       gameState = 1;
       var rank = null;
       var time = (Date.now() - startTime - pauseTime) / 1000;
-      var ranks= [
-        {t:300, u:"再见", b:"BYE."},
-        {t:240, u:"终于……", b:"Finally..."},
-        {t:210, u:"<small>你一定是在逗我</small>", b:"Too slow."},
-        {t:180, u:"渣渣", b:"Well..."},
-        {t:160, u:"<small>速度速度加快</small>", b:"Go faster."},
-        {t:140, u:"<small>还能再给力点么</small>", b:"Any more?"},
-        {t:120, u:"2分钟", b:"Beat 2 min."},
-        {t:100, u:"新世界", b:"New world."},
-        {t: 90, u:"超越秒针", b:"1 drop/sec!"},
-        {t: 80, u:"恭喜入门", b:"Not bad."},
-        {t: 73, u:"渐入佳境", b:"Going deeper."},
-        {t: 69, u:"就差10秒", b:"10 sec faster."},
-        {t: 63, u:"还有几秒", b:"Approaching."},
-        {t: 60, u:"最后一点", b:"Almost there!"},
-        {t: 56, u:"1分钟就够了", b:"1-min Sprinter!"},
-        {t: 53, u:"并不是沙包", b:"<small>No longer rookie.</small>"},
-        {t: 50, u:"50不是梦", b:"Beat 50."},
-        {t: 48, u:"每秒2块", b:"2 drops/sec!"},
-        {t: 45, u:"很能打嘛", b:"u can tetris."},
-        {t: 42, u:"有点厉害", b:"Interesting."},
-        {t: 40, u:"于是呢？", b:"So?"},
-        {t: 38, u:"高手", b:"Good."},
-        {t: 35, u:"停不下来", b:"Unstoppable."},
-        {t: 33, u:"触手", b:"Octopus"},
-        {t: 31, u:"每秒3块", b:"3 drops/sec!"},
-        {t: 30, u:"别这样", b:"Noooo"},
-        {t: 29, u:"你赢了", b:"You win."},
-        {t: 27, u:"这不魔法", b:"Magic."},
-        {t: 25, u:"闪电", b:"Lightning!"},
-        {t: 24, u:"每秒4块", b:"4 drops/sec!"},
-        {t: 23, u:"神兽", b:"Alien."},
-        {t: 22, u:"神兽他妈", b:"Beats Alien."},
-        {t: 21, u:"拯救地球", b:"<small>Save the world?</small>"},
-        {t: 20, u:"你确定？", b:"r u sure?"},
-        {t: 19, u:"5块每秒", b:"5pps"},
-        {t: 18, u:"……", b:"..."},
-        {t: 16.66, u:"…………", b:"......"},
-        {t: 14.28, u:"6块每秒", b:"6pps"},
-        {t: 12.50, u:"7块每秒", b:"7pps"},
-        {t: 11.11, u:"8块每秒", b:"8pps"},
-        {t: 10.00, u:"9块每秒", b:"9pps"},
-        {t:  9.00, u:"10块每秒", b:"10pps"},
-        {t:  0.00, u:"←_←", b:"→_→"}
-      ];
-      for (var i in ranks) {
-        if (time > ranks[i].t) {
-          rank = ranks[i];
+      for (var i in sprintRanks) {
+        if (time > sprintRanks[i].t) {
+          rank = sprintRanks[i];
           break;
         }
       }
@@ -1649,21 +1665,23 @@ function update() {
   }
 }
 
+var inloop = false; //debug
 function gameLoop() {
 
   //if (frame % 60 == 0) console.log("running");
+  var fps=60;
 
   if (!paused && gameState !== 3) {
     requestAnimFrame(gameLoop);
 
-    var repeat = ~~((Date.now() - startTime - pauseTime)/1000*60) - frame;
+    var repeat = ~~((Date.now() - startTime - pauseTime)/1000*fps) - frame;
     if (repeat>1) {
       frameSkipped += repeat-1;
     }
 
     for (var repf=0;repf<repeat;repf++) {
       //TODO check to see how pause works in replays.
-      frame++;
+      
       
       if (gameState === 0) {
         // Playing
@@ -1729,21 +1747,22 @@ function gameLoop() {
         }
         if (gameState === 2) {
           // Count Down
-          if (frame < 50) {
-            if (msg.innerHTML !== 'READY') msg.innerHTML = 'READY';
-          } else if (frame < 100) {
-            if (msg.innerHTML !== 'GO!') msg.innerHTML = 'GO!';
-          } else {
+          if (frame === 0) {
+            msg.innerHTML = '各就各位<br />READY';
+          } else if (frame === ~~(fps*5/6)) {
+            msg.innerHTML = '走着~<br />GO!';
+          } else if (frame === ~~(fps*10/6)) {
             msg.innerHTML = '';
             scoreStartTime = Date.now();
-            scoreTime = 0;
           }
+          scoreTime = 0;
         } else {
+          // are
           piece.are++;
           scoreTime = Date.now() - scoreStartTime - pauseTime;
         }
         if (
-          (gameState === 2 && frame >= 100) ||
+          (gameState === 2 && frame >= fps*10/6) ||
           (gameState === 4 && piece.are >= piece.areLimit)
         ) {
           gameState = 0;
@@ -1754,6 +1773,7 @@ function gameLoop() {
             piece.new(preview.next());
           }
           piece.draw();
+          scoreTime = Date.now() - scoreStartTime - pauseTime;
         }
         
         statistics();
@@ -1780,7 +1800,11 @@ function gameLoop() {
           gameState = 3;
         }
       }
+      frame++;
     }
+  } else {
+    console.log("stop inloop",inloop)
+    inloop = false;
   }
 }
 
