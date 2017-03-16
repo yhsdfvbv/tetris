@@ -46,8 +46,8 @@ a.btn {
   margin: 1em auto;
   width: 70%;
   height: 1.4rem;
-  border: 2px solid #FFF;
-  border-radius: 5px;
+  border: .125rem solid #ccc;
+  border-radius: .3rem;
   font-size: 1rem;
   font-family: 'Trebuchet MS', 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
   font-weight: bold;
@@ -61,12 +61,15 @@ a.btn:hover {
   background-color: #222;
   transition: background-color .1s ease;
 }
+a.btn.highlight {
+	box-shadow: 0 0 .5rem #fff;
+}
 a.btn.btn-inline {
   display: inline-block;
   margin: 0 0.5rem;
 }
 div.btn-container {
-  margin: 1em auto;
+  margin: 1rem auto;
 }
 div.btn-container.btn-container-bottom {
   position: absolute;

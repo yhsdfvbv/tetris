@@ -82,7 +82,7 @@ touchRotRight.bindsMemberName = "rotRight";
 touchRotLeft.bindsMemberName = "rotLeft";
 touchRot180.bindsMemberName = "rot180";
 
-var nLayouts = 8, currLayout = -1 /* auto */;
+var nLayouts = 7, currLayout = -2 /* none */;
 
 /**
  * Piece data
@@ -568,12 +568,24 @@ var sprintRanks= [
 ];
 
 var frame;
-var frameLastRise;
-var frameLastHarddropDown;
 var frameSkipped;
 
 /**
-*Pausing variables
+* for dig challenge mode
+*/
+
+var frameLastRise;
+var frameLastHarddropDown;
+
+/**
+* for dig zen mode
+*/
+
+var digZenBuffer;
+var lastPiecesSet;
+
+/**
+* Pausing variables
 */
 
 var startPauseTime;
@@ -860,7 +872,9 @@ function resize() {
     };
 
     setPos(touchLayout, 0, 0, buttonW, buttonH, 2, 0, 0, 0, winW, winH);
-    if(currLayout === -1) { // auto detection
+		if(currLayout === -2) { // none
+			layouts["NONE"]();
+		}else if(currLayout === -1) { // auto detection
       if(winW<buttonW*3) {
         layouts["NONE"]();
       }
@@ -882,7 +896,7 @@ function resize() {
       }
     }
     else {
-      layouts[["NONE","KBD_R","KBD_L","JOY","NARROW","NARROW_L","NARROW_LM","DELUXE"][currLayout]]();
+      layouts[["KBD_R","KBD_L","JOY","NARROW","NARROW_L","NARROW_LM","DELUXE"][currLayout]]();
     }
 
   }
@@ -1046,6 +1060,10 @@ function init(gt, params) {
       }
     }
     //stack.draw(); //resize
+  }
+  if (gametype === 7){
+		lastPiecesSet = 0;
+		digZenBuffer = 0;
   }
 
   menu();
@@ -1469,15 +1487,10 @@ function touch(e)
   //if (e.type==="touchmove")
     //e.preventDefault();
   if ((e.type === "touchstart" || e.type === "click") && e.target === touchLayout) {
-    if (currLayout === -1) {
-      currLayout = 0;
-    }
-    else {
-      currLayout++;
-      if (currLayout === nLayouts) {
-        currLayout = -1;
-      }
-    }
+		currLayout++;
+		if (currLayout === nLayouts) {
+			currLayout = -2; //none, auto, 0, 1, 2...
+		}
     resize();
   }
   if (e.type === "touchstart" || e.type === "touchmove" || e.type === "touchend") {
@@ -1602,6 +1615,26 @@ function update() {
       frameLastRise=frame;
       sound.playse("garbage");
     }
+  }else if(gametype===7) { //dig zen
+		for(;lastPiecesSet<piecesSet;lastPiecesSet++){
+			digZenBuffer++;
+			var curStage=~~(lines/30);
+			var piecePerRise=[
+				8,6.5,4,3.5,10/3,
+				3,2.8,2.6,2.4,2.2,
+				2][curStage>10?10:curStage];
+			if(digZenBuffer-piecePerRise > -0.000000001){
+				digZenBuffer-=piecePerRise;
+				if(Math.abs(digZenBuffer) < -0.000000001){
+					digZenBuffer = 0;
+				}
+				var arrRow=[8,8,8,8,8,8,8,8,8,8];
+				arrRow[~~(rng.next()*10)]=0;
+				
+				stack.rowRise(arrRow, piece);
+				sound.playse("garbage");
+			}
+		}
   }
 
   // Win
@@ -1646,8 +1679,16 @@ function update() {
       menu(3);
       sound.playse("endingstart");
     }
-  } else if (gametype === 6) { // Score Attack
-    if (lines>=300) { // exp
+  } else if (gametype === 6) { // 20G
+    if (lines>=300) { // 200 + 100
+      gameState = 1;
+      msg.innerHTML = 'GREAT!';
+      piece.dead = true;
+      menu(3);
+      sound.playse("endingstart");
+    }
+  } else if (gametype === 7) { // dig zen
+    if (lines>=400) { // 300 + 100
       gameState = 1;
       msg.innerHTML = 'GREAT!';
       piece.dead = true;

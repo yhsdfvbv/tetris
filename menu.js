@@ -90,15 +90,19 @@ var key = {
     122: 'F11',
     123: 'F12',
     173: '-',
+    186: ';',
     187: '=',
     188: ',',
+    189: '-',
     190: '.',
     191: '/',
     192: '`',
     219: '[',
     220: '\\',
     221: ']',
-    222: "'"
+    222: "'",
+    undefined: "---",
+    0: "---"
 };
 
 /**
@@ -145,7 +149,7 @@ for (var i = 0, len = controlCells.length; i < len; i++) {
             // TODO DRY
             // Make this into a function and call it when we press Esc.
             binds[currCell.id] = tempKey;
-            currCell.innerHTML = key[tempKey];
+            currCell.innerHTML = key[tempKey] || tempKey;
         }
         tempKey        = binds[this.id];
         this.innerHTML = 'Press key';
@@ -157,16 +161,22 @@ addEventListener('keyup', function (e) {
     // if click outside of cell or press esc clear currCell
     // reset binds button.
     if (currCell) {
+				var newKey=e.keyCode;
+				if(newKey===8){
+						newKey=void 0;
+				}
         // Checks if key already in use, and unbinds it.
-        for (var i in binds) {
-            if (e.keyCode === binds[i]) {
-                binds[i]                             = void 0;
-                document.getElementById(i).innerHTML = binds[i];
-            }
-        }
+        if(newKey){
+						for (var i in binds) {
+								if (newKey === binds[i]) {
+										binds[i]                             = void 0;
+										document.getElementById(i).innerHTML = key[binds[i]];
+								}
+						}
+				}
         // Binds the key and saves the data.
-        binds[currCell.id] = e.keyCode;
-        currCell.innerHTML = key[e.keyCode];
+        binds[currCell.id] = newKey;
+        currCell.innerHTML = key[newKey] || newKey;
         localStorage.setItem('binds', JSON.stringify(binds));
         currCell           = 0;
     }
@@ -246,8 +256,10 @@ function loadLocalData() {
     if (localStorage['binds']) {
         binds = JSON.parse(localStorage.getItem('binds'));
         for (var i = 0, len = controlCells.length; i < len; i++) {
-            controlCells[i].innerHTML = key[binds[controlCells[i].id]];
+            controlCells[i].innerHTML = key[binds[controlCells[i].id]] || binds[controlCells[i].id];
         }
+    }else{
+				document.getElementById("btnbinds").classList.add("highlight");
     }
     // TODO When new version just update with new stuff, rest stays unchanged.
     if (localStorage['version'] !== version) {
