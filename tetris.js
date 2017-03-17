@@ -362,6 +362,7 @@ var mySettings = {
   'Soft Drop': 6,
   'Lock Delay': 30,
   RotSys: 0,
+  Next: 6,
   Size: 0,
   Sound: 0,
   Volume: 100,
@@ -380,6 +381,7 @@ var settingName = {
   'Soft Drop': "Soft Drop 软降速度",
   'Lock Delay': "Lock Delay 锁定延迟",
   RotSys: "Rotation 旋转系统",
+  Next: "Next 预览块数",
   Size: "Size 大小",
   Sound: "Sound 声音",
   Volume: "Volume 音量",
@@ -396,7 +398,7 @@ var setting = {
     array.push('Auto');
     array.push('0G');
     for (var i = 1; i < 64; i*=2)
-      array.push(i + '/64G');
+      array.push('1/'+(64/i)+'G');
     for (var i = 1; i <= 20; i+=19)
       array.push(i + 'G');
     return array;
@@ -404,13 +406,14 @@ var setting = {
   'Soft Drop': (function() {
     var array = [];
     for (var i = 1; i < 64; i*=2)
-      array.push(i + '/64G');
+      array.push('1/'+(64/i)+'G');
     for (var i = 1; i <= 20; i+=19)
       array.push(i + 'G');
     return array;
   })(),
   'Lock Delay': range(0, 101),
   RotSys: ['Super', 'C2', 'Arika*', 'DTET', 'QQ', 'Atari'],
+  Next: ['&nbsp;', '1', '2', '3', '4', '5', '6'],
   Size: ['Auto', 'Small', 'Medium', 'Large'],
   Sound: ['Off', 'On'],
   Volume: range(0, 101),
@@ -522,13 +525,19 @@ var arrStages = [
 ];
 
 var sprintRanks= [
-  {t:300, u:"再见", b:"BYE."},
+	{t:600, u:"修仙去吧", b:"Zen"},
+	{t:540, u:"求进9分钟", b:"9 min...?"},
+	{t:480, u:"求进8分钟", b:"8 min...?"},
+	{t:420, u:"求进7分钟", b:"7 min...?"},
+	{t:360, u:"求进6分钟", b:"6 min...?"},
+  {t:300, u:"求进5分钟", b:"5 min...?"},
   {t:240, u:"终于……", b:"Finally..."},
   {t:210, u:"<small>你一定是在逗我</small>", b:"Too slow."},
   {t:180, u:"渣渣", b:"Well..."},
   {t:160, u:"<small>速度速度加快</small>", b:"Go faster."},
   {t:140, u:"<small>还能再给力点么</small>", b:"Any more?"},
-  {t:120, u:"2分钟", b:"Beat 2 min."},
+  {t:120, u:"2分钟？", b:"Beat 2 min."},
+  {t:110, u:"不难嘛", b:"So easy."},
   {t:100, u:"新世界", b:"New world."},
   {t: 90, u:"超越秒针", b:"1 drop/sec!"},
   {t: 80, u:"恭喜入门", b:"Not bad."},
@@ -564,7 +573,8 @@ var sprintRanks= [
   {t: 11.11, u:"8块每秒", b:"8pps"},
   {t: 10.00, u:"9块每秒", b:"9pps"},
   {t:  9.00, u:"10块每秒", b:"10pps"},
-  {t:  0.00, u:"←_←", b:"→_→"}
+  {t:  0.00, u:"←_←", b:"→_→"},
+  {t:  -1/0, u:"↑_↑", b:"↓_↓"}
 ];
 
 var frame;
@@ -1191,11 +1201,16 @@ function statisticsStack() {
   if(gametype === 0 || gametype === 5)
     statsLines.innerHTML = lineLimit - lines;
   else if(gametype === 1)
-    statsLines.innerHTML = lines;
+    statsLines.innerHTML = '<span style="font-size: 0.5em">' +
+			"Lv. " + ~~(lines/10) +
+			"</span><br />" +
+			lines;
   else if (gametype === 3){
     if (gameparams["digOffset"] || gameparams["digOffset"] !== 0)
-      statsLines.innerHTML = '<span style="font-size: 0.5em">' + gameparams["digOffset"]
-        + "+</span><br />" + lines;
+      statsLines.innerHTML = '<span style="font-size: 0.5em">' +
+				gameparams["digOffset"] +
+        "+</span><br />" +
+        lines;
         // /* farter */
     else
       statsLines.innerHTML = lines;
@@ -1643,7 +1658,7 @@ function update() {
     if (lines >= lineLimit) {
       gameState = 1;
       var rank = null;
-      var time = (Date.now() - startTime - pauseTime) / 1000;
+      var time = (Date.now() - scoreStartTime - pauseTime) / 1000;
       for (var i in sprintRanks) {
         if (time > sprintRanks[i].t) {
           rank = sprintRanks[i];

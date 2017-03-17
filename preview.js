@@ -42,7 +42,8 @@ Preview.prototype.gen = function() {
  */
 Preview.prototype.draw = function() {
   clear(previewCtx);
-  for (var i = 0; i < 6; i++) {
+  var drawCount = (settings["Next"]===void 0) ? 6 : settings["Next"];
+  for (var i = 0; i < drawCount; i++) {
     var p = this.grabBag[i];
     var initInfo = RotSys[settings.RotSys].initinfo[p];
     var rect = pieces[p].rect;
