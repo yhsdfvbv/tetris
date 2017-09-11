@@ -70,22 +70,7 @@ Piece.prototype.new = function(index) {
   //preview.next();
 
   this.lockDelayLimit = setting['Lock Delay'][settings['Lock Delay']];
-  if (settings.Gravity !== 0) {
-    this.areLimit = 0;
-    this.gravity = gravityArr[settings.Gravity - 1];
-  } else if (gametype === 1) { //Marathon
-    this.areLimit = 0;
-    if (level < 20) {
-      this.gravity = [
-        1/60, 1/30, 1/25, 1/20, 1/15, 1/12, 1/10, 1/8,  1/6,  1/6,
-         1/4,  1/4,  1/3,  1/3,  1/3,  1/2,    1,   1,    2,    3
-        ]
-        [level];
-    } else {
-       this.gravity = 20;
-       this.lockDelayLimit = ~~(30 * Math.pow(0.93, (Math.pow(level-20, 0.8)))); // magic!
-    }
-  } else if (gametype === 6) { //Death
+  if (gametype === 6) { //Death
     this.gravity = 20;
     if (level < 20) {
       this.lockDelayLimit = [
@@ -100,16 +85,36 @@ Piece.prototype.new = function(index) {
       this.lockDelayLimit = 11;
       this.areLimit = 6;
     }
+  } else if (settings.Gravity !== 0) {
+    this.areLimit = 0;
+    this.gravity = gravityArr[settings.Gravity - 1];
+  } else if (gametype === 1) { //Marathon
+    this.areLimit = 0;
+    if (level < 20) {
+      this.gravity = [
+        1/60, 1/30, 1/25, 1/20, 1/15, 1/12, 1/10, 1/8,  1/6,  1/6,
+         1/4,  1/4,  1/3,  1/3,  1/3,  1/2,    1,   1,    2,    3
+        ]
+        [level];
+    } else {
+       this.gravity = 20;
+       this.lockDelayLimit = ~~(30 * Math.pow(0.93, (Math.pow(level-20, 0.8)))); // magic!
+    }
   } else {
     this.areLimit = 0;
     this.gravity = gravityUnit;
+  }
+  if (gametype === 0){
+    if(this.lockDelayLimit < 8) {
+      this.lockDelayLimit = 8;
+    }
   }
   
   // Check for blockout.
   if (!this.moveValid(0, 0, this.tetro)) {
     //this.dead = true; //show it?
     gameState = 9;
-    msg.innerHTML = 'BLOCK OUT!';
+    $setText(msg,'BLOCK OUT!');
     menu(3);
     sound.playse("gameover");
     return;
@@ -318,10 +323,12 @@ Piece.prototype.hardDrop = function() {
   var distance = this.getDrop(2147483647);
   this.y += distance;
   score = score.add(bigInt(distance + this.lockDelayLimit - this.lockDelay));
-  statisticsStack();
+  //statisticsStack();
   this.lockDelay = this.lockDelayLimit;
 }
 Piece.prototype.getDrop = function(distance) {
+	if (!this.moveValid(0, 0, this.tetro))
+		return 0;
   for (var i = 1; i <= distance; i++) {
     if (!this.moveValid(0, i, this.tetro))
       return i - 1;
@@ -385,13 +392,17 @@ Piece.prototype.checkLock = function() {
       sound.playse("lock");
       this.dead = true;
       this.dirty = true;
-      this.held = false;
-      if (this.areLimit === 0) {
-        this.new(preview.next()); // consider move to main update
-      } else {
-        gameState = 4;
-        this.are = 0;
-      }
+      if(gameState === 9){ // lockout! don't spawn next piece
+				return;
+      }else{
+				this.held = false;
+				if (this.areLimit === 0) {
+					this.new(preview.next()); // consider move to main update
+				} else {
+					gameState = 4;
+					this.are = 0;
+				}
+			}
       /* farter */
     }
   }
@@ -418,7 +429,7 @@ Piece.prototype.draw = function() {
           a = 0;
         a = Math.pow(a,2)*0.5;
       }
-      draw(this.tetro, this.x, Math.floor(this.y) - stack.hiddenHeight, activeCtx, void 0, a);
+      draw(this.tetro, this.x, Math.floor(this.y) - stack.hiddenHeight, activeCtx, RotSys[settings.RotSys].color[this.index], a);
     }
   }
 }
@@ -429,7 +440,7 @@ Piece.prototype.drawGhost = function() {
          Math.floor(this.y + this.getDrop(2147483647)) - stack.hiddenHeight, activeCtx, 0);
   } else if (settings.Ghost === 1 && !landed) {
     draw(this.tetro, this.x,
-         Math.floor(this.y + this.getDrop(2147483647)) - stack.hiddenHeight, activeCtx);
+         Math.floor(this.y + this.getDrop(2147483647)) - stack.hiddenHeight, activeCtx, RotSys[settings.RotSys].color[this.index]);
   }
   activeCtx.globalAlpha = 1;
 }

@@ -1,5 +1,5 @@
 function Hold() {
-  this.piece;
+  this.piece=0;
 }
 Hold.prototype.draw = function() {
   clear(holdCtx);
@@ -12,7 +12,8 @@ Hold.prototype.draw = function() {
     -rect[initInfo[2]][1] +
       (3 - rect[initInfo[2]][3] + rect[initInfo[2]][1]) / 2
       ,
-    holdCtx
+    holdCtx,
+    RotSys[settings.RotSys].color[p]
   );
 }
 var hold = new Hold();

@@ -37,7 +37,7 @@ Stack.prototype.addPiece = function(tetro) {
   for (var x = 0; x < tetro.length; x++) {
     for (var y = 0; y < tetro[x].length; y++) {
       if (tetro[x][y] && y + piece.y >= 0) {
-        this.grid[x + piece.x][y + piece.y] = tetro[x][y];
+        this.grid[x + piece.x][y + piece.y] =  RotSys[settings.RotSys].color[piece.index];
         // Get column for finesse
         if (!once || x + piece.x < column) {
           column = x + piece.x;
@@ -57,7 +57,7 @@ Stack.prototype.addPiece = function(tetro) {
   // Lock out
   if (!valid) {
     gameState = 9;
-    msg.innerHTML = 'LOCK OUT!';
+    $setText(msg,'LOCK OUT!');
     menu(3);
     sound.playse("gameover");
     return;
@@ -131,8 +131,11 @@ Stack.prototype.addPiece = function(tetro) {
     combo = 0;
   }
   lines += lineClear;
-  if (gametype === 1 || gametype === 6)
+	if (gametype === 1 || gametype === 6) {
     level = ~~(lines / 10);
+  } else if (gametype === 7) {
+		level = ~~(lines / 30);
+  }
   score = score.add(scoreAdd.mul(bigInt(16).pow(allclear)));
   
   var pc = true;
@@ -180,7 +183,7 @@ Stack.prototype.rowRise = function(arrRow, objPiece) {
   }
   if(topout) {
     gameState = 9;
-    msg.innerHTML = 'TOP OUT!';
+    $setText(msg,'TOP OUT!');
     menu(3);
     sound.playse("gameover");
   }
@@ -191,7 +194,7 @@ Stack.prototype.rowRise = function(arrRow, objPiece) {
     piece.y-=1;
     if (piece.y + pieces[piece.index].rect[3] <= this.hiddenHeight - 2) { // the bottom is >=2 cell away from visible part
       gameState = 9;
-      msg.innerHTML = 'OOPS!';
+      $setText(msg,'OOPS!');
       menu(3);
       sound.playse("gameover");
     }
@@ -222,7 +225,7 @@ Stack.prototype.draw = function() {
   if (settings.Outline === 1 || settings.Outline === 3) {
     var b = ~~(cellSize / 8);
     var c = cellSize;
-    var hhc = stack.hiddenHeight * c;
+    var hhc = this.hiddenHeight * c;
     var pi = Math.PI;
     var lineCanvas = document.createElement('canvas');
     lineCanvas.width = stackCanvas.width;
@@ -231,8 +234,8 @@ Stack.prototype.draw = function() {
     var lineCtx = lineCanvas.getContext('2d');
     lineCtx.fillStyle = 'rgba(255,255,255,0.5)';
     lineCtx.beginPath();
-    for (var x = 0, len = this.grid.length; x < len; x++) {
-      for (var y = 0, wid = this.grid[x].length; y < wid; y++) {
+    for (var x = 0, len = this.width; x < len; x++) {
+      for (var y = 0, wid = this.height; y < wid; y++) {
         if (this.grid[x][y]) {
           if (x < this.width - 1 && !this.grid[x + 1][y]) {
             lineCtx.fillRect(x * c + c - b, y * c - hhc, b, c);
@@ -258,7 +261,7 @@ Stack.prototype.draw = function() {
               lineCtx.arc(x * c + c, y * c - hhc + c, b, 3 * pi / 2, pi, true);
             }
           }
-          if (x < this.width - 1) {
+          if (x < this.width - 1 && y > -this.hiddenHeight) {
             if (!this.grid[x + 1][y] && !this.grid[x][y - 1]) {
               lineCtx.clearRect(x * c + c - b, y * c - hhc, b, b);
               lineCtx.fillRect(x * c + c - b, y * c - hhc, b, b);
@@ -280,7 +283,7 @@ Stack.prototype.draw = function() {
               lineCtx.arc(x * c, y * c - hhc + c, b, pi * 2, 3 * pi / 2, true);
             }
           }
-          if (x > 0) {
+          if (x > 0 && y > -this.hiddenHeight) {
             if (!this.grid[x - 1][y] && !this.grid[x][y - 1]) {
               lineCtx.clearRect(x * c, y * c - hhc, b, b);
               lineCtx.fillRect(x * c, y * c - hhc, b, b);

@@ -8,13 +8,15 @@ Preview.prototype.init = function() {
     break;
     //if ([3,4,6].indexOf(this.grabBag[0]) === -1) break;
   }
-  this.grabBag.push.apply(this.grabBag, this.gen());
+  if (this.grabBag.length <= 7) {
+    this.grabBag.push.apply(this.grabBag, this.gen());
+  }
   this.draw();
 }
 Preview.prototype.next = function() {
   var next;
   next = this.grabBag.shift();
-  if (this.grabBag.length === 7) {
+  if (this.grabBag.length <= 7) {
     this.grabBag.push.apply(this.grabBag, this.gen());
   }
   this.draw();
@@ -25,13 +27,21 @@ Preview.prototype.next = function() {
  * Creates a "grab bag" of the 7 tetrominos.
  */
 Preview.prototype.gen = function() {
-  var pieceList = [0, 1, 2, 3, 4, 5, 6];
+  var pieceList = void 0;
+  if(gameparams && gameparams.pieceSet){
+    switch(gameparams.pieceSet){
+      case 1: pieceList=[1,2,3,4,5,6];break;
+      case 2: pieceList=[0,0,0,0,0,0,0];break;
+    }
+  }else{
+    pieceList= [0, 1, 2, 3, 4, 5, 6];
+  }
   //return pieceList.sort(function() {return 0.5 - rng.next()});
   /* farter */ // proven random shuffle algorithm
-  for (var i=0;i<7-1;i++)
+  for (var i=0;i<pieceList.length-1;i++)
   {
     var temp=pieceList[i];
-    var rand=~~((7-i)*rng.next())+i;
+    var rand=~~((pieceList.length-i)*rng.next())+i;
     pieceList[i]=pieceList[rand];
     pieceList[rand]=temp;
   }
@@ -53,7 +63,8 @@ Preview.prototype.draw = function() {
       -rect[initInfo[2]][1] +
         (3 - rect[initInfo[2]][3] + rect[initInfo[2]][1]) / 2 +
         i*3,
-      previewCtx
+      previewCtx,
+      RotSys[settings.RotSys].color[p]
     );
   }
 }

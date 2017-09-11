@@ -13,11 +13,11 @@ function XMLHTTP(url,obj)
           res = JSON.parse(xmlhttp.responseText);
           if(res.msg==="fail")
           {
-            leaderboard.innerHTML = "error: "+res.info;
+            $setText(leaderboard, "error: "+res.info);
           }
           else if(res.msg==="ok")
           {
-            leaderboard.innerHTML = ""
+            leaderboard.innerHTML = "";
             var ranks = res.ranks;
             var now = (new Date()).getTime();
             var gettimedifftext = function(t)
@@ -66,21 +66,21 @@ function XMLHTTP(url,obj)
               var spantime = document.createElement('span');
               var spandate = document.createElement('span');
               var spanscore = document.createElement('span');
-              spanname.innerText = ranks[i].name;
+              $setText(spanname,ranks[i].name);
               spanname.style.width = "6em";
               spanname.style["text-align"] = "left";
-              spanlines.innerText = ranks[i].lines + "L";
+              $setText(spanlines,ranks[i].lines + "L");
               spanlines.style.width = "2.5em";
-              spantime.innerText = gettimetext(ranks[i].time);
+              $setText(spantime,gettimetext(ranks[i].time));
               spantime.style.width = "4em";
-              spandate.innerText = gettimedifftext(now-ranks[i].date);
+              $setText(spandate,gettimedifftext(now-ranks[i].date));
               spandate.style.width = "2.5em";
               spandate.style["font-weight"] = "normal";
               if(res.mode==="score")
               {
-                spanscore.innerHTML = scorestring(ranks[i].score, 7);
+                $setText(spanscore,scorestring(ranks[i].score, 7));
                 spanscore.style.width = "15em";
-                spanscore.style.color = "#bdf";
+                spanscore.classList.add("rank-score");
               }
               
               div.appendChild(spanname);
@@ -100,15 +100,17 @@ function XMLHTTP(url,obj)
           }
           else
           {
-            leaderboard.innerText = "Problem retrieving leaderboard data\n" + 
+            $setText(leaderboard, "Problem retrieving leaderboard data\n" + 
               xmlhttp.status + "\n" + xmlhttp.readyState + "\n" + xmlhttp.statusText + "\n" +
-              xmlhttp.responseText;
+              xmlhttp.responseText
+            );
           }
         }
         catch(e)
         {
-          leaderboard.innerText = "Problem retrieving leaderboard data\n" + 
-            e.toString();
+          $setText(leaderboard, "Problem retrieving leaderboard data\n" + 
+            e.toString()
+          );
         }
       }
     }

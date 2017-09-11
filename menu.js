@@ -149,10 +149,10 @@ for (var i = 0, len = controlCells.length; i < len; i++) {
             // TODO DRY
             // Make this into a function and call it when we press Esc.
             binds[currCell.id] = tempKey;
-            currCell.innerHTML = key[tempKey] || tempKey;
+            $setText(currCell, key[tempKey] || tempKey);
         }
         tempKey        = binds[this.id];
-        this.innerHTML = 'Press key';
+        $setText(this, 'Press key');
         currCell       = this;
     }
 }
@@ -169,14 +169,14 @@ addEventListener('keyup', function (e) {
         if(newKey){
 						for (var i in binds) {
 								if (newKey === binds[i]) {
-										binds[i]                             = void 0;
-										document.getElementById(i).innerHTML = key[binds[i]];
+										binds[i] = void 0;
+										$setText($$(i), key[void 0]);
 								}
 						}
 				}
         // Binds the key and saves the data.
         binds[currCell.id] = newKey;
-        currCell.innerHTML = key[newKey] || newKey;
+        $setText(currCell, key[newKey] || newKey);
         localStorage.setItem('binds', JSON.stringify(binds));
         currCell           = 0;
     }
@@ -245,7 +245,7 @@ function saveSetting(s) {
     }
     localStorage['version'] = version;
 
-    document.getElementById(s).getElementsByTagName('span')[0].innerHTML = setting[s][mySettings[s]];
+    $setText($$(s).getElementsByTagName('span')[0], setting[s][mySettings[s]]);
 
     localStorage['settings'] = JSON.stringify(mySettings);
 }
@@ -256,10 +256,11 @@ function loadLocalData() {
     if (localStorage['binds']) {
         binds = JSON.parse(localStorage.getItem('binds'));
         for (var i = 0, len = controlCells.length; i < len; i++) {
-            controlCells[i].innerHTML = key[binds[controlCells[i].id]] || binds[controlCells[i].id];
+						var keycode=binds[controlCells[i].id];
+            $setText(controlCells[i], key[keycode] || keycode);
         }
     }else{
-				document.getElementById("btnbinds").classList.add("highlight");
+				$$("btnbinds").classList.add("highlight");
     }
     // TODO When new version just update with new stuff, rest stays unchanged.
     if (localStorage['version'] !== version) {
@@ -287,12 +288,12 @@ for (var s in mySettings) {
         var iRight = document.createElement('i');
 
         div.id              = s;
-        sname.innerHTML     = settingName[s];
-        span.innerHTML      = setting[s][mySettings[s]];
+        $setText(sname, settingName[s]);
+        $setText(span, setting[s][mySettings[s]]);
         iLeft.className     = 'material-icons left';
         iRight.className    = 'material-icons right';
-        iLeft.innerHTML     = "&#xE314;";
-        iRight.innerHTML    = "&#xE315;";
+        $setText(iLeft, "\uE314");
+        $setText(iRight, "\uE315");
         iLeft.onmousedown   = left;
         iLeft.ontouchstart  = left;
         iRight.onmousedown  = right;

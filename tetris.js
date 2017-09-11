@@ -16,7 +16,17 @@ function ObjectClone(obj) {
     copy[attr] = (typeof obj[attr] == "object")?ObjectClone(obj[attr]):obj[attr];
   }
   return copy;
-};
+}
+function $$(id){
+	return document.getElementById(id);
+}
+function $setText(elm,s){
+	if(typeof elm.innerText==="string"){
+		elm.innerText=s;
+	}else{
+		elm.textContent=s;
+	}
+}
 
 /**
  * Playfield.
@@ -27,27 +37,29 @@ var column;
 /**
  * Get html elements.
  */
-var msg = document.getElementById('msg');
-var stats = document.getElementById('stats');
-var statsTime = document.getElementById('time');
-var statsLines = document.getElementById('line');
-var statsPiece = document.getElementById('piece');
-var statsScore = document.getElementById('score');
+var msg = $$('msg');
+var stats = $$('stats');
+var statsTime = $$('time');
+var statsLines = $$('line');
+var statsPiece = $$('piece');
+var statsScore = $$('score');
+var statsLevel = $$('level');
+
 var h3 = document.getElementsByTagName('h3');
-var set = document.getElementById('settings');
-var leaderboard = document.getElementById('leaderboard');
-var replaydata = document.getElementById('replaydata');
-var hidescroll = document.getElementById('hidescroll');
+var set = $$('settings');
+var leaderboard = $$('leaderboard');
+var replaydata = $$('replaydata');
+var hidescroll = $$('hidescroll');
 
 // Get canvases and contexts
-var holdCanvas = document.getElementById('hold');
-var bgStackCanvas = document.getElementById('bgStack');
-var stackCanvas = document.getElementById('stack');
-var activeCanvas = document.getElementById('active');
-var previewCanvas = document.getElementById('preview');
-var spriteCanvas = document.getElementById('sprite');
+var holdCanvas = $$('hold');
+var bgStackCanvas = $$('bgStack');
+var stackCanvas = $$('stack');
+var activeCanvas = $$('active');
+var previewCanvas = $$('preview');
+var spriteCanvas = $$('sprite');
 
-var timeCanvas = document.getElementById('time').childNodes[0];
+var timeCanvas = $$('time').childNodes[0];
 
 var holdCtx = holdCanvas.getContext('2d');
 var bgStackCtx = bgStackCanvas.getContext('2d');
@@ -58,16 +70,16 @@ var spriteCtx = spriteCanvas.getContext('2d');
 
 var timeCtx = timeCanvas.getContext('2d');
 
-var touchLeft = document.getElementById('touchLeft');
-var touchRight = document.getElementById('touchRight');
-var touchDown = document.getElementById('touchDown');
-var touchDrop = document.getElementById('touchDrop');
-var touchHold = document.getElementById('touchHold');
-var touchRotLeft = document.getElementById('touchRotLeft');
-var touchRotRight = document.getElementById('touchRotRight');
-var touchRot180 = document.getElementById('touchRot180');
+var touchLeft = $$('touchLeft');
+var touchRight = $$('touchRight');
+var touchDown = $$('touchDown');
+var touchDrop = $$('touchDrop');
+var touchHold = $$('touchHold');
+var touchRotLeft = $$('touchRotLeft');
+var touchRotRight = $$('touchRotRight');
+var touchRot180 = $$('touchRot180');
 
-var touchLayout = document.getElementById('touchLayout');
+var touchLayout = $$('touchLayout');
 
 var touchButtons = [
   touchLeft, touchRight, touchDown, touchDrop,
@@ -213,41 +225,124 @@ var OffsetAtari = [
   [[ 0, 0],[-1, 0],[ 0,-1],[ 0, 0]],
   [[ 0, 0],[-1, 0],[ 0,-1],[ 0, 0]],
   [[ 0, 0],[-1, 0],[ 0,-1],[ 0, 0]]];
+var OffsetNBlox = [
+  [[ 0, 0],[-1, 0],[ 0,-1],[ 0, 0]],
+  [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0,+1],[ 0,+1],[ 0,+1],[ 0,+1]],
+  [[ 0,+1],[ 0, 0],[ 0, 0],[+1, 0]],
+  [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0,+1],[ 0, 0],[ 0, 0],[+1, 0]]];
+var OffsetNintendo = [
+  [[ 0,+1],[ 0, 0],[ 0, 0],[+1, 0]],
+  [[+1, 0],[+1, 0],[+1, 0],[+1, 0]],
+  [[+1, 0],[+1, 0],[+1, 0],[+1, 0]],
+  [[ 0,+1],[ 0,+1],[ 0,+1],[ 0,+1]],
+  [[+1,+1],[+1, 0],[+1, 0],[+2, 0]],
+  [[+1, 0],[+1, 0],[+1, 0],[+1, 0]],
+  [[+1,+1],[+1, 0],[+1, 0],[+2, 0]]];
+var OffsetMS = [
+  [[ 0, 0],[ 0, 0],[ 0,-1],[+1, 0]],
+  [[+1, 0],[+1, 0],[+1, 0],[+1, 0]],
+  [[+1, 0],[+1, 0],[+1, 0],[+1, 0]],
+  [[ 0,+1],[ 0,+1],[ 0,+1],[ 0,+1]],
+  [[+1,+1],[ 0,+1],[+1, 0],[+1,+1]],
+  [[+1, 0],[+1, 0],[+1, 0],[+1, 0]],
+  [[+1,+1],[ 0,+1],[+1, 0],[+1,+1]]];
+var OffsetE60 = [
+  [[ 0, 0],[ 0, 0],[ 0,-1],[+1, 0]],
+  [[+1, 0],[+1, 0],[+1, 0],[+1, 0]],
+  [[+1, 0],[+1, 0],[+1, 0],[+1, 0]],
+  [[ 0,+1],[ 0,+1],[ 0,+1],[ 0,+1]],
+  [[+1,+1],[+1, 0],[+1, 0],[+2, 0]],
+  [[+1, 0],[+1, 0],[+1, 0],[+1, 0]],
+  [[+1,+1],[+1, 0],[+1, 0],[+2, 0]]];
+
 //x, y, r
 var InitInfoSRS = [[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0]];
 var InitInfoARS = [[ 0, 0, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0,+1, 0],[ 0,+1, 0],[ 0, 0, 2],[ 0,+1, 0]];
 var InitInfoDRS = [[ 0,+1, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0,+1, 0],[ 0,+1, 0],[ 0, 0, 2],[ 0,+1, 0]];
 var InitInfoQRS = [[ 0, 0, 0],[ 0, 0, 1],[ 0, 0, 3],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 2],[ 0, 0, 0]];
 var InitInfoAtari = [[+1, 0, 0],[+1, 0, 2],[+1, 0, 2],[ 0,+1, 0],[+1,+1, 0],[+1, 0, 2],[+1,+1, 0]];
+var InitInfoNBlox = [[ 0, 0, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0,+1, 0],[ 0,+1, 0],[ 0, 0, 2],[ 0,+1, 0]];
+var InitInfoNintendo = [[ 0, 0, 0],[+1, 0, 2],[+1, 0, 2],[ 0,+1, 0],[+1,+1, 0],[+1, 0, 2],[+1,+1, 0]];
+var InitInfoMS = [[ 0, 0, 0],[+1, 0, 2],[+1, 0, 2],[ 0,+1, 0],[+1,+1, 0],[+1, 0, 2],[+1,+1, 0]];
+var InitInfoE60 = [[ 0, 0, 0],[+1, 0, 2],[+1, 0, 2],[ 0,+1, 0],[+1,+1, 0],[+1, 0, 2],[+1,+1, 0]];
 
+var ColorSRS = [1, 2, 3, 4, 5, 6, 7];
+var ColorARS = [7, 2, 3, 4, 6, 1, 5];
+var ColorQRS = [7, 1, 4, 3, 5, 6, 2];
+var ColorTengen = [7, 3, 6, 2, 5, 4, 1];
+var ColorAtari = [7, 4, 6, 2, 1, 5, 3];
+var ColorNBlox = [3, 6, 2, 7, 1, 4, 5];
+var ColorC2 = [5, 2, 6, 4, 1, 7, 9];
+var ColorNintendo = [9, 2, 7, 9, 2, 9, 7];
+var ColorMS = [7, 6, 4, 1, 2, 8, 5];
+var ColorE60 = [5, 5, 5, 5, 5, 5, 5];
+var ColorIBM = [7, 8, 6, 2, 5, 3, 1];
 
 //SRS, C2, ARS, QRS, DRS
 var RotSys = [
   {
     initinfo: InitInfoSRS,
-    offset: OffsetSRS
+    offset: OffsetSRS,
+    color: ColorSRS,
   },
   {
     initinfo: InitInfoSRS,
-    offset: OffsetSRS
+    offset: OffsetSRS,
+    color: ColorC2,
   },
   {
     initinfo: InitInfoARS,
-    offset: OffsetARS
+    offset: OffsetARS,
+    color: ColorARS,
   },
   {
     initinfo: InitInfoDRS,
-    offset: OffsetDRS
+    offset: OffsetDRS,
+    color: ColorARS,
   },
   {
     initinfo: InitInfoQRS,
-    offset: OffsetQRS
+    offset: OffsetQRS,
+    color: ColorQRS,
   },
   {
     initinfo: InitInfoAtari,
-    offset: OffsetAtari
+    offset: OffsetAtari,
+    color: ColorAtari,
   },
-  
+  {
+    initinfo: InitInfoAtari,
+    offset: OffsetAtari,
+    color: ColorTengen,
+  },
+  {
+    initinfo: InitInfoNBlox,
+    offset: OffsetNBlox,
+    color: ColorNBlox,
+  },
+  {
+    initinfo: InitInfoNintendo,
+    offset: OffsetNintendo,
+    color: ColorNintendo,
+  },
+  {
+    initinfo: InitInfoMS,
+    offset: OffsetMS,
+    color: ColorMS,
+  },
+  {
+    initinfo: InitInfoE60,
+    offset: OffsetE60,
+    color: ColorE60,
+  },
+  {
+    initinfo: InitInfoE60,
+    offset: OffsetE60,
+    color: ColorIBM,
+  },
 ];
 
 // Define shapes and spawns.
@@ -412,8 +507,8 @@ var setting = {
     return array;
   })(),
   'Lock Delay': range(0, 101),
-  RotSys: ['Super', 'C2', 'Arika*', 'DTET', 'QQ', 'Atari'],
-  Next: ['&nbsp;', '1', '2', '3', '4', '5', '6'],
+  RotSys: ['Super', 'C2', 'Arika*', 'DTET', 'QQ', 'Atari', 'Tengen', 'N-Blox', 'Nintendo', 'MS', "E-60", "IBM PC"],
+  Next: ['-', '1', '2', '3', '4', '5', '6'],
   Size: ['Auto', 'Small', 'Medium', 'Large'],
   Sound: ['Off', 'On'],
   Volume: range(0, 101),
@@ -671,10 +766,10 @@ var flags = {
 };
 
 function resize() {
-  var a = document.getElementById('a');
-  var b = document.getElementById('b');
-  var c = document.getElementById('c');
-  var content = document.getElementById('content');
+  var a = $$('a');
+  var b = $$('b');
+  var c = $$('c');
+  var content = $$('content');
 
   // TODO Finalize this.
   // Aspect ratio: 1.024
@@ -734,14 +829,14 @@ function resize() {
     h3[i].style.fontSize = stats.style.fontSize;
   }
   stats.style.width = h3[0].clientWidth + 'px';
-  
+
   timeCanvas.width = h3[0].clientWidth;
   timeCanvas.height = timeCanvas.clientHeight || timeCanvas.offsetHeight || timeCanvas.getBoundingClientRect().height;
   timeCtx.fillStyle = "#fff";
-  timeCtx.font = 'bold 1.125em "Trebuchet MS"';
+  timeCtx.font = 'bold 1.125em Roboto, "Trebuchet MS"';
   timeCtx.textAlign = "center";
   timeCtx.textBaseline = "middle";
-  
+
 
   // position of touch buttons
   {
@@ -1002,7 +1097,7 @@ function init(gt, params) {
   //html5 mobile device sound
   if(settings.Sound === 1)
     sound.init();
-  
+
   //Reset
   column = 0;
   keysDown = 0;
@@ -1039,9 +1134,6 @@ function init(gt, params) {
   if (gametype === 3) {
     frameLastRise = 0;
     frameLastHarddropDown = 0;
-    //statsLines.innerHTML = "0";
-
-    //stack.draw();
   }
   if (gametype === 4) {
     // Dig Race
@@ -1050,7 +1142,7 @@ function init(gt, params) {
     if (gameparams["digraceType"] === void 0 || gameparams["digraceType"] === "checker") {
       // harder digrace: checkerboard
       digLines = range(stack.height - 10, stack.height);
-      statsLines.innerHTML = 10;
+      $setText(statsLines,10);
       for (var y = stack.height - 1; y > stack.height - 10 - 1; y--) {
         for (var x = 0; x < stack.width; x++) {
           if ((x+y)&1)
@@ -1061,7 +1153,7 @@ function init(gt, params) {
       var begin = ~~(rng.next()*stack.width);
       var dire = (~~(rng.next()*2))*2-1;
       digLines = range(stack.height - 10, stack.height);
-      statsLines.innerHTML = 10;
+      $setText(statsLines,10);
       for (var y = stack.height - 1; y > stack.height - 10 - 1; y--) {
         for (var x = 0; x < stack.width; x++) {
           if ((begin+dire*y+x+stack.width*2)%10 !== 0)
@@ -1129,7 +1221,7 @@ function pause() {
   if (gameState === 0 || gameState === 4) {
     paused = true;
     startPauseTime = Date.now();
-    msg.innerHTML = "Paused";
+    $setText(msg,"Paused");
     menu(4);
   }
 }
@@ -1137,7 +1229,7 @@ function pause() {
 function unpause() {
   paused = false;
   pauseTime += (Date.now() - startPauseTime);
-  msg.innerHTML = '';
+  $setText(msg,'');
   menu();
   console.log("start inloop", inloop);
   inloop = true;
@@ -1163,7 +1255,7 @@ function scorestring(s, n){
   var strsplit = s.split("");
   var spacetoggle = 0;
   for (var i = strsplit.length - 1 - 3; i >= 0; i -= 3) {
-    strsplit[i] += (spacetoggle === n-1 ?" ":"&#160;");
+    strsplit[i] += (spacetoggle === n-1 ?" ":"\xA0");
     spacetoggle = (spacetoggle + 1) % n;
   }
   return strsplit.join("");
@@ -1186,7 +1278,7 @@ function statistics() {
   skipR = (skipR>fsbl)?fsbl:skipR;
   skipL = skipL/fsbl*timeCanvas.width;
   skipR = skipR/fsbl*timeCanvas.width;
-  
+
   timeCtx.clearRect(0, 0, timeCanvas.width, timeCanvas.height);
   timeCtx.fillText(displayTime, timeCanvas.width/2, timeCanvas.height/2);
   timeCtx.fillRect(skipL,timeCanvas.height-0.2,skipR,timeCanvas.height);
@@ -1195,49 +1287,36 @@ function statistics() {
 /**
  * Draws the stats about the stack next to the tetrion.
  */
+// /* farter */
 function statisticsStack() {
-  statsPiece.innerHTML = piecesSet;
+  $setText(statsPiece, piecesSet);
 
-  if(gametype === 0 || gametype === 5)
-    statsLines.innerHTML = lineLimit - lines;
-  else if(gametype === 1)
-    statsLines.innerHTML = '<span style="font-size: 0.5em">' +
-			"Lv. " + ~~(lines/10) +
-			"</span><br />" +
-			lines;
-  else if (gametype === 3){
-    if (gameparams["digOffset"] || gameparams["digOffset"] !== 0)
-      statsLines.innerHTML = '<span style="font-size: 0.5em">' +
-				gameparams["digOffset"] +
-        "+</span><br />" +
-        lines;
-        // /* farter */
-    else
-      statsLines.innerHTML = lines;
-  }
-  //else if (gametype === 4){
-  //  statsLines.innerHTML = digLines.length;
+  if(gametype === 0 || gametype === 5) {
+    $setText(statsLines, lineLimit - lines);
+    $setText(statsLevel, "");
+  }else if(gametype === 1 || gametype === 6 || gametype === 7){
+		$setText(statsLines, lines);
+    $setText(statsLevel, "Lv. " + level);
+  }else if (gametype === 3){
+    if (gameparams["digOffset"] || gameparams["digOffset"] !== 0){
+      $setText(statsLevel, gameparams["digOffset"] + "+");
+    }else{
+			$setText(statsLevel, "");
+    }
+    $setText(statsLines, lines);
+  }//else if (gametype === 4){
+  //  $setText(statsLines, digLines.length);
   //}
   else{
-    statsLines.innerHTML = lines;
+    $setText(statsLines, lines);
+    $setText(statsLevel, "");
   }
 
   var light=['#ffffff','#EFB08C','#EDDD82','#8489C7','#FFDB94','#EFAFC5','#98DF6E','#6FC5C5','#9A7FD1','#78D4A3'];
-  statsScore.innerHTML = '<span style="' +
-    (b2b===0?'':(
-      'color: '+
-      light[b2b%10]+
-      ';'
-    ))+
-    (combo===0?'':(
-      'text-shadow: '+
-      ('0 0 0.5em '+light[(combo-1)%10])+
-      ';'
-    ))+
-    '">'+
-    scorestring(score.toString(), 2)+
-    '</span>'
-    ;
+
+  statsScore.style.color=(b2b===0?'':light[b2b%10]);
+  statsScore.style.textShadow=(combo===0?'':('0 0 0.5em '+light[(combo-1)%10]));
+  $setText(statsScore,scorestring(score.toString(), 2));
 }
 // ========================== View ============================================
 
@@ -1284,7 +1363,8 @@ function makeSprite() {
     ['#9ccd38', '#b9e955', '#81b214', '#659700'],
     ['#9c5ab8', '#b873d4', '#81409d', '#672782'],
     ['#e64b3c', '#ff6853', '#c62c25', '#a70010'],
-    ['#898989', '#a3a3a3', '#6f6f6f', '#575757']
+    ['#898989', '#a3a3a3', '#6f6f6f', '#575757'],
+    ['#c1c1c1', '#dddddd', '#a6a6a6', '#8b8b8b'],
   ];
   var glossy = [
     //25         37         52         -21        -45
@@ -1296,33 +1376,25 @@ function makeSprite() {
     ['#efff81', '#ffffa2', '#ffffcd', '#6b9200', '#2c5600'],
     ['#dc9dfe', '#ffbeff', '#ffe9ff', '#5d287e', '#210043'],
     ['#ff9277', '#ffb497', '#ffe0bf', '#a7000a', '#600000'],
-    ['#cbcbcb', '#ededed', '#ffffff', '#545454', '#1f1f1f']
+    ['#cbcbcb', '#ededed', '#ffffff', '#545454', '#1f1f1f'],
+    ['#ffffff', '#ffffff', '#ffffff', '#888888', '#4d4d4d'],
   ];
   var tgm = [
-    ['#7b7b7b', '#303030', '#6b6b6b', '#363636'],
-    ['#f08000', '#a00000', '#e86008', '#b00000'],
+    ['#ababab', '#5a5a5a', '#9b9b9b', '#626262'],
+    ['#00e8f0', '#0070a0', '#00d0e0', '#0080a8'],
     ['#00a8f8', '#0000b0', '#0090e8', '#0020c0'],
     ['#f8a800', '#b84000', '#e89800', '#c85800'],
     ['#e8e000', '#886800', '#d8c800', '#907800'],
-    ['#f828f8', '#780078', '#e020e0', '#880088'],
-    ['#00e8f0', '#0070a0', '#00d0e0', '#0080a8'],
     ['#78f800', '#007800', '#58e000', '#008800'],
-    ['#7b7b7b', '#303030', '#6b6b6b', '#363636']
+    ['#f828f8', '#780078', '#e020e0', '#880088'],
+    ['#f08000', '#a00000', '#e86008', '#b00000'],
+    ['#7b7b7b', '#303030', '#6b6b6b', '#363636'],
+    ['#ababab', '#5a5a5a', '#9b9b9b', '#626262'],
   ];
-  var world = [];
-  world[0] = tgm[0];
-  world[1] = tgm[6];
-  world[2] = tgm[2];
-  world[3] = tgm[3];
-  world[4] = tgm[4];
-  world[5] = tgm[7];
-  world[6] = tgm[5];
-  world[7] = tgm[1];
-  world[8] = tgm[8];
 
-  spriteCanvas.width = cellSize * 9;
+  spriteCanvas.width = cellSize * 10;
   spriteCanvas.height = cellSize;
-  for (var i = 0; i < 9; i++) {
+  for (var i = 0; i < 10; i++) {
     var x = i * cellSize;
     if (settings.Block === 0) {
       // Shaded
@@ -1374,8 +1446,6 @@ function makeSprite() {
       spriteCtx.fillRect(x + k, k, cellSize - k * 2, cellSize - k * 2);
 
     } else if (settings.Block === 3 || settings.Block === 4) {
-      // Arika
-      if (settings.Block === 4) tgm = world;
       var k = Math.max(~~(cellSize * 0.125), 1);
 
       spriteCtx.fillStyle = tgm[i][1];
@@ -1592,13 +1662,13 @@ function update() {
 
   piece.update();
 
-  if(gametype === 3) { //Dig
+	if(gametype === 3) { //Dig
     var fromLastRise = frame-frameLastRise;
     var fromLastHD = (flags.hardDrop & keysDown)?(frame-frameLastHarddropDown):0;
-    
+
     var arrRow = [8,8,8,8,8,8,8,8,8,8];
     var curStage = 0, objCurStage;
-    
+
     while(curStage<arrStages.length && arrStages[curStage].begin <= lines + (gameparams["digOffset"] || 0)) {
       curStage++;
     }
@@ -1633,11 +1703,10 @@ function update() {
   }else if(gametype===7) { //dig zen
 		for(;lastPiecesSet<piecesSet;lastPiecesSet++){
 			digZenBuffer++;
-			var curStage=~~(lines/30);
 			var piecePerRise=[
 				8,6.5,4,3.5,10/3,
 				3,2.8,2.6,2.4,2.2,
-				2][curStage>10?10:curStage];
+				2][level>10?10:level];
 			if(digZenBuffer-piecePerRise > -0.000000001){
 				digZenBuffer-=piecePerRise;
 				if(Math.abs(digZenBuffer) < -0.000000001){
@@ -1645,7 +1714,7 @@ function update() {
 				}
 				var arrRow=[8,8,8,8,8,8,8,8,8,8];
 				arrRow[~~(rng.next()*10)]=0;
-				
+
 				stack.rowRise(arrRow, piece);
 				sound.playse("garbage");
 			}
@@ -1670,46 +1739,36 @@ function update() {
       menu(3);
       sound.playse("endingstart");
     }
-  } else if (gametype === 1) { // Marathon
-    if (settings.Gravity !== 0 && lines>=200) { // not Auto, limit to 200 Lines
-      gameState = 1;
-      msg.innerHTML = 'GREAT!';
-      piece.dead = true;
-      menu(3);
-      sound.playse("endingstart");
-    }
-  } else if (gametype === 5) { // Score Attack
-    if (lines>=lineLimit) { // not Auto, limit to 200 Lines
-      gameState = 1;
-      msg.innerHTML = 'GREAT!';
-      piece.dead = true;
-      menu(3);
-      sound.playse("endingstart");
-    }
-  } else if (gametype === 4) { // Dig race
-    if (digLines.length === 0) {
-      gameState = 1;
-      msg.innerHTML = 'GREAT!';
-      piece.dead = true;
-      menu(3);
-      sound.playse("endingstart");
-    }
-  } else if (gametype === 6) { // 20G
-    if (lines>=300) { // 200 + 100
-      gameState = 1;
-      msg.innerHTML = 'GREAT!';
-      piece.dead = true;
-      menu(3);
-      sound.playse("endingstart");
-    }
-  } else if (gametype === 7) { // dig zen
-    if (lines>=400) { // 300 + 100
-      gameState = 1;
-      msg.innerHTML = 'GREAT!';
-      piece.dead = true;
-      menu(3);
-      sound.playse("endingstart");
-    }
+  } else {
+		var isend=false;
+		if (gametype === 1) { // Marathon
+			if (settings.Gravity !== 0 && lines>=200) { // not Auto, limit to 200 Lines
+				isend=true;
+			}
+		} else if (gametype === 5) { // Score Attack
+			if (lines>=lineLimit) { // not Auto, limit to 200 Lines
+				isend=true;
+			}
+		} else if (gametype === 4) { // Dig race
+			if (digLines.length === 0) {
+				isend=true;
+			}
+		} else if (gametype === 6) { // 20G
+			if (lines>=300) { // 200 + 100
+				isend=true;
+			}
+		} else if (gametype === 7) { // dig zen
+			if (lines>=400) { // 300 + 100
+				isend=true;
+			}
+		}
+		if(isend){
+			gameState = 1;
+			$setText(msg,'GREAT!');
+			piece.dead = true;
+			menu(3);
+			sound.playse("endingstart");
+		}
   }
   /* farter */
 
@@ -1737,8 +1796,8 @@ function gameLoop() {
 
     for (var repf=0;repf<repeat;repf++) {
       //TODO check to see how pause works in replays.
-      
-      
+
+
       if (gameState === 0) {
         // Playing
 
@@ -1761,7 +1820,7 @@ function gameLoop() {
         piece.dirty = false;
 
       } else if (gameState === 2 || gameState === 4) {
-      
+
         if (lastKeys !== keysDown && !watchingReplay) {
           replay.keys[frame] = keysDown;
         } else if (frame in replay.keys) {
@@ -1804,11 +1863,11 @@ function gameLoop() {
         if (gameState === 2) {
           // Count Down
           if (frame === 0) {
-            msg.innerHTML = '各就各位<br />READY';
+            $setText(msg,'各就各位\nREADY');
           } else if (frame === ~~(fps*5/6)) {
-            msg.innerHTML = '走着~<br />GO!';
+            $setText(msg,'走着~\nGO!');
           } else if (frame === ~~(fps*10/6)) {
-            msg.innerHTML = '';
+            $setText(msg,'');
             scoreStartTime = Date.now();
           }
           scoreTime = 0;
@@ -1831,9 +1890,9 @@ function gameLoop() {
           piece.draw();
           scoreTime = Date.now() - scoreStartTime - pauseTime;
         }
-        
+
         statistics();
-        
+
       } else if (gameState === 9 || gameState === 1) {
         if (toGreyRow >= stack.hiddenHeight) {
           /**
@@ -1882,7 +1941,7 @@ function trysubmitscore() {
   var time = scoreTime;
 
   if(gametype===0) // 40L
-    obj.mode="sprint";
+    obj.mode="sprint" + (gameparams&&gameparams.pieceSet?["","noi","alli"][gameparams.pieceSet]:"");
   else if(gametype===3) // dig
     obj.mode="dig" + (gameparams&&gameparams.digOffset?gameparams.digOffset:"");
   else if(gametype===4) // dig race
@@ -1891,6 +1950,10 @@ function trysubmitscore() {
     obj.mode="marathon";
   else if(gametype===5) // score attack
     obj.mode="score";
+  else if(gametype===6) // 20g
+		obj.mode="marathon20g";
+	else if(gametype===7) // dig zen
+		obj.mode="digzen";
   else
     return;
 
@@ -1899,7 +1962,10 @@ function trysubmitscore() {
     (gametype===3 && gameState===9)||
     (gametype===4 && gameState===1)||
     (gametype===1 && settings.Gravity === 0)||
-    (gametype===5)
+    (gametype===5)||
+    (gametype===6)||
+    (gametype===7)||
+    false
   ){
     requireplayername();
     obj.lines=lines;
