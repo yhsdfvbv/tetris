@@ -306,4 +306,3 @@ for (var s in mySettings) {
         div.appendChild(iRight);
     }
 }
-resize();
