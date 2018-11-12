@@ -108,6 +108,7 @@ body {
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   color: #FFF;
+  -webkit-touch-callout: none;
 }
 body, span, a, p, div, h2, h3, h4, h5, h6 {
   font-family: 'Roboto', 'Trebuchet MS', 'Microsoft Yahei', 'Hiragino Sans GB', sans-serif;
@@ -115,6 +116,11 @@ body, span, a, p, div, h2, h3, h4, h5, h6 {
 
 span.rank-score {
   color: #ffabab;
+}
+
+div.has-replay:hover span {
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 a.btn i {
@@ -378,6 +384,7 @@ nav li {
               margin .2s ease;
   transform: translateX(-100%);
   -webkit-transform: translateX(-100%);
+  -webkit-overflow-scrolling: touch;
   pointer-events: none;
 }
 .on {

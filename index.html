@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport"
-        content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width"/>
+        content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0, width=device-width"/>
   <title>Tetr.js</title>
   <link rel="stylesheet" href="style.css">
   <!--<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-554c83a8661bf358" async="async"></script>-->
@@ -64,7 +64,7 @@
     </div>
 
     <nav class="menu on">
-      <h1>Tetr.js - Dig v0.56</h1>
+      <h1>Tetr.js - Dig v0.58</h1>
 
       <p>forked from: <a class="link" href="http://simon.lc/tetr.js/">&gt;&gt;simonlc</a><br/>
         farter's Dig Mod</p>
@@ -77,9 +77,9 @@
         <a class="btn" onclick="init(4,{digraceType:'easy'})"><i class="material-icons">&#xE91D;</i> Dig Race 挖掘练习</a>
         <a class="btn" onclick="init(5)"><i class="material-icons">&#xE2C3;</i> Zen 修仙模式</a>
 
-        <a class="btn" onclick="menu(6,1)"><i class="material-icons">&#xE04A;</i> Replay 录像回放</a>
         <a class="btn" onclick="menu(2)" id="btnbinds"><i class="material-icons">&#xE021;</i> Controls 调整按键</a>
         <a class="btn" onclick="menu(1)"><i class="material-icons">&#xE869;</i> Settings 调整设定</a>
+        <a class="btn" onclick="menu(6,1)"><i class="material-icons">&#xE04A;</i> Replay 录像回放</a>
         <a class="btn highlight" onclick="menu(7,1);this.classList.remove('highlight')"><i class="material-icons">&#xE8E5;</i> Harder 更厉害的</a>
       </div>
     </nav>
@@ -153,7 +153,7 @@
     <nav id="go" class="menu">
       <div class="btn-container btn-container-bottom">
         <a class="btn" onclick="init(gametype,gameparams)">Retry 再来</a>
-        <a class="btn btn-inline" onclick="init('replay')" style="width: 50%;">Replay 回放 </a><a class="btn btn-inline" onclick="showreplaydata()" style="width: calc(25% - .7rem); margin-left: .7rem"><i class="material-icons">&#xE161;</i></a>
+        <a class="btn btn-inline" onclick="init('replay')" style="width: 50%;">Replay 回放 </a><a class="btn btn-inline" onclick="showreplaydata(curreplaydata())" style="width: calc(25% - .7rem); margin-left: .7rem"><i class="material-icons">&#xE161;</i></a>
         <a class="btn highlight" onclick="menu(5,1);this.classList.remove('highlight')">Rankings 排行</a>
         <a class="btn" onclick="menu(0)">Back 回菜单</a>
       </div>
@@ -196,9 +196,11 @@
         <a class="btn" onclick="init(4,{digraceType:'checker'})"><i class="material-icons">&#xE540;</i> Dig Hard 疯狂挖掘</a>
         <a class="btn" onclick="init(6)"><i class="material-icons">&#xE01F;</i> 20G 瞬降模式</a>
         <a class="btn" onclick="init(7)"><i class="material-icons">&#xE034;</i> Dig Zen 沉思挖掘</a>
-        <a class="btn" onclick="init(0,{pieceSet:1})"><i class="material-icons"></i> Sprnt 困难40行</a>
-        <a class="btn" onclick="init(0,{pieceSet:2})"><i class="material-icons"></i> i 简单40行</a>
-        
+        <a class="btn" onclick="init(0,{pieceSet:1})"><i class="material-icons"></i> Spr_nt 困难40行</a>
+        <a class="btn" onclick="init(0,{pieceSet:2})"><i class="material-icons"></i> Heaven 简单40行</a>
+        <a class="btn" onclick="init(0,{backFire:1})"><i class="material-icons"></i> Backfire 自攻自受</a>
+        <a class="btn" onclick="init(0,{backFire:2})"><i class="material-icons"></i> Backfire2 自攻自受2</a>
+        <a class="btn" onclick="init(0,{backFire:3})"><i class="material-icons"></i> Backfire3 自攻自受3</a>
         
         <a class="btn" onclick="menu(void 0,-1)">Back 返回</a>
       </div>
@@ -227,8 +229,5 @@
 <script type="text/javascript" src="sound.js"></script>
 <script type="text/javascript" src="touch.js"></script>
 
-<!--
-<script>_gaq=[['_setAccount','UA-30472693-1'],['_trackPageview']];(function(d){var g=d.createElement('script'),s=d.scripts[0];g.src='//www.google-analytics.com/ga.js';s.parentNode.insertBefore(g,s)})(document)</script>
--->
 </body>
 </html>

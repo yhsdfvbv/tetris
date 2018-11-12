@@ -61,13 +61,6 @@ Piece.prototype.new = function(index) {
   } else {
     this.tetro = pieces[index].tetro[this.pos];
   }
-  
-  // TODO ---------------- snip
-
-  //TODO Do this better. (make grabbag object)
-  // Preview.next(); == grabbag.next()
-  // Preview.draw();
-  //preview.next();
 
   this.lockDelayLimit = setting['Lock Delay'][settings['Lock Delay']];
   if (gametype === 6) { //Death
@@ -77,19 +70,12 @@ Piece.prototype.new = function(index) {
         30, 25, 22, 20, 20, 18, 17, 17, 15, 15,
         13, 13, 13, 13, 13, 12, 12, 12, 11, 11
       ][level];
-      this.areLimit = [
-        18, 18, 18, 15, 15, 12, 12, 12, 12, 12,
-        12, 12, 10, 10, 10,  8,  8,  8,  8,  8
-      ][level];
     } else {
       this.lockDelayLimit = 11;
-      this.areLimit = 6;
     }
   } else if (settings.Gravity !== 0) {
-    this.areLimit = 0;
     this.gravity = gravityArr[settings.Gravity - 1];
   } else if (gametype === 1) { //Marathon
-    this.areLimit = 0;
     if (level < 20) {
       this.gravity = [
         1/60, 1/30, 1/25, 1/20, 1/15, 1/12, 1/10, 1/8,  1/6,  1/6,
@@ -101,7 +87,6 @@ Piece.prototype.new = function(index) {
        this.lockDelayLimit = ~~(30 * Math.pow(0.93, (Math.pow(level-20, 0.8)))); // magic!
     }
   } else {
-    this.areLimit = 0;
     this.gravity = gravityUnit;
   }
   if (gametype === 0){
@@ -120,18 +105,19 @@ Piece.prototype.new = function(index) {
     return;
   }
   
-  //real 20G !
+  //real 20G
   if(this.gravity >= 20) {
     this.checkFall();
   }
   if (flags.moveDown & keysDown) {
     var grav = gravityArr[settings['Soft Drop'] + 1];
-    if (grav >= 20) // 20G softdrop vs. 20G das
+    if (grav >= 20) // 20G softdrop = 20G gravity
       this.y += this.getDrop(grav);
     //piece.finesse++;
   }
   landed = !this.moveValid(0, 1, this.tetro);
   
+  // die-in-one-frame!
   if(landed && (this.lockDelay >= this.lockDelayLimit)) {
     this.checkLock();
   }
@@ -165,7 +151,7 @@ Piece.prototype.rotate = function(direction) {
   var offsetY =
     RotSys[settings.RotSys].offset[this.index][newPos][1] -
     RotSys[settings.RotSys].offset[this.index][curPos][1];
-  if (settings.RotSys === 2) { //ARS
+  if (settings.RotSys === 2 || settings.RotSys === 14) { //ARS, Plus
     var kickList = [];
     if (this.index === PieceI.index) {
       if(curPos === 1 || curPos === 3)
@@ -188,6 +174,8 @@ Piece.prototype.rotate = function(direction) {
       kickList = WKTableSRS[this.index][kickIndex][curPos];
     else if (settings.RotSys === 1)
       kickList = WKTableCultris;
+    else if (settings.RotSys === 15)
+      kickList = WKTableDX[kickIndex][curPos]
     else
       kickList = WKTableDRS[kickIndex];
     this.tryKickList(kickList, rotated, newPos, offsetX, offsetY);
@@ -238,6 +226,11 @@ Piece.prototype.checkShift = function() {
   // Handle events
   /* farter */
   // here problem causes it taking 2 frames to move 1 grid even ARR=1
+  var dascut = [false,true][(settings.DASCut || 0)]
+  //if (dascut) {
+  //  this.ShiftDir = 0;
+  //  console.log("interrupt")
+  //}
   if (this.shiftDir) {
     // 1. When key pressed instantly move over once.
     if (this.shiftReleased && settings.DAS !== 0) {
@@ -249,9 +242,11 @@ Piece.prototype.checkShift = function() {
       this.shiftDelay++;
     // 3. Once the delay is complete, move over once.
     //     Increment delay so this doesn't run again.
+    // if arr=0, repeat here, not entering 4
+    // but if dascut, let shiftdelay == das + 1 and arrdelay = 0 which is not < arr
     } else if (this.shiftDelay === settings.DAS) {
       this.shift(this.shiftDir);
-      if (settings.ARR !== 0) this.shiftDelay++;
+      if (settings.ARR !== 0 || dascut) this.shiftDelay++;
     // 4. Apply ARR delay
     } else if (this.arrDelay < settings.ARR) {
       this.arrDelay++;
@@ -388,25 +383,45 @@ Piece.prototype.checkLock = function() {
   if (landed) {
     this.y = Math.floor(this.y); //@sega
     if (this.lockDelay >= this.lockDelayLimit) {
+      this.dead = true;
       stack.addPiece(this.tetro);
       sound.playse("lock");
-      this.dead = true;
       this.dirty = true;
       if(gameState === 9){ // lockout! don't spawn next piece
-				return;
+        return;
       }else{
-				this.held = false;
-				if (this.areLimit === 0) {
-					this.new(preview.next()); // consider move to main update
-				} else {
-					gameState = 4;
-					this.are = 0;
-				}
-			}
+        this.held = false;
+        /* farter */
+        // Win?
+        checkWin();
+        if (gameState === 0 && piece.dead) { // still playing, then spawn the next piece
+          // determine next ARE limit
+          if (gametype === 6) { //Death
+            if (level < 20) {
+              this.areLimit = [
+                18, 18, 18, 15, 15, 12, 12, 12, 12, 12,
+                12, 12, 10, 10, 10,  8,  8,  8,  8,  8
+              ][level];
+            } else {
+              this.lockDelayLimit = 11;
+              this.areLimit = 6;
+            }
+          } else {
+            this.areLimit = 0;
+          }
+          if (this.areLimit === 0) { // IRS IHS not possible
+            this.new(preview.next()); // may die-in-one-frame
+          } else {
+            gameState = 4;
+            this.are = 0;
+          }
+        }
+      }
       /* farter */
     }
   }
 }
+
 Piece.prototype.update = function() {
   if (this.moveValid(0, 1, this.tetro)) {
     this.checkFall();
@@ -417,6 +432,7 @@ Piece.prototype.update = function() {
   }
   this.checkLock();
 }
+
 Piece.prototype.draw = function() {
   clear(activeCtx);
   if (!this.dead) {
@@ -433,6 +449,7 @@ Piece.prototype.draw = function() {
     }
   }
 }
+
 Piece.prototype.drawGhost = function() {
   activeCtx.globalAlpha = 0.4;
   if (settings.Ghost === 0 && !landed) {

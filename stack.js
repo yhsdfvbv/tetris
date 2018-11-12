@@ -13,6 +13,8 @@ Stack.prototype.new = function(x, y, hy) {
   this.height = hy + y;
   this.hiddenHeight = hy;
   this.grid = cells;
+  
+  this.dirty = true;
 }
 /**
  * Adds tetro to the stack, and clears lines if they fill up.
@@ -21,6 +23,11 @@ Stack.prototype.addPiece = function(tetro) {
   var lineClear = 0;
   var isSpin = false;
   var once = false;
+  
+  var bottomRow = []; // for backfire
+  for (var x = 0; x < this.width; x++) {
+    bottomRow.push(this.grid[x][this.height - 1]);
+  }
 
   // spin check
   if (
@@ -93,6 +100,7 @@ Stack.prototype.addPiece = function(tetro) {
   }
 
   var scoreAdd = bigInt(level + 1);
+  var garbage = 0;
   if (lineClear !== 0) {
     //console.log("C"+combo+" B"+b2b)
     if (isSpin) {
@@ -100,13 +108,15 @@ Stack.prototype.addPiece = function(tetro) {
         bigInt([800,1200,1600,2000][lineClear - 1])
           .mul(bigInt(2).pow(b2b + combo))
       );
+      garbage = [[2,4,6,8],[3,6,9,12]][b2b != 0 ? 1 : 0][lineClear - 1];
       b2b += 1;
       sound.playse("tspin",lineClear);
-    } else if(lineClear === 4) {
+    } else if (lineClear === 4) {
       scoreAdd = scoreAdd.mul(
         bigInt(800)
           .mul(bigInt(2).pow(b2b + combo))
       );
+      garbage = [4,5][b2b != 0 ? 1 : 0];
       b2b += 1;
       sound.playse("erase",lineClear);
     } else {
@@ -115,8 +125,10 @@ Stack.prototype.addPiece = function(tetro) {
           .mul(bigInt(2).pow(combo))
       );
       b2b = 0;
+      garbage = [0,1,2,4][lineClear - 1];
       sound.playse("erase",lineClear);
     }
+    garbage += ~~(combo / 2); //[0,0,1,1,2,2,3,3,4,4,5,5,6,6,...]
     combo += 1;
   } else {
     if (isSpin) {
@@ -131,10 +143,10 @@ Stack.prototype.addPiece = function(tetro) {
     combo = 0;
   }
   lines += lineClear;
-	if (gametype === 1 || gametype === 6) {
+  if (gametype === 1 || gametype === 6) {
     level = ~~(lines / 10);
   } else if (gametype === 7) {
-		level = ~~(lines / 30);
+    level = ~~(lines / 30);
   }
   score = score.add(scoreAdd.mul(bigInt(16).pow(allclear)));
   
@@ -147,6 +159,29 @@ Stack.prototype.addPiece = function(tetro) {
     score = score.add(bigInt(1000000).mul(bigInt(16).pow(allclear)));
     allclear ++;
     sound.playse("bravo");
+    garbage += 10;
+  }
+  
+  if(gameparams&&gameparams.backFire){
+    if(gameparams.backFire === 1){
+      garbage = [0, 0,1,2,4][lineClear];
+    }else if(gameparams.backFire === 3){
+      garbage *= ~~(lines/2);
+    }
+    if(garbage !== 0) {
+      if(gameparams.backFire === 1){
+        for(var y = 0; y < garbage; y++){
+          this.rowRise(bottomRow, piece);
+        }
+      }else if(gameparams.backFire === 2 || gameparams.backFire === 3){
+        var hole = ~~(rng.next() * 10);
+        var arrRow = [8,8,8,8,8,8,8,8,8,8];
+        arrRow[hole] = 0;
+        for(var y = 0; y < garbage; y++){
+          this.rowRise(arrRow, piece);
+        }
+      }
+    }
   }
   
   //if (scoreAdd.cmp(0) > 0)
@@ -157,9 +192,7 @@ Stack.prototype.addPiece = function(tetro) {
   // TODO Might not need this (same for in init)
   column = 0;
 
-  statisticsStack();
-
-  this.draw();
+  this.dirty = true;
 }
 /**
  * Raise a garbage line. farter
@@ -190,17 +223,19 @@ Stack.prototype.rowRise = function(arrRow, objPiece) {
   if(!isEmpty) {
     digLines.push(this.height - 1);
   }
-  if (!piece.moveValid(0, 0, piece.tetro)) {
-    piece.y-=1;
-    if (piece.y + pieces[piece.index].rect[3] <= this.hiddenHeight - 2) { // the bottom is >=2 cell away from visible part
-      gameState = 9;
-      $setText(msg,'OOPS!');
-      menu(3);
-      sound.playse("gameover");
+  if (!piece.dead) {
+    if (!piece.moveValid(0, 0, piece.tetro)) {
+      piece.y-=1;
+      if (piece.y + pieces[piece.index].rect[3] <= this.hiddenHeight - 2) { // the bottom is >=2 cell away from visible part
+        gameState = 9;
+        $setText(msg,'OOPS!');
+        menu(3);
+        sound.playse("gameover");
+      }
     }
+    piece.dirty = true;
   }
-  piece.dirty = true;
-  this.draw();
+  this.dirty = true;
 }
 /**
  * Draws the stack.
@@ -301,5 +336,9 @@ Stack.prototype.draw = function() {
     stackCtx.globalCompositeOperation = 'source-over';
     stackCtx.drawImage(lineCanvas, 0, 0);
   }
+  
+  statisticsStack();
+  
+  this.dirty = false;
 }
 var stack = new Stack();

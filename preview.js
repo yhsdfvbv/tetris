@@ -11,6 +11,7 @@ Preview.prototype.init = function() {
   if (this.grabBag.length <= 7) {
     this.grabBag.push.apply(this.grabBag, this.gen());
   }
+  this.dirty = true;
   this.draw();
 }
 Preview.prototype.next = function() {
@@ -19,7 +20,7 @@ Preview.prototype.next = function() {
   if (this.grabBag.length <= 7) {
     this.grabBag.push.apply(this.grabBag, this.gen());
   }
-  this.draw();
+  this.dirty = true;
   return next;
   //TODO Maybe return the next piece?
 }
@@ -56,16 +57,17 @@ Preview.prototype.draw = function() {
   for (var i = 0; i < drawCount; i++) {
     var p = this.grabBag[i];
     var initInfo = RotSys[settings.RotSys].initinfo[p];
+    var r = initInfo[2];
     var rect = pieces[p].rect;
     draw(
-      pieces[p].tetro[initInfo[2]],
-      -rect[initInfo[2]][0] + (4 - rect[initInfo[2]][2] + rect[initInfo[2]][0]) / 2,
-      -rect[initInfo[2]][1] +
-        (3 - rect[initInfo[2]][3] + rect[initInfo[2]][1]) / 2 +
-        i*3,
+      pieces[p].tetro[r],
+      -rect[r][0] + (4 - rect[r][2] + rect[r][0]) / 2,
+      -rect[r][1] + (3 - rect[r][3] + rect[r][1]) / 2 + i*3,
       previewCtx,
       RotSys[settings.RotSys].color[p]
     );
+    //if(p===0)console.log(-rect[r][0], (4 - rect[r][2] + rect[r][0]) / 2);
   }
+  this.dirty = false;
 }
 var preview = new Preview();
