@@ -162,7 +162,7 @@ Stack.prototype.addPiece = function(tetro) {
     garbage += 10;
   }
   
-  if(gameparams&&gameparams.backFire){
+  if(gameparams.backFire){
     if(gameparams.backFire === 1){
       garbage = [0, 0,1,2,4][lineClear];
     }else if(gameparams.backFire === 3){

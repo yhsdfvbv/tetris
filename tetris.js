@@ -524,7 +524,7 @@ var mySettings = {
   Next: 6,
   Size: 0,
   Sound: 0,
-  Volume: 100,
+  Volume: 50,
   Block: 2,
   Ghost: 1,
   Grid: 1,
@@ -962,7 +962,7 @@ function init(gt, params) {
           throw "wtf";
         if(params === "" || params.slice(0,1) !=="{")
           throw "please paste replay data, correctly..."
-        replay = JSON.parse(params);
+        replay = JSON.parse(params.replace(/\n/g,""));
         if(typeof replay !== "object")
           throw "json parse fail";
         if((replay.gametype === void 0)
@@ -981,7 +981,7 @@ function init(gt, params) {
       }
     }
     gametype = replay.gametype;
-    gameparams = replay.gameparams;
+    gameparams = replay.gameparams || {};
     settings = replay.settings; // by reference
     rng.seed = replay.seed;
   } else {
@@ -1057,7 +1057,7 @@ function init(gt, params) {
     // Dig Race
     // make ten random numbers, make sure next isn't the same as last? t=rnd()*(size-1);t>=arr[i-1]?t++:; /* farter */
     //TODO make into function or own file.
-    if (gameparams["digraceType"] === void 0 || gameparams["digraceType"] === "checker") {
+    if (gameparams.digraceType === void 0 || gameparams.digraceType === "checker") {
       // harder digrace: checkerboard
       digLines = range(stack.height - 10, stack.height);
       $setText(statsLines,10);
@@ -1067,7 +1067,7 @@ function init(gt, params) {
             stack.grid[x][y] = 8;
         }
       }
-    } else if(gameparams["digraceType"] === "easy") {
+    } else if(gameparams.digraceType === "easy") {
       var begin = ~~(rng.next()*stack.width);
       var dire = (~~(rng.next()*2))*2-1;
       digLines = range(stack.height - 10, stack.height);
@@ -1085,13 +1085,26 @@ function init(gt, params) {
     lastPiecesSet = 0;
     digZenBuffer = 0;
   }
+  if (gametype === 1 && gameparams.marathonType === 1){
+    if (settings.ARR < 1){
+      settings.ARR = 1;
+    }
+    if (settings["Soft Drop"] > 6){
+      settings["Soft Drop"] = 6;
+    }
+    if (settings.Next > 1){
+      settings.Next = 1;
+    }
+  }
 
   menu();
 
   // Only start a loop if one is not running already.
   // don't keep looping when not played
-  console.log(paused,gameState);
-  if (paused || gameState === 3) {
+  // in the 0~16ms after the last frame, inloop==true and gameState==3
+  // retry is instant event, so double RAF here... 
+  console.log(paused,gameState,inloop);
+  if (/*paused || gameState === 3*/ !inloop) {
     console.log("start inloop",inloop);
     inloop=true;
     requestAnimFrame(gameLoop);
@@ -1203,7 +1216,7 @@ function statistics() {
 
   timeCtx.clearRect(0, 0, timeCanvas.width, timeCanvas.height);
   timeCtx.fillText(displayTime, timeCanvas.width/2, timeCanvas.height/2);
-  timeCtx.fillRect(skipL,timeCanvas.height-0.2,skipR,timeCanvas.height);
+  timeCtx.fillRect(skipL,timeCanvas.height-0.4,skipR,timeCanvas.height);
 }
 
 /**
@@ -1220,8 +1233,8 @@ function statisticsStack() {
     $setText(statsLines, lines);
     $setText(statsLevel, "Lv. " + level);
   }else if (gametype === 3){
-    if (gameparams["digOffset"] || gameparams["digOffset"] !== 0){
-      $setText(statsLevel, gameparams["digOffset"] + "+");
+    if (gameparams.digOffset || gameparams.digOffset !== 0){
+      $setText(statsLevel, gameparams.digOffset + "+");
     }else{
       $setText(statsLevel, "");
     }
@@ -1548,7 +1561,7 @@ function update() {
       var arrRow = [8,8,8,8,8,8,8,8,8,8];
       var curStage = 0, objCurStage;
 
-      while(curStage<arrStages.length && arrStages[curStage].begin <= lines + (gameparams["digOffset"] || 0)) {
+      while(curStage<arrStages.length && arrStages[curStage].begin <= lines + (gameparams.digOffset || 0)) {
         curStage++;
       }
       curStage--;
@@ -1617,11 +1630,17 @@ function gameLoop() {
   if (!paused && gameState !== 3) {
     requestAnimFrame(gameLoop);
 
-    var repeat = ~~((Date.now() - startTime - pauseTime)/1000*fps) - frame;
-    if (repeat>1) {
+    // anti turbulance
+    // requestanimationframe is not perfectly 60fps, also with turbulance
+    var repeat = (Date.now() - startTime - pauseTime)/1000*fps - frame;
+    if (repeat>=2) {
+      repeat = Math.floor(repeat);
       frameSkipped += repeat-1;
-    } else if (repeat<=0) {
-      frameSkipped += repeat-1;
+    } else if (repeat <= 0) {
+      repeat = Math.ceil(repeat);
+      frameSkipped += (repeat-1+60);
+    } else {
+      repeat = 1;
     }
 
     for (var repf=0;repf<repeat;repf++) {
@@ -1657,19 +1676,22 @@ function gameLoop() {
         if (flags.rotLeft & keysDown && !(lastKeys & flags.rotLeft)) {
           piece.irsDir = -1;
           piece.finesse++;
-          console.log("IRS");
+          //console.log("IRS");
         } else if (flags.rotRight & keysDown && !(lastKeys & flags.rotRight)) {
           piece.irsDir = 1;
           piece.finesse++;
-          console.log("IRS");
+          //console.log("IRS");
         } else if (flags.rot180 & keysDown && !(lastKeys & flags.rot180)) {
           piece.irsDir = 2;
           piece.finesse++;
-          console.log("IRS");
+          //console.log("IRS");
         }
         if (!(lastKeys & flags.holdPiece) && flags.holdPiece & keysDown) {
-          piece.ihs = true;
-          console.log("IHS");
+          if (gametype === 1 && gameparams.marathonType === 1){
+          } else {
+            piece.ihs = true;
+            //console.log("IHS");
+          }
         }
         if (lastKeys !== keysDown) {
           lastKeys = keysDown;
@@ -1769,7 +1791,7 @@ function checkWin(){
   if (gametype === 0) { // 40L
     if (lines >= lineLimit) {
       gameState = 1;
-      if (gameparams && gameparams.backFire){
+      if (gameparams.backFire){
         msg.innerHTML = "GREAT!";
       } else {
         var rank = null;
@@ -1838,14 +1860,14 @@ function trysubmitscore() {
 
   if(gametype===0) // 40L
     obj.mode="sprint" + 
-      (gameparams&&gameparams.pieceSet?["","noi","alli"][gameparams.pieceSet]:"") +
-      (gameparams&&gameparams.backFire?["","bf1","bf2","bf3"][gameparams.backFire]:"");
+      (gameparams.pieceSet?["","noi","alli"][gameparams.pieceSet]:"") +
+      (gameparams.backFire?["","bf1","bf2","bf3"][gameparams.backFire]:"");
   else if(gametype===3) // dig
-    obj.mode="dig" + (gameparams&&gameparams.digOffset?gameparams.digOffset:"");
+    obj.mode="dig" + (gameparams.digOffset?gameparams.digOffset:"");
   else if(gametype===4) // dig race
-    obj.mode="digrace" + (gameparams&&gameparams.digraceType?gameparams.digraceType:"checker");
+    obj.mode="digrace" + (gameparams.digraceType?gameparams.digraceType:"checker");
   else if(gametype===1) // marathon
-    obj.mode="marathon";
+    obj.mode="marathon" + (gameparams.marathonType?["","cls"][gameparams.marathonType]:"");
   else if(gametype===5) // score attack
     obj.mode="score";
   else if(gametype===6) // 20g

@@ -76,15 +76,20 @@ Piece.prototype.new = function(index) {
   } else if (settings.Gravity !== 0) {
     this.gravity = gravityArr[settings.Gravity - 1];
   } else if (gametype === 1) { //Marathon
-    if (level < 20) {
-      this.gravity = [
-        1/60, 1/30, 1/25, 1/20, 1/15, 1/12, 1/10, 1/8,  1/6,  1/6,
-         1/4,  1/4,  1/3,  1/3,  1/3,  1/2,    1,   1,    2,    3
-        ]
-        [level];
+    if (gameparams.marathonType === 1) {
+      this.gravity = (level * 2 + 10) / 60;
+      this.lockDelayLimit = 8;
     } else {
-       this.gravity = 20;
-       this.lockDelayLimit = ~~(30 * Math.pow(0.93, (Math.pow(level-20, 0.8)))); // magic!
+      if (level < 20) {
+        this.gravity = [
+          1/60, 1/30, 1/25, 1/20, 1/15, 1/12, 1/10, 1/8,  1/6,  1/6,
+           1/4,  1/4,  1/3,  1/3,  1/3,  1/2,    1,   1,    2,    3
+          ]
+          [level];
+      } else {
+         this.gravity = 20;
+         this.lockDelayLimit = ~~(30 * Math.pow(0.93, (Math.pow(level-20, 0.8)))); // magic!
+      }
     }
   } else {
     this.gravity = gravityUnit;
@@ -322,8 +327,8 @@ Piece.prototype.hardDrop = function() {
   this.lockDelay = this.lockDelayLimit;
 }
 Piece.prototype.getDrop = function(distance) {
-	if (!this.moveValid(0, 0, this.tetro))
-		return 0;
+  if (!this.moveValid(0, 0, this.tetro))
+    return 0;
   for (var i = 1; i <= distance; i++) {
     if (!this.moveValid(0, i, this.tetro))
       return i - 1;
@@ -331,6 +336,9 @@ Piece.prototype.getDrop = function(distance) {
   return i - 1;
 }
 Piece.prototype.hold = function() {
+  if (gametype === 1 && gameparams.marathonType === 1){
+    return
+  }
   var temp = hold.piece;
   if (!this.held) {
     if (hold.piece !== void 0) {
@@ -406,6 +414,8 @@ Piece.prototype.checkLock = function() {
               this.lockDelayLimit = 11;
               this.areLimit = 6;
             }
+          } else if (gametype === 1 && gameparams.marathonType === 1) {
+            this.areLimit = 11;
           } else {
             this.areLimit = 0;
           }

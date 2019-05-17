@@ -186,7 +186,7 @@ function handlereplay(xmlhttp)
 }
 
 var hostaddr=
-  "http://farter.tk:8888";
+  "http://farter.cn:8888";
   //"http://localhost:8888";
 
 function submitscore(obj)
