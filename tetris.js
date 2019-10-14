@@ -137,7 +137,7 @@ var TetroZ = [
   [[0,7,0,0],[0,7,7,0],[0,0,7,0],[0,0,0,0]],
   [[0,7,7,0],[7,7,0,0],[0,0,0,0],[0,0,0,0]]];
 // [r][MINX MINY MAXX MAXY]
-var RectI = [[0,1,4,2],[2,0,3,4],[0,2,4,3],[1,0,2,4]]; // hacked for next display
+var RectI = [[0,1,4,2],[2,0,3,4],[0,2,4,3],[1,0,2,4]];
 var RectJ = [[0,0,3,2],[1,0,3,3],[0,1,3,3],[0,0,2,3]];
 var RectL = [[0,0,3,2],[1,0,3,3],[0,1,3,3],[0,0,2,3]];
 var RectO = [[1,0,3,2],[1,0,3,2],[1,0,3,2],[1,0,3,2]];
@@ -181,9 +181,9 @@ var WKTableSRS = [WKTableSRSI,WKTableSRSX,WKTableSRSX,WKTableSRSX,WKTableSRSX,WK
 
 var WKTableCultris = [[ 0, 0],[-1, 0],[+1, 0],[ 0,+1],[-1,+1],[+1,+1],[-2, 0],[+2, 0],[ 0,-1]];
 
-var WKTableDRS_R = [[ 0, 0],[+1, 0],[-1, 0],[ 0,+1],[+1,+1],[-1,+1],[ 0,-1]];
-var WKTableDRS_L = [[ 0, 0],[-1, 0],[+1, 0],[ 0,+1],[-1,+1],[+1,+1],[ 0,-1]];
-var WKTableDRS = [WKTableDRS_R,WKTableDRS_L,WKTableDRS_L];
+var WKTableDTET_R = [[ 0, 0],[+1, 0],[-1, 0],[ 0,+1],[+1,+1],[-1,+1],[ 0,-1]];
+var WKTableDTET_L = [[ 0, 0],[-1, 0],[+1, 0],[ 0,+1],[-1,+1],[+1,+1],[ 0,-1]];
+var WKTableDTET = [WKTableDTET_R,WKTableDTET_L,WKTableDTET_L];
 
 var WKTableDX_R = [[[0, 0], [-1, -1]], [[0, 0], [+1, -1]], [[0, 0], [+1, +1]], [[0, 0], [-1, +1]]];
 var WKTableDX_L = [[[0, 0], [+1, -1]], [[0, 0], [+1, +1]], [[0, 0], [-1, +1]], [[0, 0], [-1, -1]]];
@@ -206,15 +206,15 @@ var OffsetARS = [
   [[ 0,+1],[-1, 0],[ 0, 0],[ 0, 0]],
   [[ 0,+1],[ 0, 0],[ 0, 0],[ 0, 0]],
   [[ 0,+1],[ 0, 0],[ 0, 0],[+1, 0]]];
-var OffsetDRS = [
+var OffsetDTET = [
   [[ 0,+1],[ 0, 0],[ 0, 0],[ 0, 0]],
-  [[ 0,+1],[ 0, 0],[ 0, 0],[ 0, 0]],
-  [[ 0,+1],[ 0, 0],[ 0, 0],[ 0, 0]],
-  [[ 0,+1],[ 0,+1],[ 0,+1],[ 0,+1]],
-  [[ 0,+1],[ 0, 0],[ 0, 0],[ 0, 0]],
-  [[ 0,+1],[ 0, 0],[ 0, 0],[ 0, 0]],
-  [[ 0,+1],[ 0, 0],[ 0, 0],[ 0, 0]]];
-var OffsetQRS = [
+  [[ 0,+2],[ 0,+1],[ 0,+1],[ 0,+1]],
+  [[ 0,+2],[ 0,+1],[ 0,+1],[ 0,+1]],
+  [[ 0,+2],[ 0,+2],[ 0,+2],[ 0,+2]],
+  [[ 0,+2],[ 0,+1],[ 0,+1],[ 0,+1]],
+  [[ 0,+2],[ 0,+1],[ 0,+1],[ 0,+1]],
+  [[ 0,+2],[ 0,+1],[ 0,+1],[ 0,+1]]];
+var OffsetQQ = [
   [[ 0, 0],[ 0, 0],[ 0,-1],[+1, 0]],
   [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
   [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
@@ -240,12 +240,12 @@ var OffsetNBlox = [
   [[ 0,+1],[ 0, 0],[ 0, 0],[+1, 0]]];
 var OffsetNintendo = [
   [[ 0,+1],[ 0, 0],[ 0, 0],[+1, 0]],
-  [[+1, 0],[+1, 0],[+1, 0],[+1, 0]],
-  [[+1, 0],[+1, 0],[+1, 0],[+1, 0]],
+  [[+1,+1],[+1,+1],[+1,+1],[+1,+1]],
+  [[+1,+1],[+1,+1],[+1,+1],[+1,+1]],
   [[ 0,+1],[ 0,+1],[ 0,+1],[ 0,+1]],
-  [[+1,+1],[+1, 0],[+1, 0],[+2, 0]],
-  [[+1, 0],[+1, 0],[+1, 0],[+1, 0]],
-  [[+1,+1],[+1, 0],[+1, 0],[+2, 0]]];
+  [[+1,+2],[+1,+1],[+1,+1],[+2,+1]],
+  [[+1,+1],[+1,+1],[+1,+1],[+1,+1]],
+  [[+1,+2],[+1,+1],[+1,+1],[+2,+1]]];
 var OffsetMS = [
   [[ 0, 0],[ 0, 0],[ 0,-1],[+1, 0]],
   [[+1, 0],[+1, 0],[+1, 0],[+1, 0]],
@@ -294,12 +294,36 @@ var OffsetDX = [
   [[ 0,+1],[ 0,+1],[ 0,+1],[ 0,+1]],
   [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
   [[ 0,+1],[ 0,+1],[ 0,+1],[ 0,+1]]];
-
+var OffsetNintendoL = [
+  [[ 0,+1],[-1, 0],[ 0, 0],[ 0, 0]],
+  [[ 0,+1],[ 0,+1],[ 0,+1],[ 0,+1]],
+  [[ 0,+1],[ 0,+1],[ 0,+1],[ 0,+1]],
+  [[ 0,+1],[ 0,+1],[ 0,+1],[ 0,+1]],
+  [[ 0,+2],[-1,+1],[ 0,+1],[ 0,+1]],
+  [[ 0,+1],[ 0,+1],[ 0,+1],[ 0,+1]],
+  [[ 0,+2],[-1,+1],[ 0,+1],[ 0,+1]]];
+var OffsetQuadra = [
+  [[ 0, 0],[-1, 0],[ 0,-1],[ 0, 0]],
+  [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0,+1],[ 0,+1],[ 0,+1],[ 0,+1]],
+  [[ 0,+1],[-1, 0],[ 0, 0],[ 0, 0]],
+  [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0,+1],[-1, 0],[ 0, 0],[ 0, 0]]];
+var OffsetMybo = [
+  [[ 0,+2],[-1, 0],[ 0,+1],[ 0, 0]],
+  [[+1,+2],[ 0,+1],[+1,+1],[+1,+1]],
+  [[+1,+2],[ 0,+1],[+1,+1],[+1,+1]],
+  [[ 0,+2],[ 0,+2],[ 0,+2],[ 0,+2]],
+  [[+1,+2],[+1,+1],[+1,+1],[+2,+1]],
+  [[+1,+2],[+1,+1],[+1,+1],[+1,+1]],
+  [[+1,+2],[+1,+1],[+1,+1],[+2,+1]]];
+  
 //x, y, r
 var InitInfoSRS = [[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0]];
 var InitInfoARS = [[ 0, 0, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0,+1, 0],[ 0,+1, 0],[ 0, 0, 2],[ 0,+1, 0]];
-var InitInfoDRS = [[ 0,+1, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0,+1, 0],[ 0,+1, 0],[ 0, 0, 2],[ 0,+1, 0]];
-var InitInfoQRS = [[ 0, 0, 0],[ 0, 0, 1],[ 0, 0, 3],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 2],[ 0, 0, 0]];
+var InitInfoDTET = [[ 0, 0, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0,+1, 0],[ 0,+1, 0],[ 0, 0, 2],[ 0,+1, 0]];
+var InitInfoQQ = [[ 0, 0, 0],[ 0, 0, 1],[ 0, 0, 3],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 2],[ 0, 0, 0]];
 var InitInfoAtari = [[+1, 0, 0],[+1, 0, 2],[+1, 0, 2],[ 0,+1, 0],[+1,+1, 0],[+1, 0, 2],[+1,+1, 0]];
 var InitInfoNBlox = [[ 0, 0, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0,+1, 0],[ 0,+1, 0],[ 0, 0, 2],[ 0,+1, 0]];
 var InitInfoNintendo = [[ 0, 0, 0],[+1, 0, 2],[+1, 0, 2],[ 0,+1, 0],[+1,+1, 0],[+1, 0, 2],[+1,+1, 0]];
@@ -309,10 +333,13 @@ var InitInfoJJSRS = [[ 0, 0, 0],[+1, 0, 0],[+1, 0, 0],[ 0, 0, 0],[+1, 0, 0],[+1,
 var InitInfo5000 = [[ 0, 0, 3],[ 0, 0, 1],[+1, 0, 3],[ 0, 0, 0],[ 0, 0, 0],[ 0, -1, 2],[ 0, 0, 0]];
 var InitInfoPlus = [[ 0, 0, 0],[+1, 0, 2],[+1, 0, 2],[ 0,+1, 0],[+1,+1, 0],[+1, 0, 2],[+1,+1, 0]];
 var InitInfoDX = [[ 0, 0, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0,+1, 0],[ 0,+1, 0],[ 0, 0, 2],[ 0,+1, 0]];
+var InitInfoNintendoL = [[ 0, 0, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0,+1, 0],[ 0,+1, 0],[ 0, 0, 2],[ 0,+1, 0]];
+var InitInfoQuadra = [[ 0, 0, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0,+1, 0],[ 0,+1, 0],[ 0, 0, 2],[ 0,+1, 0]];
+var InitInfoMybo = [[ 0,+1, 0],[+1, 0, 2],[+1, 0, 2],[ 0,+1, 0],[+1,+1, 0],[+1, 0, 2],[+1,+1, 0]];
 
 var ColorSRS = [1, 2, 3, 4, 5, 6, 7];
-var ColorARS = [7, 2, 3, 4, 6, 1, 5];
-var ColorQRS = [7, 1, 3, 4, 5, 6, 2];
+var ColorSega = [7, 2, 3, 4, 6, 1, 5];
+var ColorQQ = [7, 1, 3, 4, 5, 6, 2];
 var ColorTengen = [7, 3, 6, 2, 5, 4, 1];
 var ColorAtari = [7, 4, 6, 2, 1, 5, 3];
 var ColorNBlox = [3, 6, 2, 7, 1, 4, 5];
@@ -324,8 +351,10 @@ var ColorIBM = [7, 9, 6, 2, 5, 3, 1];
 var ColorJJSRS = [5, 1, 3, 4, 7, 6, 2];
 var Color5000 = [7, 6, 8, 4, 5, 1, 2];
 var ColorDX = [9, 7, 2, 4, 3, 5, 6];
+var ColorMybo = [5, 6, 7, 4, 3, 2, 1];
+var ColorQuadra = [5, 4, 6, 3, 1, 2, 7];
+var ColorGameBoy = [9, 2, 7, 8, 7, 9, 2];
 
-//SRS, C2, ARS, QRS, DRS
 var RotSys = [
   {
     initinfo: InitInfoSRS,
@@ -340,17 +369,17 @@ var RotSys = [
   {
     initinfo: InitInfoARS,
     offset: OffsetARS,
-    color: ColorARS,
+    color: ColorSega,
   },
   {
-    initinfo: InitInfoDRS,
-    offset: OffsetDRS,
-    color: ColorARS,
+    initinfo: InitInfoDTET,
+    offset: OffsetDTET,
+    color: ColorSega,
   },
   {
-    initinfo: InitInfoQRS,
-    offset: OffsetQRS,
-    color: ColorQRS,
+    initinfo: InitInfoQQ,
+    offset: OffsetQQ,
+    color: ColorQQ,
   },
   {
     initinfo: InitInfoAtari,
@@ -400,13 +429,28 @@ var RotSys = [
   {
     initinfo: InitInfoPlus,
     offset: OffsetPlus,
-    color: ColorARS,
+    color: ColorSega,
   },
   {
     initinfo: InitInfoDX,
     offset: OffsetDX,
     color: ColorDX,
-  }
+  },
+  {
+    initinfo: InitInfoNintendoL,
+    offset: OffsetNintendoL,
+    color: ColorGameBoy,
+  },
+  {
+    initinfo: InitInfoQuadra,
+    offset: OffsetQuadra,
+    color: ColorQuadra,
+  },
+  {
+    initinfo: InitInfoMybo,
+    offset: OffsetMybo,
+    color: ColorMybo,
+  },
 ];
 
 // Define shapes and spawns.
@@ -575,9 +619,9 @@ var setting = {
     return array;
   })(),
   'Lock Delay': range(0, 101),
-  RotSys: ['Super', 'C2', 'Arika*', 'DTET', 'QQ', 'Atari', 'Tengen', 'N-Blox', 'Nintendo', 'MS', 'E-60', 'IBM PC', 'JJ', '5000', 'Plus', 'DX'],
+  RotSys: ['Super', 'C2', 'Arika*', 'DTET', 'QQ', 'Atari', 'Tengen', 'N-Blox', 'Nintendo', 'MS', 'E-60', 'IBM PC', 'JJ', '5000', 'Plus', 'DX', 'GameBoy', 'Quadra', 'Mybo'],
   Next: ['-', '1', '2', '3', '4', '5', '6'],
-  Size: ['Full', 'Small', 'Medium', 'Large', 'Larger'],
+  Size: ['Auto', 'Small', 'Medium', 'Large', 'Larger'],
   Sound: ['Off', 'On'],
   Volume: range(0, 101),
   Block: ['Shaded', 'Solid', 'Glossy', 'Arika', 'World'],
@@ -1208,7 +1252,11 @@ function statistics() {
     (minutes < 10 ? '0' : '') + minutes +
     (seconds < 10 ? ':0' : ':') + seconds;
   var fsbl = 30; /* frameskip bar length */
-  var skipL = frameSkipped % (fsbl*2), skipR = frameSkipped % (fsbl*2);
+  var pos = frameSkipped % (fsbl*2);
+  if (frameSkipped < 0 && pos !== 0) {
+    pos = 60 + pos; // euclid division modulus
+  }
+  var skipL = pos, skipR = pos;
   skipL = (skipL-fsbl<0)?0:(skipL-fsbl);
   skipR = (skipR>fsbl)?fsbl:skipR;
   skipL = skipL/fsbl*timeCanvas.width;
@@ -1638,7 +1686,7 @@ function gameLoop() {
       frameSkipped += repeat-1;
     } else if (repeat <= 0) {
       repeat = Math.ceil(repeat);
-      frameSkipped += (repeat-1+60);
+      frameSkipped += repeat-1;
     } else {
       repeat = 1;
     }

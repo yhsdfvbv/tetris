@@ -54,18 +54,21 @@ Preview.prototype.gen = function() {
 Preview.prototype.draw = function() {
   clear(previewCtx);
   var drawCount = (settings["Next"]===void 0) ? 6 : settings["Next"];
+  var curY = 0;
   for (var i = 0; i < drawCount; i++) {
     var p = this.grabBag[i];
     var initInfo = RotSys[settings.RotSys].initinfo[p];
     var r = initInfo[2];
-    var rect = pieces[p].rect;
+    var rect = pieces[p].rect[r];
+    var h = Math.max(rect[3] - rect[1], 3);
     draw(
       pieces[p].tetro[r],
-      -rect[r][0] + (4 - rect[r][2] + rect[r][0]) / 2,
-      -rect[r][1] + (3 - rect[r][3] + rect[r][1]) / 2 + i*3,
+      -rect[0] + (4 - rect[2] + rect[0]) / 2,
+      curY - rect[1] + (h - rect[3] + rect[1]) / 2,
       previewCtx,
       RotSys[settings.RotSys].color[p]
     );
+    curY += h;
     //if(p===0)console.log(-rect[r][0], (4 - rect[r][2] + rect[r][0]) / 2);
   }
   this.dirty = false;

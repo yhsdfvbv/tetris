@@ -189,9 +189,6 @@ textarea {
 textarea:focus {
   outline-color: #BFB;
 }
-#settings > div {
-  margin: 0.3em 0;
-}
 
 a {
   color: #FFF;
@@ -441,9 +438,12 @@ i.left.material-icons, i.right.material-icons {
 #settings {
   margin: 0 0 1em;
 }
+#settings > div {
+  margin: 0.3em 0;
+}
 #settings b {
   display: inline-block;
-  width: 9.5rem;
+  width: 8.5rem;
   font-size: 0.9em;
   text-align: left;
   font-weight: normal;
@@ -454,8 +454,7 @@ i.left.material-icons, i.right.material-icons {
   font-size: .9em;
   font-weight: bold;
   display: inline-block;
-  width: 3.5rem;
-  margin: 0.2em 0;
+  width: 4rem;
 }
 #leader div {
   margin: 1em 0;

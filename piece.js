@@ -182,7 +182,7 @@ Piece.prototype.rotate = function(direction) {
     else if (settings.RotSys === 15)
       kickList = WKTableDX[kickIndex][curPos]
     else
-      kickList = WKTableDRS[kickIndex];
+      kickList = WKTableDTET[kickIndex];
     this.tryKickList(kickList, rotated, newPos, offsetX, offsetY);
   }
 }
