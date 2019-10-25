@@ -49,11 +49,11 @@ function keysEncode(keys) {
   for(var i in keys) {
     curFrame = +i;
     curKeys = keys[i];
-    for(var xhb=0; xhb<10; xhb++) {
+    for(var xhb=0; xhb<18; xhb++) {
       if((curKeys ^ lastKeys) & (1 << xhb)) {
         writeVL4(arrHB, curFrame - lastFrame);
-        arrHB.push(xhb);
-        //console.log("key", curFrame - lastFrame, xhb, i)
+        writeVL4(arrHB, xhb);
+        // console.log("df:", curFrame - lastFrame, ", key:", xhb, i)
         lastFrame = curFrame;
       }
     }
@@ -62,7 +62,7 @@ function keysEncode(keys) {
   arrHB.push(8);
   arrHB.push(0);
   
-  //console.log(arrHB);
+  // console.log(arrHB);
   
   var nHB = arrHB.length;
   var sum;
@@ -124,21 +124,29 @@ function keysDecode(str) {
   //console.log(arrHB.length, arrHB.toString());
   
   for(var i=0; i<arrHB.length;) {
-    var nexti;
+    var nexti,dframe,bit;
     nexti = scanVL4(arrHB, i, objNum);
     if(nexti === null) {
-      //return null;
       console.log("scanVL4 null:",i,arrHB.length);
       throw 3;
     }
     if(nexti === -1)
       break;
+    dframe = objNum[0];
     i = nexti;
-    lastFrame += objNum[0];
-    lastKeys ^= (1 << arrHB[i]); // flip that bit
+    nexti = scanVL4(arrHB, i, objNum);
+    if(nexti === null) {
+      console.log("scanVL4 null:",i,arrHB.length);
+      throw 4;
+    }
+    if(nexti === -1)
+      throw 5;
+    bit = objNum[0];
+    i = nexti;
+    lastFrame += dframe;
+    lastKeys ^= (1 << bit); // flip that bit
     keys[lastFrame] = lastKeys;
-    //console.log("event:",objNum[0],"F interval, key:", arrHB[i]);
-    i++;
+    // console.log("df:",dframe,", key:", bit);
   }
   
   return keys;

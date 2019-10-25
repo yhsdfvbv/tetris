@@ -144,7 +144,7 @@ a.link {
 a.btn {
   display: block;
   padding: 0.22rem 0.6rem 0.4rem;
-  margin: .7em auto;
+  margin: .7rem auto;
   width: 75%;
   height: 2rem;
   box-shadow: 0 0 0 .1rem #999, 0 0 .3rem .2rem rgba(0, 0, 0, .5);
@@ -171,6 +171,12 @@ a.btn.highlight {
 a.btn.btn-inline {
   display: inline-block;
   margin: 0;
+}
+a.btn.btn-inline:not(:first-child) {
+  margin-left: .7rem;
+}
+div.btn-line {
+  margin: .7rem auto;
 }
 div.btn-container {
   margin: 1rem auto;

@@ -1050,7 +1050,7 @@ function init(gt, params) {
     gametype = 0;
 
   if(gametype === 0) // sprint
-    lineLimit = 40;
+    lineLimit = gameparams.lineLimit || 40;
   else if(gametype === 5) // score attack
     lineLimit = 200;
   else
@@ -1138,6 +1138,22 @@ function init(gt, params) {
     }
     if (settings.Next > 1){
       settings.Next = 1;
+    }
+  }
+  if (gametype === 0){
+    // don't care about digLines since it's not dig mode
+    if (gameparams.lineLimit === 1){
+      for (var y = stack.height - 1; y > stack.height - 10 - 1; y--) {
+        stack.grid[~~(rng.next()*stack.width)][y] = 8;
+      }
+    } else if(gameparams.lineLimit === 25){
+      for (var y = stack.height - 1; y > stack.height - 10 - 1; y--) {
+        var pattern = ~~(rng.next() * 1022) + 1;
+        for (var x = 0; x < stack.width; x++) {
+          if ((1<<x)&pattern)
+            stack.grid[x][y] = ~~(rng.next() * 8) + 1;
+        }
+      }
     }
   }
 
@@ -1836,7 +1852,7 @@ function gameLoop() {
 
 // called after piece lock, may be called multple times when die-in-one-frame
 function checkWin(){
-  if (gametype === 0) { // 40L
+  if (gametype === 0 && lineLimit >= 40) { // 40L + longer sprints
     if (lines >= lineLimit) {
       gameState = 1;
       if (gameparams.backFire){
@@ -1844,6 +1860,9 @@ function checkWin(){
       } else {
         var rank = null;
         var time = (Date.now() - scoreStartTime - pauseTime) / 1000;
+        if (lineLimit !== 40) {
+          time = time * 40 / lineLimit;
+        }
         for (var i in sprintRanks) {
           if (time > sprintRanks[i].t) {
             rank = sprintRanks[i];
@@ -1878,6 +1897,10 @@ function checkWin(){
       if (lines>=400) { // 300 + 100
         isend=true;
       }
+    } else if (gametype === 0) { // misc line limited modes
+      if (lines>=lineLimit) {
+        isend=true;
+      }
     }
     if(isend){
       gameState = 1;
@@ -1908,6 +1931,7 @@ function trysubmitscore() {
 
   if(gametype===0) // 40L
     obj.mode="sprint" + 
+      (gameparams.lineLimit?""+gameparams.lineLimit:"") +
       (gameparams.pieceSet?["","noi","alli"][gameparams.pieceSet]:"") +
       (gameparams.backFire?["","bf1","bf2","bf3"][gameparams.backFire]:"");
   else if(gametype===3) // dig

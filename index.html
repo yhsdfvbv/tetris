@@ -64,9 +64,11 @@
     </div>
 
     <nav class="menu on">
-      <h1>Tetr.js - Dig v0.59</h1>
+      <h1>Tetr.js - Dig v0.60</h1>
 
-      <p>forked from: <a class="link" href="http://simon.lc/tetr.js/">&gt;&gt;simonlc</a><br/>
+      <p>
+        original: <a class="link" href="//simon.lc/tetr.js/">&gt;&gt;simonlc</a><br/>
+        enhanced: <a class="link" href="//doktorocelot.com/tetr.js/">&gt;&gt;drocelot</a><br/>
         farter's Dig Mod</p>
 
       <div class="btn-container">
@@ -153,7 +155,10 @@
     <nav id="go" class="menu">
       <div class="btn-container btn-container-bottom">
         <a class="btn" onclick="init(gametype,gameparams)">Retry 再来</a>
-        <a class="btn btn-inline" onclick="init('replay')" style="width: 50%;">Replay 回放 </a><a class="btn btn-inline" onclick="showreplaydata(curreplaydata())" style="width: calc(25% - .7rem); margin-left: .7rem"><i class="material-icons">&#xE161;</i></a>
+        <div class="btn-line">
+          <a class="btn btn-inline" onclick="init('replay')" style="width: 50%;">Replay 回放 </a>
+          <a class="btn btn-inline" onclick="showreplaydata(curreplaydata())" style="width: 20%"><i class="material-icons">&#xE161;</i></a>
+        </div>
         <a class="btn highlight" onclick="menu(5,1);this.classList.remove('highlight')">Rankings 排行</a>
         <a class="btn" onclick="menu(0)">Back 回菜单</a>
       </div>
@@ -198,12 +203,20 @@
         <a class="btn" onclick="init(4,{digraceType:'checker'})"><i class="material-icons">&#xE540;</i> Dig Hard 疯狂挖掘</a>
         <a class="btn" onclick="init(6)"><i class="material-icons">&#xE01F;</i> 20G 瞬降模式</a>
         <a class="btn" onclick="init(7)"><i class="material-icons">&#xE034;</i> Dig Zen 沉思挖掘</a>
+        <div class="btn-line">
+          <a class="btn btn-inline" style="width:15%;" onclick="init(0,{lineLimit:1})">1</a>
+          <a class="btn btn-inline" style="width:15%;" onclick="init(0,{lineLimit:4})">4</a>
+          <a class="btn btn-inline" style="width:35%;" onclick="init(0,{lineLimit:25})">TYPE-B</a>
+        </div>
+        <div class="btn-line">
+          <a class="btn btn-inline" style="width:30%;" onclick="init(0,{lineLimit:100})">100</a>
+          <a class="btn btn-inline" style="width:40%;" onclick="init(0,{lineLimit:1000})">1000</a>
+        </div>
         <a class="btn" onclick="init(0,{pieceSet:1})"><i class="material-icons"></i> Spr_nt 困难40行</a>
         <a class="btn" onclick="init(0,{pieceSet:2})"><i class="material-icons"></i> Heaven 简单40行</a>
         <a class="btn" onclick="init(0,{backFire:1})"><i class="material-icons"></i> Backfire 自攻自受</a>
         <a class="btn" onclick="init(0,{backFire:2})"><i class="material-icons"></i> Backfire2 自攻自受2</a>
         <a class="btn" onclick="init(0,{backFire:3})"><i class="material-icons"></i> Backfire3 自攻自受3</a>
-        
         <a class="btn" onclick="menu(void 0,-1)">Back 返回</a>
       </div>
     </nav>
