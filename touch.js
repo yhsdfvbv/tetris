@@ -177,7 +177,7 @@ function touchButtonsLayout()
 
   };
 
-  setPos(touchLayout, 0, 0, buttonW, buttonH, 2, 0, 0, 0, winW, winH);
+  setPos(touchLayout, 0, 0, buttonW*0.8, buttonH*0.8, 2, 0, 0, 0, winW, winH);
   if(currLayout === -2) { // none
     layouts["NONE"]();
   }else if(currLayout === -1) { // auto detection
@@ -206,51 +206,78 @@ function touchButtonsLayout()
   }
 }
 
+function touchButtonsToggle(){
+  if(!isGameRunning() || watchingReplay){
+    touchOverlay.classList.add("touchoverlay-disabled");
+    for (var i = 0, len = touchButtons.length; i < len; i++)
+      touchButtons[i].classList.add("touchbutton-disabled");
+  }else{
+    touchOverlay.classList.remove("touchoverlay-disabled");
+    for (var i = 0, len = touchButtons.length; i < len; i++)
+      touchButtons[i].classList.remove("touchbutton-disabled");
+  }
+}
+
 function touch(e)
 {
   var winH = window.innerHeight, winW = window.innerWidth;
-  //if (e.type==="touchmove")
-    //e.preventDefault();
-  if ((e.type === "touchstart" || e.type === "click") && e.target === touchLayout) {
-    currLayout++;
-    if (currLayout === nLayouts) {
-      currLayout = -2; //none, auto, 0, 1, 2...
-    }
-    resize();
-  }
+  //console.log(e.type, e.target.keyName);
+
   if (e.type === "touchstart" || e.type === "touchmove" || e.type === "touchend") {
-    for (var i in binds)
-      keyUpDown({
-        type: "keyup",
-        keyCode: binds[i],
-        preventDefault: function(){}
-      });
-    for (var i = 0, l = e.touches.length; i < l; i++) {
-      var tX = e.touches[i].pageX, tY = e.touches[i].pageY;
-      for (var j = 0; j < touchButtons.length; j++) {
-        var oRef = touchButtons[j];
-        if (tX>=oRef.offsetLeft && tX<oRef.offsetLeft+oRef.offsetWidth &&
-          tY>=oRef.offsetTop && tY<oRef.offsetTop+oRef.offsetHeight) {
-          keyUpDown({
-            type: "keydown",
-            keyCode: binds[oRef.bindsMemberName],
-            preventDefault: function(){}
-          });
-          e.preventDefault();
+    if (isGameRunning()) {
+      keysDownTouch = 0;
+      for (var i = 0, l = e.touches.length; i < l; i++) {
+        var tX = e.touches[i].pageX, tY = e.touches[i].pageY;
+        
+        /*
+        for (var j = 0; j < touchButtons.length; j++) {
+          var btn = touchButtons[j];
+          if (tX>=btn.offsetLeft && tX<btn.offsetLeft+btn.offsetWidth &&
+            tY>=btn.offsetTop && tY<btn.offsetTop+btn.offsetHeight) {
+            keysDownTouch |= flags[btn.keyName];
+          }
         }
+        */
       }
+      e.preventDefault();
     }
   }
+}
+
+function touchOnLayout(e){
+  //console.log(e.type, e.target);
+  if ((e.type === "touchend" || e.type === "click") && e.target === touchLayout) {
+    if (isGameRunning()) {
+      pause();
+    } else {
+      currLayout++;
+      if (currLayout === nLayouts) {
+        currLayout = -2; //none, auto, 0, 1, 2...
+      }
+      touchButtonsLayout();
+    }
+  }
+  e.preventDefault();
+  e.stopPropagation();
 }
 
 function preventDefault(e) {
   e.preventDefault();
+  e.stopPropagation();
 }
-document.addEventListener('touchstart',touch, false);
-document.addEventListener('touchmove',touch, false);
-document.addEventListener('touchend',touch, false);
-document.addEventListener('click',touch, false);
 
+touchOverlay.addEventListener('touchstart',touch, false);
+touchOverlay.addEventListener('touchmove',touch, false);
+touchOverlay.addEventListener('touchend',touch, false);
+
+touchLayout.addEventListener('touchstart', touchOnLayout, false);
+touchLayout.addEventListener('touchmove', touchOnLayout, false);
+touchLayout.addEventListener('touchend', touchOnLayout, false);
+touchLayout.addEventListener('click', touchOnLayout, false);
+
+touchOverlay.addEventListener('gesturestart',preventDefault,false);
+touchOverlay.addEventListener('gestureend',preventDefault,false);
+touchOverlay.addEventListener('gesturechange',preventDefault,false);
 document.addEventListener('gesturestart',preventDefault,false);
 document.addEventListener('gestureend',preventDefault,false);
 document.addEventListener('gesturechange',preventDefault,false);

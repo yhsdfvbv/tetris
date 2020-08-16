@@ -109,6 +109,7 @@ body {
   -webkit-font-smoothing: antialiased;
   color: #FFF;
   -webkit-touch-callout: none;
+  overflow: hidden;
 }
 body, span, a, p, div, h2, h3, h4, h5, h6 {
   font-family: 'Roboto', 'Trebuchet MS', 'Microsoft Yahei', 'Hiragino Sans GB', sans-serif;
@@ -185,6 +186,12 @@ div.btn-container.btn-container-bottom {
   position: absolute;
   width: 100%;
   bottom: 0;
+  opacity: 75%;
+  transition: opacity .5s ease;
+}
+div.btn-container.btn-container-bottom:hover{
+  opacity: 100%;
+  transition: opacity .3s ease;
 }
 #msg {
   text-shadow: #000 0 0 10px;
@@ -331,7 +338,6 @@ nav li {
   width: 100%;
 }
 #stats th {
-  text-transform: uppercase;
   display: block;
   width: 100%;
   vertical-align: top;
@@ -360,6 +366,9 @@ nav li {
   font-weight: 900;
   font-size: 0.9em;
   display: block;
+}
+#penalty {
+  color: #F33;
 }
 /* Menus */
 .menu {
@@ -504,14 +513,37 @@ i.left.material-icons, i.right.material-icons {
   bottom: 2em;
 }
 /* Touch Buttons */
+#touchOverlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+}
+
+.touchoverlay-disabled {
+  pointer-events: none;
+}
 .touchbutton {
   position: absolute;
   font-family: Arial, sans-serif;
   text-align: center;
   color: #FFF;
   border-radius: 5px;
-  opacity: 0.2;
+  opacity: 0.3;
   /* padding: 0.3rem 0.6rem 0.4rem; */
-  background: #444;
+  /* background: rgba(60,60,60,0.8); */
+  background: transparent;
   z-index: 100;
+}
+.touchbutton-disabled {
+  opacity: 0.2;
+  background: transparent;
+  pointer-events: none;
+}
+#touchLayout {
+  background: transparent;
+  pointer-events: auto;
+}
+#touchLayout > i {
+  margin-top: -0.3rem;
 }

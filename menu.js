@@ -1,4 +1,4 @@
-var version       = '0.1.8';
+var version       = '0.62';
 var setLoop;
 var arrowReleased = true;
 var arrowDelay    = 0;
@@ -267,46 +267,69 @@ function loadLocalData() {
     $$("btnbinds").classList.add("highlight");
   }
   // TODO When new version just update with new stuff, rest stays unchanged.
-  if (localStorage['version'] !== version) {
-    localStorage.removeItem('settings');
-    localStorage.removeItem('binds');
+  var storedSettings;
+  if (localStorage['settings']) {
+    storedSettings = JSON.parse(localStorage.getItem('settings'));
+    if (localStorage['version'] !== version) {
+      try{
+        tryUpgradeSetting(storedSetting);
+        localStorage['settings'] = JSON.stringify(mySettings);
+      }catch(e){
+        localStorage.removeItem('settings');
+      }
+    }
   }
   if (localStorage['settings']) {
-    var storedSettings = JSON.parse(localStorage.getItem('settings'));
     for (var i in mySettings) {
       if (i in storedSettings) {
         mySettings[i] = storedSettings[i];
       }
     }
   }
-
 }
 
 loadLocalData();
-for (var s in mySettings) {
-  if (mySettings.hasOwnProperty(s)) {
-    var div    = document.createElement('div');
-    var sname  = document.createElement('b');
-    var iLeft  = document.createElement('i');
-    var span   = document.createElement('span');
-    var iRight = document.createElement('i');
+for (var s in settingName) {
+  var div    = document.createElement('div');
+  var sname  = document.createElement('b');
+  var iLeft  = document.createElement('i');
+  var span   = document.createElement('span');
+  var iRight = document.createElement('i');
 
-    div.id              = s;
-    $setText(sname, settingName[s]);
-    $setText(span, setting[s][mySettings[s]]);
-    iLeft.className     = 'material-icons left';
-    iRight.className    = 'material-icons right';
-    $setText(iLeft, "\uE314");
-    $setText(iRight, "\uE315");
-    iLeft.onmousedown   = left;
-    iLeft.ontouchstart  = left;
-    iRight.onmousedown  = right;
-    iRight.ontouchstart = right;
+  div.id              = s;
+  $setText(sname, settingName[s]);
+  $setText(span, setting[s][mySettings[s]]);
+  iLeft.className     = 'material-icons left';
+  iRight.className    = 'material-icons right';
+  $setText(iLeft, "\uE314");
+  $setText(iRight, "\uE315");
+  iLeft.onmousedown   = left;
+  iLeft.ontouchstart  = left;
+  iRight.onmousedown  = right;
+  iRight.ontouchstart = right;
 
-    set.appendChild(div);
-    div.appendChild(sname);
-    div.appendChild(iLeft);
-    div.appendChild(span);
-    div.appendChild(iRight);
+  set.appendChild(div);
+  div.appendChild(sname);
+  div.appendChild(iLeft);
+  div.appendChild(span);
+  div.appendChild(iRight);
+}
+function renameTransfer(obj, oldName, newName, f){
+  if(obj[oldName] === void 0 && obj[newName] === void 0){
+    throw oldName+","+newName;
   }
+  if(obj[oldName] !== void 0 && obj[newName] === void 0){
+    obj[newName] = f?f(obj[oldName]):obj[oldName];
+    delete obj[oldName];
+  }
+}
+function tryUpgradeSetting(sett){
+  renameTransfer(sett, 'Lock Delay', "LockDelay");
+  renameTransfer(sett, 'Soft Drop', "SoftDrop", function(oldv){
+    if(oldv === 7){
+      return gravityArr.length - 1;
+    }else{
+      return oldv + 1;
+    }
+  });
 }

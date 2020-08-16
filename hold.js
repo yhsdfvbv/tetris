@@ -1,17 +1,20 @@
 function Hold() {
-  this.piece=0;
+  this.piece=void 0;
 }
 Hold.prototype.draw = function() {
   clear(holdCtx);
   var p = this.piece;
+  if (p === void 0){
+    return;
+  }
+  var minh = (RotSys[settings.RotSys].initinfo[PieceI.index][2] & 1) ? 4 : 3;
   var initInfo = RotSys[settings.RotSys].initinfo[p];
-  var rect = pieces[p].rect;
+  var r = initInfo[2];
+  var rect = pieces[p].rect[r];
   draw(
     pieces[p].tetro[initInfo[2]],
-    -rect[initInfo[2]][0] + (4 - rect[initInfo[2]][2] + rect[initInfo[2]][0]) / 2,
-    -rect[initInfo[2]][1] +
-      (3 - rect[initInfo[2]][3] + rect[initInfo[2]][1]) / 2
-      ,
+    -rect[0] + (4 - rect[2] + rect[0]) / 2,
+    -rect[1] + (minh - rect[3] + rect[1]) / 2,
     holdCtx,
     RotSys[settings.RotSys].color[p]
   );

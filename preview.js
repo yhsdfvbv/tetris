@@ -12,7 +12,6 @@ Preview.prototype.init = function() {
     this.grabBag.push.apply(this.grabBag, this.gen());
   }
   this.dirty = true;
-  this.draw();
 }
 Preview.prototype.next = function() {
   var next;
@@ -54,13 +53,14 @@ Preview.prototype.gen = function() {
 Preview.prototype.draw = function() {
   clear(previewCtx);
   var drawCount = (settings["Next"]===void 0) ? 6 : settings["Next"];
+  var minh = (RotSys[settings.RotSys].initinfo[PieceI.index][2] & 1) ? 4 : 3;
   var curY = 0;
   for (var i = 0; i < drawCount; i++) {
     var p = this.grabBag[i];
     var initInfo = RotSys[settings.RotSys].initinfo[p];
     var r = initInfo[2];
     var rect = pieces[p].rect[r];
-    var h = Math.max(rect[3] - rect[1], 3);
+    var h = Math.max(rect[3] - rect[1], minh);
     draw(
       pieces[p].tetro[r],
       -rect[0] + (4 - rect[2] + rect[0]) / 2,
