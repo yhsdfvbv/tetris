@@ -48,17 +48,43 @@ Stack.prototype.addPiece = function(piece) {
     var cellToDelWhole = [];
     // Add the piece to the stack.
     var valid = false;
+    
+    var doAddPiece = true;
+    if (gameparams.validPos === 1) { // fixed lite, only allow flat up-facing pose
+      if (!(piece.index === PieceO.index || piece.pos === 0 || (piece.pos === 2 && (
+        [PieceI.index, PieceS.index, PieceZ.index].indexOf(piece.index) !== -1
+      )))){
+        doAddPiece = false;
+      }
+    } else if (gameparams.validPos === 2) { // just flat pose
+      if (!(piece.index === PieceO.index || piece.pos === 0 || piece.pos === 2)){
+        doAddPiece = false;
+      }
+    }
+    if (!doAddPiece) {
+      timePenalty += 10;
+      if (timePenalty >= 100) {
+        gameState = 9;
+        $setText(msg,'RUUAAHHHH!');
+        menu(3);
+        sound.playse("gameover");
+        break;
+      }
+    }
+    
     for (var tx = 0; tx < tetro.length; tx++) {
       for (var ty = 0; ty < tetro[tx].length; ty++) {
         var x = tx + piece.x, y = ty + piece.y;
         if (tetro[tx][ty] && y >= 0) {
-          this.grid[x][y] =
-            RotSys[settings.RotSys].color[piece.index] |
-            (cellFlags.maskConn & tetro[tx][ty]) |
-            ((piece.index + 1) << cellFlags.heightIndex);
+          if (doAddPiece) {
+            this.grid[x][y] =
+              RotSys[settings.RotSys].color[piece.index] |
+              (cellFlags.maskConn & tetro[tx][ty]) |
+              ((piece.index + 1) << cellFlags.heightIndex);
+          }
           if (gameparams.symmetry === 1) {
             // mark pieces violating symmetry constraint, delete later
-            // must selete after completely added, because it may be itself!
+            // must delete after completely added, because it may be itself!
             var symmx = this.width - 1 - x;
             var c = this.grid[x][y];
             var symmc = this.grid[symmx][y];
@@ -67,6 +93,24 @@ Stack.prototype.addPiece = function(piece) {
                 cellToDelWhole.push([symmx, y]);
               }
             }
+          }
+          if (gameparams.isolation) {
+            // find piece of the same index nearby (but not myself), delete it
+            for (var i = 0; i < 4; i++){
+              var d = fourWays[i];
+              var cx = x + d.dx, cy = y + d.dy;
+              if (cx >= 0 && cx < this.width && cy >= 0 && cy < this.height) {
+                if (!(this.grid[x][y] & d.connFlag) && this.grid[cx][cy] !== void 0 && (
+                  ((this.grid[cx][cy] & cellFlags.maskIndex) >> cellFlags.heightIndex) === piece.index + 1
+                )) {
+                  cellToDelWhole.push([cx, cy]);
+                  if (gameparams.isolation === 2) {
+                    cellToDelWhole.push([x, y]);
+                  }
+                }
+              }
+            }
+            
           }
           // Get column for finesse
           if (!once || x < column) {
@@ -82,14 +126,13 @@ Stack.prototype.addPiece = function(piece) {
       }
     }
     
-    
-    if (gameparams.symmetry === 1) {
+    if (gameparams.symmetry === 1 || gameparams.isolation) {
       for (var i = 0; i < cellToDelWhole.length; i++){
         var xy = cellToDelWhole[i];
         var x = xy[0], y = xy[1];
         piecesDel += this.delWholePieceAt(x, y);
       }
-      if (piecesDel) {
+      if (piecesDel && !gameparams.isolation) { // isoltion mode, don't add penalty
         timePenalty += 10 * piecesDel;
         if (timePenalty >= 100) {
           gameState = 9;
@@ -181,9 +224,11 @@ Stack.prototype.addPiece = function(piece) {
           }
         }
       }
-      for (var y = row; y >= 0; y--) {
-        for (var x = 0; x < this.width; x++) {
-          this.grid[x][y] = y === 0 ? void 0 : this.grid[x][y - 1];
+      if (!gameparams.fallMode) { // 0 normal 1 none 2+ others
+        for (var y = row; y >= 0; y--) {
+          for (var x = 0; x < this.width; x++) {
+            this.grid[x][y] = y === 0 ? void 0 : this.grid[x][y - 1];
+          }
         }
       }
       
@@ -198,7 +243,7 @@ Stack.prototype.addPiece = function(piece) {
           bigInt(400 + 400 * lineClear)
             .mul(bigInt(2).pow(b2b + combo))
         );
-        garbage = lineClear * (b2b == 0 ? 2 : 3);
+        garbage = ~~((2 + (lineClear + 3) * lineClear / 2) * (b2b == 0 ? 3 : 4) / 5);
         b2b += 1;
         sound.playse("tspin",Math.min(lineClear, 3));
       } else if (lineClear >= 4) {
@@ -206,7 +251,7 @@ Stack.prototype.addPiece = function(piece) {
           bigInt(100 * (lineClear * lineClear / 4 + lineClear) - 25 * (lineClear & 1))
             .mul(bigInt(2).pow(b2b + combo))
         );
-        garbage = ~~((lineClear * 1.5 - 2) * (b2b == 0 ? 1 : 1.25));
+        garbage = ~~((lineClear * lineClear) * (b2b == 0 ? 4 : 5) / 16);
         b2b += 1;
         sound.playse("erase4");
       } else {
@@ -241,7 +286,7 @@ Stack.prototype.addPiece = function(piece) {
     score = score.add(scoreAdd.mul(bigInt(16).pow(allclear)));
     
     var isPC = true;
-    if (piecesDel !== 0) { // self symmetry violation leads to fake PC
+    if (piecesDel !== 0 || !doAddPiece) { // self symmetry violation leads to fake PC
       isPC = false;
     }
     for (var x = 0; x < this.width; x++)

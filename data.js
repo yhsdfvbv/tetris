@@ -144,7 +144,7 @@ var OffsetNintendo = [
   [[ 0,+1],[ 0, 0],[ 0, 0],[+1, 0]],
   [[+1,+1],[+1,+1],[+1,+1],[+1,+1]],
   [[+1,+1],[+1,+1],[+1,+1],[+1,+1]],
-  [[ 0,+1],[ 0,+1],[ 0,+1],[ 0,+1]],
+  [[ 0,+2],[ 0,+2],[ 0,+2],[ 0,+2]],
   [[+1,+2],[+1,+1],[+1,+1],[+2,+1]],
   [[+1,+1],[+1,+1],[+1,+1],[+1,+1]],
   [[+1,+2],[+1,+1],[+1,+1],[+2,+1]]];
@@ -238,12 +238,12 @@ var OffsetCDi = [
   [[ 0,+1],[ 0, 0],[ 0, 0],[+1, 0]]];
 var OffsetSHC = [
   [[ 0, 0],[ 0, 0],[ 0,-1],[+1, 0]],
-  [[+1,+1],[+1, 0],[+1, 0],[+1, 0]],
-  [[+1,+1],[+1, 0],[+1, 0],[+1, 0]],
+  [[ 0,+1],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0,+1],[ 0, 0],[ 0, 0],[ 0, 0]],
   [[ 0,+1],[ 0,+1],[ 0,+1],[ 0,+1]],
-  [[+1,+1],[+1, 0],[+1, 0],[+2, 0]],
-  [[+1,+1],[+1, 0],[+1, 0],[+1, 0]],
-  [[+1,+1],[+1, 0],[+1, 0],[+2, 0]]];
+  [[ 0,+1],[ 0, 0],[ 0, 0],[+1, 0]],
+  [[ 0,+1],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0,+1],[ 0, 0],[ 0, 0],[+1, 0]]];
 var OffsetMax = [
   [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
   [[+1, 0],[+1, 0],[+1, 0],[+1, 0]],
@@ -284,7 +284,30 @@ var OffsetBPS = [
   [[+1,+1],[+1, 0],[+1, 0],[+2, 0]],
   [[ 0,+1],[ 0,+1],[ 0,+1],[ 0,+1]],
   [[+1,+1],[+1, 0],[+1, 0],[+2, 0]]];
-  
+var OffsetAcid = [
+  [[ 0,+1],[ 0, 0],[ 0, 0],[+1, 0]],
+  [[+1,+1],[+1,+1],[+1,+1],[+1,+1]],
+  [[+1,+1],[+1,+1],[+1,+1],[+1,+1]],
+  [[+1,+2],[+1,+2],[+1,+2],[+1,+2]],
+  [[+1,+2],[+1,+1],[+1,+1],[+2,+1]],
+  [[+1,+1],[+1,+1],[+1,+1],[+1,+1]],
+  [[+1,+2],[+1,+1],[+1,+1],[+2,+1]]];
+var OffsetCrazyYXWD = [
+  [[ 0, 0],[ 0, 0],[ 0,-1],[+1, 0]],
+  [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0, 0],[-1, 0],[ 0,-1],[ 0, 0]],
+  [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[ 0, 0],[-1, 0],[ 0,-1],[ 0, 0]]];
+var OffsetTrukaMy = [
+  [[ 0, 0],[-1, 0],[ 0,-1],[ 0, 0]],
+  [[ 0, 0],[-1, 0],[ 0,-1],[ 0, 0]],
+  [[ 0, 0],[-1, 0],[ 0,-1],[ 0, 0]],
+  [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
+  [[+1, 0],[+1, 0],[+1,-1],[+2, 0]],
+  [[+1, 0],[+1, 0],[+1, 0],[+1, 0]],
+  [[+1, 0],[ 0, 0],[+1,-1],[+1, 0]]];
 //x, y, r
 var InitInfoSRS = [[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0]];
 var InitInfoARS = [[ 0, 0, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0,+1, 0],[ 0,+1, 0],[ 0, 0, 2],[ 0,+1, 0]];
@@ -298,6 +321,7 @@ var InitInfoE60 = [[ 0, 0, 0],[+1, 0, 2],[+1, 0, 2],[ 0,+1, 0],[+1,+1, 0],[+1, 0
 var InitInfoJJSRS = [[ 0, 0, 0],[+1, 0, 0],[+1, 0, 0],[ 0, 0, 0],[+1, 0, 0],[+1, 0, 0],[+1, 0, 0]];
 var InitInfo5000 = [[ 0, 0, 3],[ 0, 0, 1],[+1, 0, 3],[ 0, 0, 0],[ 0, 0, 0],[ 0, -1, 2],[ 0, 0, 0]];
 var InitInfoPlus = [[ 0, 0, 0],[+1, 0, 2],[+1, 0, 2],[ 0,+1, 0],[+1,+1, 0],[+1, 0, 2],[+1,+1, 0]];
+var InitInfoSHC = [[+1,+1, 0],[+1, 0, 2],[+1, 0, 2],[ 0,+1, 0],[+1,+1, 0],[+1, 0, 2],[+1,+1, 0]];
 var InitInfoDX = [[ 0, 0, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0,+1, 0],[ 0,+1, 0],[ 0, 0, 2],[ 0,+1, 0]];
 var InitInfoNintendoL = [[ 0, 0, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0,+1, 0],[ 0,+1, 0],[ 0, 0, 2],[ 0,+1, 0]];
 var InitInfoQuadra = [[ 0, 0, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0,+1, 0],[ 0,+1, 0],[ 0, 0, 2],[ 0,+1, 0]];
@@ -310,6 +334,8 @@ var InitInfoZen = [[ 0,-1, 3],[+1, 0, 3],[ 0, 0, 1],[ 0,+1, 0],[ 0, 0, 1],[ 0, 0
 var InitInfoTris = [[ 0, 0, 3],[+1, 0, 3],[ 0, 0, 1],[ 0,+1, 0],[+1,+1, 3],[+1, 0, 2],[+1,+1, 3]];
 var InitInfoBPS = [[ 0,+1, 0],[ 0,+1, 0],[ 0,+1, 0],[ 0,+1, 0],[+1,+1, 0],[ 0,+1, 0],[+1,+1, 0]];
 var InitInfoBPS2 = [[ 0,+1, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0,+1, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0, 0, 2]];
+var InitInfoAcid = [[+1, 0, 0],[+2, 0, 2],[+2, 0, 2],[+2,+1, 0],[+2,+1, 0],[+2, 0, 2],[+2,+1, 0]];
+var InitInfoTrukaMy = [[ 0, 0, 0],[+1, 0, 2],[+1, 0, 2],[ 0, 0, 0],[+1, 0, 0],[+1, 0, 2],[+1, 0, 0]];
 
 var ColorSRS = [1, 2, 3, 4, 5, 6, 7];
 var ColorSega = [7, 2, 3, 4, 6, 1, 5];
@@ -338,6 +364,9 @@ var ColorTris = [3, 7, 5, 6, 2, 1, 4];
 var ColorSHMac = [5, 4, 3, 7, 2, 1, 6];
 var ColorBPS = [7, 4, 1, 2, 6, 9, 5];
 var ColorBPS2 = [7, 1, 3, 4, 6, 2, 5];
+var ColorAcid = [4, 6, 1, 5, 7, 2, 3];
+var ColorCrazyYXWD = [9, 1, 6, 4, 2, 7, 5];
+var ColorTrukaMy = [5, 2, 1, 6, 4, 7, 3];
 
 var RotSys = [
   {
@@ -446,7 +475,7 @@ var RotSys = [
     color: ColorCDi,
   },
   { // spectrum Holobyte Classic (PC)
-    initinfo: InitInfoPlus,
+    initinfo: InitInfoSHC,
     offset: OffsetSHC,
     color: ColorSHC,
   },
@@ -484,6 +513,21 @@ var RotSys = [
     initinfo: InitInfoBPS2,
     offset: OffsetSRS,
     color: ColorBPS2,
+  },
+  { // nintendo R with O 1right plus all pieces 1right
+    initinfo: InitInfoAcid,
+    offset: OffsetAcid,
+    color: ColorAcid,
+  },
+  {
+    initinfo: InitInfoSRS,
+    offset: OffsetCrazyYXWD,
+    color: ColorCrazyYXWD,
+  },
+  {
+    initinfo: InitInfoTrukaMy,
+    offset: OffsetTrukaMy,
+    color: ColorTrukaMy,
   },
 ];
 
@@ -545,7 +589,13 @@ var cellFlags = {
   connUp: 2048,
   maskIndex: 65536-4096, //index+1. 0 = not specified, don't care
   heightIndex: 12,
-}
+};
+
+var fourWays = [
+  {dx:+1,dy:0,connFlag:cellFlags.connRight},
+  {dx:0,dy:+1,connFlag:cellFlags.connDown},
+  {dx:-1,dy:0,connFlag:cellFlags.connLeft},
+  {dx:0,dy:-1,connFlag:cellFlags.connUp}];
 
 var pieceSymmetryIndex = [0, 2, 1, 3, 6, 5, 4];
 
@@ -649,6 +699,14 @@ var gravityNameArr = (function() {
   array.push("20G (∞)")
   return array;
 })();
+var dasNameArr = (function() {
+  var array = [];
+  array.push('0');
+  for (var i = 1; i < 16; i++)
+    array.push(i+', '+(i>=6?(i/60).toFixed(2)+"s":~~(i*100/6+.5)+"ms"));
+  return array;
+})();
+
 var lockDelayLimit = void 0;
 
 var mySettings = {
@@ -674,7 +732,7 @@ var settings = mySettings; // initialized by reference; replaced when game start
 
 var settingName = {
   DAS: "DAS 加速延迟",
-  ARR: "ARR 重复延迟",
+  ARR: "ARR 重复速率",
   SoftDrop: "Soft Drop 软降速度",
   Gravity: "Gravity 下落速度",
   LockDelay: "Lock Delay 锁定延迟",
@@ -691,23 +749,24 @@ var settingName = {
   NextSide: "Next Side 预览位置"
 };
 var setting = {
-  DAS: range(0,31),
-  ARR: range(0,11),
+  DAS: dasNameArr,
+  ARR: ["0 (∞)","1, 60Hz","2, 30Hz","3, 20Hz","4, 15Hz","5, 12Hz","6, 10Hz","7, 8.6Hz","8, 7.5Hz","9, 6.7Hz","10, 6Hz"],
   SoftDrop: gravityNameArr,
   Gravity: ["Auto"].concat(gravityNameArr),
   LockDelay: range(0, 101),
   RotSys: [
-    'Super', 'C2', 'Arika*', 'DTET', 'QQ', 'Atari', 'Tengen',
+    'Super', 'CultrisII', 'Arika*', 'DTET', 'NM/QQ', 'Atari', 'Tengen',
     'N-Blox', 'Nintendo', 'Microsoft', 'E-60', 'IBM PC', 'JJ', '5000',
     'Plus', 'DX', 'GameBoy', 'Quadra', 'Mybo', 'TNET', 'CD-i',
     'SH-C', 'Max', 'Intelore', 'Zen', 'Tris', 'Quinn', 'BPS', 'BPS2',
+    'ACiD', '英雄无敌', 'Truka·My'
   ],
   Next: ['-', '1', '2', '3', '4', '5', '6'],
   Size: ['Auto', 'Small', 'Medium', 'Large', 'Larger'],
-  Sound: ['Off', 'Meme', 'Dr. Ocelot'],
+  Sound: ['Off', 'Memes', 'Dr.Ocelot'],
   Volume: range(0, 101),
   Block: ['Shaded', 'Solid', 'Glossy', 'Arika', 'World'],
-  Ghost: ['Normal', 'Colored', 'Off', 'Hidden'],
+  Ghost: ['Grey', 'Colored', 'Off', 'Hidden'],
   Grid: ['Off', 'On'],
   Outline: ['Off', 'On', 'Hidden', 'Only'],
   DASCut: ['Off', 'On'],

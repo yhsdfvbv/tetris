@@ -1299,7 +1299,10 @@ function trysubmitscore() {
       (gameparams.delType?["","whole"][gameparams.delType]:"")+
       (gameparams.triplet?["","triplet"][gameparams.triplet]:"")+
       (gameparams.symmetry?["","symmetry"][gameparams.symmetry]:"")+
-      (gameparams.noRotation?["","norot"][gameparams.noRotation]:"");
+      (gameparams.noRotation?["","norot"][gameparams.noRotation]:"")+
+      (gameparams.validPos?["","posup","posflat"][gameparams.validPos]:"")+
+      (gameparams.fallMode?["","nofall"][gameparams.fallMode]:"")+
+      (gameparams.isolation?["","iso","isoboth"][gameparams.isolation]:"");
   else if(gametype===3) // dig
     obj.mode="dig" + (gameparams.digOffset?gameparams.digOffset:"");
   else if(gametype===4) // dig race
