@@ -103,7 +103,7 @@ var lastPiecesSet;
 * Pausing variables
 */
 
-var startPauseTime;
+var lastPsUpsTime;
 var pauseTime;
 var startTime;
 var scoreTime;
@@ -514,7 +514,7 @@ function init(gt, params) {
     requestAnimFrame(gameLoop);
   }
   startTime = Date.now();
-  startPauseTime = 0;
+  lastPsUpsTime = 0;
   pauseTime = 0;
   scoreTime = 0;
   paused = false;
@@ -538,9 +538,12 @@ window.requestAnimFrame = (function () {
 })();
 
 function pause() {
+  if (Date.now() - lastPsUpsTime < 500) {
+    return;
+  }
   if (gameState === 0 || gameState === 4) {
     paused = true;
-    startPauseTime = Date.now();
+    lastPsUpsTime = Date.now();
     $setText(msg,"Paused");
     menu(4);
     touchButtonsToggle();
@@ -548,9 +551,13 @@ function pause() {
 }
 
 function unpause() {
+  if (Date.now() - lastPsUpsTime < 500) {
+    return;
+  }
   paused = false;
   touchButtonsToggle();
-  pauseTime += (Date.now() - startPauseTime);
+  pauseTime += Date.now() - lastPsUpsTime;
+  lastPsUpsTime = Date.now();
   $setText(msg,'');
   menu();
   console.log("start inloop", inloop);
