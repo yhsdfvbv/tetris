@@ -17,6 +17,11 @@ var column;
 /**
  * Get html elements.
  */
+var divdebug = $$('divdebug');
+function debugmsg(s){
+  $setText(divdebug, s);
+}
+
 var msg = $$('msg');
 var stats = $$('stats');
 var statsTime = $$('time');
@@ -330,7 +335,7 @@ function init(gt, params) {
         try{
           tryUpgradeSetting(replay.settings);
         }catch(e){
-          alert("replay too old, failed to auto-upgrade... 回访数据过于古代，自动升级失败...\n" + e);
+          alert("replay too old, failed to auto-upgrade... 回放数据过于古代，自动升级失败...\n" + e);
           return;
         }
         replay.keys = keysDecode(replay.keys);

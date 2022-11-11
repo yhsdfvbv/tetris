@@ -164,14 +164,6 @@ var OffsetE60 = [
   [[+1,+1],[+1, 0],[+1, 0],[+2, 0]],
   [[+1, 0],[+1, 0],[+1, 0],[+1, 0]],
   [[+1,+1],[+1, 0],[+1, 0],[+2, 0]]];
-var OffsetJJSRS = [
-  [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
-  [[+1, 0],[+1, 0],[+1, 0],[+1, 0]],
-  [[+1, 0],[+1, 0],[+1, 0],[+1, 0]],
-  [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
-  [[+1, 0],[+1, 0],[+1, 0],[+1, 0]],
-  [[+1, 0],[+1, 0],[+1, 0],[+1, 0]],
-  [[+1, 0],[+1, 0],[+1, 0],[+1, 0]]];
 var Offset5000 = [
   [[ 0,+1],[-1, 0],[ 0, 0],[ 0, 0]],
   [[ 0, 0],[ 0, 0],[ 0, 0],[ 0, 0]],
@@ -316,7 +308,7 @@ var OffsetTwin = [
   [[+1,+1],[ 0,+1],[+1, 0],[+1,+1]],
   [[+1, 0],[+1, 0],[+1, 0],[+1, 0]],
   [[+1,+1],[ 0,+1],[+1, 0],[+1,+1]]];
-var OffsetFun = [
+var OffsetFun2k = [
   [[ 0, 0],[ 0, 0],[ 0,-1],[+1, 0]],
   [[ 0,+1],[ 0,+1],[ 0,+1],[ 0,+1]],
   [[ 0,+1],[ 0,+1],[ 0,+1],[ 0,+1]],
@@ -324,6 +316,23 @@ var OffsetFun = [
   [[+1, 0],[ 0, 0],[+1,-1],[+1, 0]],
   [[+1, 0],[+1, 0],[+1, 0],[+1, 0]],
   [[+1, 0],[ 0, 0],[+1,-1],[+1, 0]]];
+var OffsetBrick = [
+  [[ 0,+1],[ 0, 0],[ 0, 0],[+1, 0]],
+  [[ 0,+2],[-1,+1],[ 0,+1],[ 0,+1]],
+  [[ 0,+2],[-1,+1],[ 0,+1],[ 0,+1]],
+  [[ 0,+2],[ 0,+2],[ 0,+2],[ 0,+2]],
+  [[ 0,+2],[-1,+1],[ 0,+1],[ 0,+1]],
+  [[ 0,+2],[-1,+1],[ 0,+1],[ 0,+1]],
+  [[ 0,+2],[-1,+1],[ 0,+1],[ 0,+1]]];
+var OffsetHuanle = [
+  [[ 0,+1],[-1, 0],[ 0, 0],[ 0, 0]],
+  [[ 0,+1],[ 0,+1],[ 0,+1],[ 0,+1]],
+  [[ 0,+1],[ 0,+1],[ 0,+1],[ 0,+1]],
+  [[ 0,+1],[ 0,+1],[ 0,+1],[ 0,+1]],
+  [[ 0,+1],[ 0, 0],[ 0, 0],[+1, 0]],
+  [[ 0,+1],[ 0,+1],[ 0,+1],[ 0,+1]],
+  [[ 0,+1],[ 0, 0],[ 0, 0],[+1, 0]]];
+  
 //x, y, r
 var InitInfoSRS = [[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0]];
 var InitInfoARS = [[ 0, 0, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0,+1, 0],[ 0,+1, 0],[ 0, 0, 2],[ 0,+1, 0]];
@@ -334,7 +343,6 @@ var InitInfoNBlox = [[ 0, 0, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0,+1, 0],[ 0,+1, 0],[ 0,
 var InitInfoNintendo = [[ 0, 0, 0],[+1, 0, 2],[+1, 0, 2],[ 0,+1, 0],[+1,+1, 0],[+1, 0, 2],[+1,+1, 0]];
 var InitInfoMS = [[ 0, 0, 0],[+1, 0, 2],[+1, 0, 2],[ 0,+1, 0],[+1,+1, 0],[+1, 0, 2],[+1,+1, 0]];
 var InitInfoE60 = [[ 0, 0, 0],[+1, 0, 2],[+1, 0, 2],[ 0,+1, 0],[+1,+1, 0],[+1, 0, 2],[+1,+1, 0]];
-var InitInfoJJSRS = [[ 0, 0, 0],[+1, 0, 0],[+1, 0, 0],[ 0, 0, 0],[+1, 0, 0],[+1, 0, 0],[+1, 0, 0]];
 var InitInfo5000 = [[ 0, 0, 3],[ 0, 0, 1],[+1, 0, 3],[ 0, 0, 0],[ 0, 0, 0],[ 0, -1, 2],[ 0, 0, 0]];
 var InitInfoPlus = [[ 0, 0, 0],[+1, 0, 2],[+1, 0, 2],[ 0,+1, 0],[+1,+1, 0],[+1, 0, 2],[+1,+1, 0]];
 var InitInfoSHC = [[+1,+1, 0],[+1, 0, 2],[+1, 0, 2],[ 0,+1, 0],[+1,+1, 0],[+1, 0, 2],[+1,+1, 0]];
@@ -353,7 +361,9 @@ var InitInfoBPS2 = [[ 0,+1, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0,+1, 0],[ 0, 0, 2],[ 0, 
 var InitInfoAcid = [[+1, 0, 0],[+2, 0, 2],[+2, 0, 2],[+2,+1, 0],[+2,+1, 0],[+2, 0, 2],[+2,+1, 0]];
 var InitInfoTrukaMy = [[ 0, 0, 0],[+1, 0, 2],[+1, 0, 2],[ 0, 0, 0],[+1, 0, 0],[+1, 0, 2],[+1, 0, 0]];
 var InitInfoTwin = [[ 0, 0, 0],[+1,+1, 0],[ 0,+1, 0],[ 0,+1, 0],[+1,+1, 0],[ 0,+1, 0],[+1,+1, 0]];
-var InitInfoFun = [[ 0, 0, 0],[+1, 0, 0],[+1, 0, 0],[+1, 0, 0],[+1, 0, 0],[+1, 0, 0],[+1, 0, 0]];
+var InitInfoFun2k = [[ 0, 0, 0],[+1, 0, 0],[+1, 0, 0],[+1, 0, 0],[+1, 0, 0],[+1, 0, 0],[+1, 0, 0]];
+var InitInfoBrick = [[ 0, 0, 0],[ 0, 0, 2],[ 0, 0, 2],[ 0,+1, 0],[ 0,+1, 0],[ 0, 0, 2],[ 0,+1, 0]];
+var InitInfoHuanle = [[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0, 0, 0],[ 0,-1, 1],[ 0, 0, 0],[ 0,-1, 1]];
 
 var ColorSRS = [1, 2, 3, 4, 5, 6, 7];
 var ColorSega = [7, 2, 3, 4, 6, 1, 5];
@@ -366,13 +376,13 @@ var ColorNintendo = [9, 2, 7, 9, 2, 9, 7];
 var ColorMS = [7, 6, 4, 1, 2, 8, 5];
 var ColorE60 = [5, 5, 5, 5, 5, 5, 5];
 var ColorIBM = [7, 9, 6, 2, 5, 3, 1];
-var ColorJJSRS = [5, 1, 3, 4, 7, 6, 2];
+var ColorJJ = [5, 1, 3, 4, 7, 6, 2];
 var Color5000 = [7, 6, 8, 4, 5, 1, 2];
 var ColorDX = [9, 7, 2, 4, 3, 5, 6];
 var ColorMybo = [5, 6, 7, 4, 3, 2, 1];
 var ColorQuadra = [5, 4, 6, 3, 1, 2, 7];
 var ColorGameBoy = [9, 2, 7, 8, 7, 9, 2];
-var ColorTNET = [5, 5, 6, 4, 2, 4, 7];
+var ColorTNET = [2, 5, 6, 4, 2, 4, 7];
 var ColorCDi = [3, 7, 5, 9, 6, 2, 4];
 var ColorSHC = [2, 4, 5, 7, 1, 3, 6];
 var ColorMax = [2, 7, 1, 6, 4, 5, 9];
@@ -386,7 +396,9 @@ var ColorAcid = [4, 6, 1, 5, 7, 2, 3];
 var ColorCrazyYXWD = [9, 1, 6, 4, 2, 7, 5];
 var ColorTrukaMy = [5, 2, 1, 6, 4, 7, 3];
 var ColorTwin = [7, 6, 3, 2, 1, 4, 5];
-var ColorFun = [1, 7, 4, 3, 6, 2, 5];
+var ColorFun2k = [1, 7, 4, 3, 6, 2, 5];
+var ColorMono = [9, 9, 9, 9, 9, 9, 9];
+var ColorHuanle = [1, 2, 5, 7, 6, 4, 3];
 
 var RotSys = [
   {
@@ -450,9 +462,9 @@ var RotSys = [
     color: ColorIBM,
   },
   {
-    initinfo: InitInfoJJSRS,
-    offset: OffsetJJSRS,
-    color: ColorJJSRS,
+    initinfo: InitInfoSRS,
+    offset: OffsetSRS,
+    color: ColorJJ,
   },
   {
     initinfo: InitInfo5000,
@@ -501,7 +513,7 @@ var RotSys = [
   },
   {
     initinfo: InitInfoMax,
-    offset: OffsetJJSRS,
+    offset: OffsetMax,
     color: ColorMax,
   },
   { //4 games at puzzle-game-download.com / intelore, interesting rs
@@ -555,9 +567,19 @@ var RotSys = [
     color: ColorTwin,
   },
   {
-    initinfo: InitInfoFun,
-    offset: OffsetFun,
-    color: ColorFun,
+    initinfo: InitInfoFun2k,
+    offset: OffsetFun2k,
+    color: ColorFun2k,
+  },
+  {
+    initinfo: InitInfoBrick,
+    offset: OffsetBrick,
+    color: ColorMono,
+  },
+  {
+    initinfo: InitInfoHuanle,
+    offset: OffsetHuanle,
+    color: ColorHuanle,
   },
 ];
 
@@ -785,11 +807,11 @@ var setting = {
   Gravity: ["Auto"].concat(gravityNameArr),
   LockDelay: range(0, 101),
   RotSys: [
-    'Super', 'CultrisII', 'Arika*', 'DTET', 'NM/QQ', 'Atari', 'Tengen',
+    '- Super -', 'CultrisII', 'Arika*', 'DTET', 'NM/QQ', 'Atari', 'Tengen',
     'N-Blox', 'Nintendo', 'Microsoft', 'E-60', 'IBM PC', 'JJ', '5000',
     'Plus', 'DX', 'GameBoy', 'Quadra', 'Mybo', 'TNET', 'CD-i',
-    'SH-C', 'Max', 'Intelore', 'Zen', 'Tris', 'Quinn', 'BPS', 'BPS2',
-    'ACiD', '英雄无敌', 'Truka·My', 'Twin', 'TFun2k'
+    'SH Clsc.', 'Max/BL', 'Intelore', 'Zen', 'Tris', 'Quinn', 'BPS', 'BPS2',
+    'ACiD', '英雄无敌', 'Truka·My', 'Twin', 'TFun2k', 'Brick', '桃谷欢乐'
   ],
   Next: ['-', '1', '2', '3', '4', '5', '6'],
   Size: ['Auto', 'Small', 'Medium', 'Large', 'Larger'],

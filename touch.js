@@ -220,27 +220,49 @@ function touchButtonsToggle(){
 
 function touch(e)
 {
+  // debugmsg("test");
   var winH = window.innerHeight, winW = window.innerWidth;
   //console.log(e.type, e.target.keyName);
-
+  
   if (e.type === "touchstart" || e.type === "touchmove" || e.type === "touchend") {
     if (isGameRunning()) {
       keysDownTouch = 0;
       for (var i = 0, l = e.touches.length; i < l; i++) {
-        var tX = e.touches[i].pageX, tY = e.touches[i].pageY;
+        var t = e.touches[i];
+        var tX = t.pageX, tY = t.pageY;
         
-        /*
+        var nearestbtn = null, mindist = Infinity;
         for (var j = 0; j < touchButtons.length; j++) {
           var btn = touchButtons[j];
-          if (tX>=btn.offsetLeft && tX<btn.offsetLeft+btn.offsetWidth &&
-            tY>=btn.offsetTop && tY<btn.offsetTop+btn.offsetHeight) {
-            keysDownTouch |= flags[btn.keyName];
+          var centerX = btn.offsetLeft + btn.offsetWidth/2;
+          var centerY = btn.offsetTop + btn.offsetHeight/2;
+          var dist = Math.sqrt((tX - centerX) * (tX - centerX) + (tY - centerY) * (tY - centerY));
+          if (dist < 96 && dist < mindist) {
+            nearestbtn = btn;
+            mindist = dist;
           }
         }
-        */
+        if(nearestbtn !== null){
+          keysDownTouch |= flags[nearestbtn.keyName];
+        }
       }
       e.preventDefault();
     }
+  }
+  
+  //debug
+  var touchcollect=[],btncollect=[];
+  if(false && e.type=="touchstart"){
+    for (var i = 0, l = e.touches.length; i < l; i++) {
+      var t = e.touches[i];
+      var tX = t.pageX, tY = t.pageY;
+      touchcollect.push([tX,tY].join(","));
+    }
+    for (var j = 0; j < touchButtons.length; j++) {
+      var btn = touchButtons[j];
+      btncollect.push([btn.offsetLeft,btn.offsetTop,btn.offsetWidth,btn.offsetHeight,btn.keyName].join(","));
+    }
+    debugmsg(touchcollect.join("\n")+"\n"+btncollect.join("\n"));
   }
 }
 
@@ -278,6 +300,7 @@ touchLayout.addEventListener('click', touchOnLayout, false);
 touchOverlay.addEventListener('gesturestart',preventDefault,false);
 touchOverlay.addEventListener('gestureend',preventDefault,false);
 touchOverlay.addEventListener('gesturechange',preventDefault,false);
-document.addEventListener('gesturestart',preventDefault,false);
-document.addEventListener('gestureend',preventDefault,false);
-document.addEventListener('gesturechange',preventDefault,false);
+
+document.body.addEventListener('gesturestart',preventDefault,false);
+document.body.addEventListener('gestureend',preventDefault,false);
+document.body.addEventListener('gesturechange',preventDefault,false);
